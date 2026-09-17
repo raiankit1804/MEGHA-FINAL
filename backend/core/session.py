@@ -83,8 +83,16 @@ def resolve_location(
     """
     if explicit_location and explicit_location.get("name"):
         loc = {**explicit_location, "source": "explicit"}
-        session["sessionLocation"] = loc
+        session["activeLocation"] = loc
         return loc
+
+    # If activeLocation is already established in this conversation, keep using it for follow-ups
+    cur_active = session.get("activeLocation")
+    if cur_active and cur_active.get("name"):
+        lat = cur_active.get("latitude")
+        lon = cur_active.get("longitude")
+        if lat is None or lon is None or is_in_india(lat, lon):
+            return cur_active
 
     cur_sess = session.get("sessionLocation")
     if cur_sess:
@@ -142,6 +150,7 @@ def add_message(
     followup_chips_english: Optional[list] = None,
     requires_chart: bool = False,
     chart_data: Optional[dict] = None,
+    location_name: Optional[str] = None,
 ) -> dict:
     """
     Add a message to session history.
@@ -169,6 +178,8 @@ def add_message(
         message["followup_chips_english"] = followup_chips_english or []
         message["requires_chart"] = requires_chart
         message["chart_data"] = chart_data
+        if location_name:
+            message["location_name"] = location_name
 
     session["messages"].append(message)
     session["turn_count"] = session.get("turn_count", 0) + 1

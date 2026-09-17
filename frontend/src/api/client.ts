@@ -1,7 +1,7 @@
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || '';
 
 function getHeaders(extraHeaders: Record<string, string> = {}): Record<string, string> {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('wgpt_token') : null;
+  const token = typeof window !== 'undefined' ? (localStorage.getItem('wgpt_token') || localStorage.getItem('auth_token')) : null;
   const headers: Record<string, string> = {
     ...extraHeaders,
   };

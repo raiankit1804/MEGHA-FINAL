@@ -61,15 +61,32 @@ export default function ChatInput({
     onListeningChange?.(recording);
   }, [recording, onListeningChange]);
   const [showModeMenu, setShowModeMenu] = useState(false);
+  const [openUpward, setOpenUpward] = useState(true);
   const [modeGlow, setModeGlow] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const modeMenuRef = useRef<HTMLDivElement | null>(null);
   const recognitionRef = useRef<any>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const baseTextRef = useRef<string>('');
+
+  // Auto-detect optimal dropdown direction (upward vs downward) based on viewport space
+  useEffect(() => {
+    if (showModeMenu && modeMenuRef.current) {
+      const rect = modeMenuRef.current.getBoundingClientRect();
+      const spaceAbove = rect.top;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      // If space above is cramped (< 280px) and there's more room below, open downwards
+      if (spaceAbove < 280 && spaceBelow >= spaceAbove) {
+        setOpenUpward(false);
+      } else {
+        setOpenUpward(true);
+      }
+    }
+  }, [showModeMenu]);
 
   const activeMode = DOMAIN_MODES.find((m) => m.id === domainFilter) || DOMAIN_MODES[0];
   const activeModeName = language === 'en' ? activeMode.label : (getTranslation(language, activeMode.nameKey) || activeMode.label);
-  const placeholder = getTranslation(language, 'inputPlaceholder', 'Ask WeatherGPT…');
+  const placeholder = getTranslation(language, 'inputPlaceholder', 'Ask Megha App…');
 
   // Close mode menu on outside click
   useEffect(() => {
@@ -92,8 +109,14 @@ export default function ChatInput({
   const handleSend = () => {
     const q = query.trim();
     if (!q || loading) return;
+    if (recording) {
+      if (recognitionRef.current) recognitionRef.current.stop();
+      if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') mediaRecorderRef.current.stop();
+      setRecording(false);
+    }
     onSend(q);
     setQuery('');
+    baseTextRef.current = '';
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
     }
@@ -108,6 +131,7 @@ export default function ChatInput({
 
   const handleInput = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setQuery(e.target.value);
+    baseTextRef.current = e.target.value.trim();
     const el = e.target;
     el.style.height = 'auto';
     el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
@@ -129,10 +153,14 @@ export default function ChatInput({
       return;
     }
 
+    // Preserve whatever text is already in the input box so the user continues seamlessly
+    baseTextRef.current = query.trim();
+
     if (SpeechRecognition) {
       try {
         const recognition = new SpeechRecognition();
-        recognition.continuous = false;
+        // Enable continuous recognition to prevent abrupt cut-offs when pausing
+        recognition.continuous = true;
         recognition.interimResults = true;
         recognition.lang = getBcp47Lang(language);
 
@@ -144,7 +172,7 @@ export default function ChatInput({
           let interimTranscript = '';
           let finalTranscript = '';
 
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
+          for (let i = 0; i < event.results.length; ++i) {
             if (event.results[i].isFinal) {
               finalTranscript += event.results[i][0].transcript;
             } else {
@@ -152,12 +180,16 @@ export default function ChatInput({
             }
           }
 
-          const currentText = finalTranscript || interimTranscript;
-          if (currentText) {
-            setQuery(currentText);
+          const sessionTranscript = (finalTranscript + (interimTranscript ? ` ${interimTranscript}` : '')).trim();
+          const base = baseTextRef.current;
+          const fullText = base ? (sessionTranscript ? `${base} ${sessionTranscript}` : base) : sessionTranscript;
+
+          if (fullText) {
+            setQuery(fullText);
             if (textareaRef.current) {
               textareaRef.current.style.height = 'auto';
               textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`;
+              textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
             }
           }
         };
@@ -167,7 +199,7 @@ export default function ChatInput({
           setRecording(false);
           if (event.error === 'not-allowed') {
             alert('Microphone permission was denied. Please allow microphone access in your browser settings.');
-          } else {
+          } else if (event.error !== 'no-speech') {
             fallbackMediaRecorder();
           }
         };
@@ -216,8 +248,16 @@ export default function ChatInput({
           if (res.ok) {
             const data = await res.json();
             if (data.text) {
-              setQuery(data.text);
-              textareaRef.current?.focus();
+              const base = baseTextRef.current;
+              const newText = base ? `${base} ${data.text.trim()}` : data.text.trim();
+              setQuery(newText);
+              baseTextRef.current = newText;
+              if (textareaRef.current) {
+                textareaRef.current.style.height = 'auto';
+                textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 160)}px`;
+                textareaRef.current.scrollTop = textareaRef.current.scrollHeight;
+                textareaRef.current.focus();
+              }
             }
           }
         } catch (e) {
@@ -288,7 +328,7 @@ export default function ChatInput({
 
                 {/* Mode Dropdown Menu */}
                 {showModeMenu && (
-                  <div className={`${styles.modeDropdown} ${styles.modeDropdownDown}`} role="menu">
+                  <div className={`${styles.modeDropdown} ${openUpward ? styles.modeDropdownUp : styles.modeDropdownDown} ${styles.modeDropdownLeft}`} role="menu">
                     <div className={styles.dropdownHeader}>Select Domain Mode</div>
                     {DOMAIN_MODES.map((mode) => {
                       const isSelected = domainFilter === mode.id;
@@ -358,17 +398,6 @@ export default function ChatInput({
       <div className={`${styles.inputContainer} ${isHero ? styles.inputContainerHero : ''} ${modeGlow ? styles.containerGlow : ''}`}>
         {/* Top input row */}
         <div className={styles.topRow}>
-          {/* Gemini '+' action icon */}
-          <button
-            type="button"
-            className={styles.plusBtn}
-            onClick={() => textareaRef.current?.focus()}
-            title="Options & Tools"
-            aria-label="Add options"
-          >
-            <span style={{ fontSize: '1.25rem', lineHeight: 1 }}>+</span>
-          </button>
-
           {/* Auto-expanding textarea */}
           <textarea
             ref={textareaRef}
@@ -401,7 +430,7 @@ export default function ChatInput({
 
               {/* Mode Dropdown Menu */}
               {showModeMenu && (
-                <div className={`${styles.modeDropdown} ${isHero ? styles.modeDropdownDown : ''}`} role="menu">
+                <div className={`${styles.modeDropdown} ${openUpward ? styles.modeDropdownUp : styles.modeDropdownDown} ${styles.modeDropdownRight}`} role="menu">
                   <div className={styles.dropdownHeader}>Select Domain Mode</div>
                   {DOMAIN_MODES.map((mode) => {
                     const isSelected = domainFilter === mode.id;

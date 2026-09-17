@@ -36,8 +36,9 @@ FORMATTING — ESTABLISHING TURN (Initial Weather Overview & Advisory):
 FOLLOWUP_RULES = """
 FORMATTING — FOLLOW-UP TURN (STRICTLY FOCUSED ON THE SPECIFIC QUESTION):
 - This is a FOLLOW-UP question in an ongoing conversation.
-- DO NOT provide the full weather overview or repeat all highlights, 3-day forecast, or generic advice checklists!
-- DO NOT re-output "🌤️ Current Highlights", "🌧️ Rain & Forecast", or generic clothing/commute lists.
+- LOCATION CONTINUITY: The conversation is currently focused on the specific city/locality in the retrieved weather data. Always answer strictly for this active city unless the user explicitly asks about a different city or asks about their current GPS location. Never randomly switch back to default/home location.
+- STUDENT & TOPIC CONTINUITY: Remember and maintain continuity with the student/user's line of interest across previous questions in the conversation (e.g. outdoor sports like football/cricket, school/college travel, study conditions, exams, cycling, walking, or rain safety). Relate the weather parameters directly to their ongoing question of interest.
+- NO DUPLICATE CARDS OR OVERVIEWS: The visual weather card was already presented in the initial question. Do NOT provide the full weather overview, card data dumps, or repeat all highlights, 3-day forecast tables, or generic advice checklists!
 - Answer ONLY what the user asked, directly, conversationally, and concisely (typically 2 to 4 clear sentences or focused, targeted bullet points).
 - If the user asks about their location (e.g. "what is my location", "where am I"), explicitly state the currently active resolved location name and coordinates from the retrieved weather data (e.g. "📍 Your location is currently detected as **Bengaluru, Karnataka**.").
 - If the user asks about waterlogged areas, flooded routes, or commute advice, provide the specific municipal hotspots, vulnerable low-lying underpasses, and commuter safety advice from the Urban Inundation data provided. DO NOT give a generic refusal.

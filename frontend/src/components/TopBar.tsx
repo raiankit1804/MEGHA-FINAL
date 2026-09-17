@@ -3,7 +3,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '../theme/ThemeProvider';
 import { api } from '../api/client';
-import { INDIAN_LANGUAGES, getTranslation } from '../i18n/translations';
+import { INDIAN_LANGUAGES, getTranslation, translateLocation } from '../i18n/translations';
 import { SessionState, SessionLocation, UserProfile } from '../types/chat';
 
 export interface TopBarProps {
@@ -29,7 +29,7 @@ export default function TopBar({
   onOpenSatellite,
   hasWarnings = false,
 }: TopBarProps) {
-  const { interfaceStyle } = useTheme();
+  const { interfaceStyle, colorScheme, setColorScheme } = useTheme();
   const [showLocPicker, setShowLocPicker] = useState(false);
 
   const locationName = session?.sessionLocation?.name || 'Bengaluru, Karnataka';
@@ -56,7 +56,7 @@ export default function TopBar({
             <path d="M9 18 Q16 10 23 18" stroke="#fff" strokeWidth="2" strokeLinecap="round" fill="none" />
             <path d="M6 21 Q16 12 26 21" stroke="#fff" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.6" />
           </svg>
-          <span style={wordmark}>WeatherGPT</span>
+          <span style={wordmark}>Megha App</span>
           <span style={badge}>SIH26068</span>
         </div>
       </div>
@@ -80,7 +80,7 @@ export default function TopBar({
               fontSize: '0.86rem',
             }}
           >
-            {locationName}
+            {translateLocation(locationName, language)}
           </span>
           {isApproximate && (
             <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
@@ -150,6 +150,26 @@ export default function TopBar({
 
         {/* 22 Indian Languages selector */}
         <LanguageToggle value={language} onChange={onLanguageChange} />
+
+        {/* Dark / Light Mode Toggle (Available in Minimal mode, hidden in Modern mode) */}
+        {interfaceStyle !== 'modern' && (
+          <button
+            type="button"
+            onClick={() => {
+              const next = colorScheme === 'dark' ? 'light' : 'dark';
+              setColorScheme(next);
+              if (user) api.patch('/api/user', { color_scheme: next }).catch(() => {});
+            }}
+            style={actionPillBtn}
+            title={colorScheme === 'dark' ? 'Switch to Light mode' : 'Switch to Dark mode'}
+            aria-label="Toggle theme mode"
+          >
+            <span style={{ fontSize: '0.95rem' }}>{colorScheme === 'dark' ? '☀️' : '🌙'}</span>
+            <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
+              {colorScheme === 'dark' ? 'Light' : 'Dark'}
+            </span>
+          </button>
+        )}
 
         {/* Far-Right Profile Menu Button */}
         <ProfileButton user={user} onClick={onProfileClick} />

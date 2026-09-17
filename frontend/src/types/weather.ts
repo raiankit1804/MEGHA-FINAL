@@ -107,6 +107,7 @@ export interface RiskItem {
 export interface WeatherSource {
   name: string;
   url?: string;
+  type?: string;
 }
 
 export interface WeatherData {

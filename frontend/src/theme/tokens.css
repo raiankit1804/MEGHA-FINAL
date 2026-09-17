@@ -9,6 +9,9 @@
 
 /* ─── Reset & Base ──────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+button, input, select, textarea {
+  font-family: inherit;
+}
 html {
   scroll-behavior: smooth;
   width: 100%;
@@ -16,7 +19,7 @@ html {
   overflow-x: hidden;
 }
 body {
-  font-family: 'Inter', 'Noto Sans Bengali', 'Noto Sans Devanagari', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Kohinoor Bangla', 'Bangla Sangam MN', system-ui, sans-serif;
+  font-family: 'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Noto Sans Bengali', 'Noto Sans Gujarati', 'Noto Sans Malayalam', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', 'Noto Sans Arabic', 'Kannada Sangam MN', 'Kannada MN', 'Telugu Sangam MN', 'Tamil Sangam MN', 'Bangla Sangam MN', 'Gujarati Sangam MN', 'Malayalam Sangam MN', 'Gurmukhi Sangam MN', 'Oriya Sangam MN', 'Devanagari Sangam MN', system-ui, -apple-system, sans-serif;
   font-size: 16px;
   line-height: 1.6;
   background: var(--bg-base);
@@ -108,8 +111,8 @@ body {
   --anim-enabled:    1;
 
   /* Typography */
-  --font-body:       'Inter', 'Noto Sans Bengali', 'Noto Sans Devanagari', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Kohinoor Bangla', 'Bangla Sangam MN', system-ui, sans-serif;
-  --font-headline:   'Outfit', 'Inter', 'Noto Sans Bengali', 'Noto Sans Devanagari', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Kohinoor Bangla', 'Bangla Sangam MN', system-ui, sans-serif;
+  --font-body:       'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Noto Sans Bengali', 'Noto Sans Gujarati', 'Noto Sans Malayalam', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', 'Noto Sans Arabic', 'Kannada Sangam MN', 'Kannada MN', 'Telugu Sangam MN', 'Tamil Sangam MN', 'Bangla Sangam MN', 'Gujarati Sangam MN', 'Malayalam Sangam MN', 'Gurmukhi Sangam MN', 'Oriya Sangam MN', 'Devanagari Sangam MN', system-ui, -apple-system, sans-serif;
+  --font-headline:   'Outfit', 'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Noto Sans Bengali', 'Noto Sans Gujarati', 'Noto Sans Malayalam', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', 'Noto Sans Arabic', 'Kannada Sangam MN', 'Kannada MN', 'Telugu Sangam MN', 'Tamil Sangam MN', 'Bangla Sangam MN', 'Gujarati Sangam MN', 'Malayalam Sangam MN', 'Gurmukhi Sangam MN', 'Oriya Sangam MN', 'Devanagari Sangam MN', system-ui, -apple-system, sans-serif;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -181,8 +184,8 @@ body {
   --transition-slow: 600ms ease;
   --anim-enabled:    1;
 
-  --font-body:       'Inter', 'Noto Sans Bengali', 'Noto Sans Devanagari', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Kohinoor Bangla', 'Bangla Sangam MN', system-ui, sans-serif;
-  --font-headline:   'Outfit', 'Inter', 'Noto Sans Bengali', 'Noto Sans Devanagari', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Kohinoor Bangla', 'Bangla Sangam MN', system-ui, sans-serif;
+  --font-body:       'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Noto Sans Bengali', 'Noto Sans Gujarati', 'Noto Sans Malayalam', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', 'Noto Sans Arabic', 'Kannada Sangam MN', 'Kannada MN', 'Telugu Sangam MN', 'Tamil Sangam MN', 'Bangla Sangam MN', 'Gujarati Sangam MN', 'Malayalam Sangam MN', 'Gurmukhi Sangam MN', 'Oriya Sangam MN', 'Devanagari Sangam MN', system-ui, -apple-system, sans-serif;
+  --font-headline:   'Outfit', 'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Noto Sans Bengali', 'Noto Sans Gujarati', 'Noto Sans Malayalam', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', 'Noto Sans Arabic', 'Kannada Sangam MN', 'Kannada MN', 'Telugu Sangam MN', 'Tamil Sangam MN', 'Bangla Sangam MN', 'Gujarati Sangam MN', 'Malayalam Sangam MN', 'Gurmukhi Sangam MN', 'Oriya Sangam MN', 'Devanagari Sangam MN', system-ui, -apple-system, sans-serif;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -255,8 +258,8 @@ body {
   --transition-slow: 200ms ease;
   --anim-enabled:    0;
 
-  --font-body:       'Inter', 'Noto Sans Bengali', 'Noto Sans Devanagari', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Kohinoor Bangla', 'Bangla Sangam MN', system-ui, sans-serif;
-  --font-headline:   'Inter', 'Noto Sans Bengali', 'Noto Sans Devanagari', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Kohinoor Bangla', 'Bangla Sangam MN', system-ui, sans-serif;
+  --font-body:       'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Noto Sans Bengali', 'Noto Sans Gujarati', 'Noto Sans Malayalam', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', 'Noto Sans Arabic', 'Kannada Sangam MN', 'Kannada MN', 'Telugu Sangam MN', 'Tamil Sangam MN', 'Bangla Sangam MN', 'Gujarati Sangam MN', 'Malayalam Sangam MN', 'Gurmukhi Sangam MN', 'Oriya Sangam MN', 'Devanagari Sangam MN', system-ui, -apple-system, sans-serif;
+  --font-headline:   'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Noto Sans Bengali', 'Noto Sans Gujarati', 'Noto Sans Malayalam', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', 'Noto Sans Arabic', 'Kannada Sangam MN', 'Kannada MN', 'Telugu Sangam MN', 'Tamil Sangam MN', 'Bangla Sangam MN', 'Gujarati Sangam MN', 'Malayalam Sangam MN', 'Gurmukhi Sangam MN', 'Oriya Sangam MN', 'Devanagari Sangam MN', system-ui, -apple-system, sans-serif;
 }
 
 /* ════════════════════════════════════════════════════════════════════════════
@@ -328,8 +331,8 @@ body {
   --transition-slow: 200ms ease;
   --anim-enabled:    0;
 
-  --font-body:       'Inter', 'Noto Sans Bengali', 'Noto Sans Devanagari', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Kohinoor Bangla', 'Bangla Sangam MN', system-ui, sans-serif;
-  --font-headline:   'Inter', 'Noto Sans Bengali', 'Noto Sans Devanagari', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Kohinoor Bangla', 'Bangla Sangam MN', system-ui, sans-serif;
+  --font-body:       'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Noto Sans Bengali', 'Noto Sans Gujarati', 'Noto Sans Malayalam', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', 'Noto Sans Arabic', 'Kannada Sangam MN', 'Kannada MN', 'Telugu Sangam MN', 'Tamil Sangam MN', 'Bangla Sangam MN', 'Gujarati Sangam MN', 'Malayalam Sangam MN', 'Gurmukhi Sangam MN', 'Oriya Sangam MN', 'Devanagari Sangam MN', system-ui, -apple-system, sans-serif;
+  --font-headline:   'Inter', 'Noto Sans Devanagari', 'Noto Sans Kannada', 'Noto Sans Telugu', 'Noto Sans Tamil', 'Noto Sans Bengali', 'Noto Sans Gujarati', 'Noto Sans Malayalam', 'Noto Sans Gurmukhi', 'Noto Sans Oriya', 'Noto Sans Arabic', 'Kannada Sangam MN', 'Kannada MN', 'Telugu Sangam MN', 'Tamil Sangam MN', 'Bangla Sangam MN', 'Gujarati Sangam MN', 'Malayalam Sangam MN', 'Gurmukhi Sangam MN', 'Oriya Sangam MN', 'Devanagari Sangam MN', system-ui, -apple-system, sans-serif;
 }
 
 /* ─── prefers-reduced-motion ─────────────────────────────────────────────── */

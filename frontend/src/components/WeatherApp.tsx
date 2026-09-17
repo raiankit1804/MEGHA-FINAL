@@ -12,6 +12,7 @@ import SosModal from './SosModal';
 import DisasterWarningModal from './DisasterWarningModal';
 import SatelliteModal from './SatelliteModal';
 import LanguageModal from './LanguageModal';
+import { useTheme } from '../theme/ThemeProvider';
 import {
   ChatMessage,
   SessionState,
@@ -85,6 +86,7 @@ const DOMAIN_MODES = [
 ];
 
 export default function WeatherApp() {
+  const { interfaceStyle, setInterfaceStyle } = useTheme();
   const [showSplash, setShowSplash] = useState(true);
   const [switchingMode, setSwitchingMode] = useState<string | null>(null);
   const [showProfile, setShowProfile] = useState(false);
@@ -142,6 +144,7 @@ export default function WeatherApp() {
     const params = new URLSearchParams(window.location.search);
     const token = params.get('token');
     if (token) {
+      localStorage.setItem('wgpt_token', token);
       localStorage.setItem('auth_token', token);
       window.history.replaceState({}, document.title, window.location.pathname);
     }
@@ -312,18 +315,25 @@ export default function WeatherApp() {
           user_id: user?.id || null,
         };
 
-        if (session.sessionLocation?.latitude) {
+        // Only send raw GPS coordinates on the initial message or when current location is explicitly asked.
+        // For follow-up questions, let the backend maintain the active conversational location (e.g., Kochi).
+        const gpsSource = session.sessionLocation?.source;
+        const isGpsOrHome = gpsSource === 'gps' || gpsSource === 'ip' || gpsSource === 'default' || gpsSource === 'home';
+        const isCurrentLocQuery = /my location|where am i|current location|मेरा स्थान|ನನ್ನ ಸ್ಥಳ|నా స్థానం|என் இடம்/i.test(query);
+        if ((messages.length === 0 || isCurrentLocQuery) && session.sessionLocation?.latitude && isGpsOrHome) {
           payload.latitude = session.sessionLocation.latitude;
           payload.longitude = session.sessionLocation.longitude;
-          payload.location_name = session.sessionLocation.name;
         }
 
         const resp = await api.post('/api/chat', payload);
 
+        // Only update sessionLocation if this was a GPS/home location response.
+        // Do NOT overwrite the user's home location with a remote query result
+        // (e.g. asking "assam weather" should not change home to Assam).
         setSession((s) => ({
           ...s,
           session_id: resp.session_id || s.session_id,
-          sessionLocation: resp.resolved_location
+          sessionLocation: !resp.is_remote_query && resp.resolved_location
             ? {
                 name: resp.resolved_location,
                 latitude: resp.weather_data?.location_info?.latitude ?? s.sessionLocation?.latitude,
@@ -342,10 +352,10 @@ export default function WeatherApp() {
           if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
             const firstWarn = resp.warnings[0];
             const title = `⚠️ Weather Alert: ${firstWarn.hazard_type || 'Severe Weather'}`;
-            const body = `${firstWarn.severity?.toUpperCase() || 'WARNING'} in ${firstWarn.district || resp.resolved_location || 'your area'}: ${firstWarn.advisory_text || firstWarn.action_instructions || 'Check WeatherGPT for details.'}`;
+            const body = `${firstWarn.severity?.toUpperCase() || 'WARNING'} in ${firstWarn.district || resp.resolved_location || 'your area'}: ${firstWarn.advisory_text || firstWarn.action_instructions || 'Check Megha App for details.'}`;
             new Notification(title, {
               body,
-              icon: 'https://cdn-icons-png.flaticon.com/512/1163/1163624.png',
+              icon: '/megha_setu_phone.png',
             });
           }
         }
@@ -404,16 +414,22 @@ export default function WeatherApp() {
     setMessages((prev) =>
       prev.map((msg) => {
         if (msg.role !== 'assistant') return msg;
-        if (msg.variants && msg.variants[lang]) return msg;
+        if (msg.variants && msg.variants[lang] && lang !== 'en' && msg.variants[lang] !== msg.response_text_english) {
+          return msg;
+        }
 
         const sourceText = msg.response_text_english || msg.response_text;
+        const chipsToTranslate = msg.followup_chips_english?.length
+          ? msg.followup_chips_english
+          : msg.followup_chips_native;
+
         if (sourceText) {
           api
             .post('/api/translate', {
               text: sourceText,
               source_lang: 'en',
               target_lang: lang,
-              follow_up_questions: msg.followup_chips_english,
+              follow_up_questions: chipsToTranslate,
             })
             .then((trans) => {
               if (trans && trans.translated_text) {
@@ -511,6 +527,21 @@ export default function WeatherApp() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
+            {/* Quick 1-tap Modern / Minimal Style Switcher */}
+            <button
+              type="button"
+              onClick={() => {
+                const next = interfaceStyle === 'modern' ? 'minimal' : 'modern';
+                setInterfaceStyle(next);
+                if (user) api.patch('/api/user', { interface_style: next }).catch(() => {});
+                handleNewChat();
+              }}
+              style={mobileHeaderActionBtn}
+              title={interfaceStyle === 'modern' ? 'Active: Modern View (Tap for Minimal)' : 'Active: Minimal View (Tap for Modern)'}
+              aria-label="Toggle Modern / Minimal View"
+            >
+              <span style={{ fontSize: '0.95rem' }}>{interfaceStyle === 'modern' ? '✨' : '📄'}</span>
+            </button>
             <button
               type="button"
               onClick={handleNewChat}
@@ -555,6 +586,7 @@ export default function WeatherApp() {
           <ProfileMenu
             user={user}
             onClose={() => setShowProfile(false)}
+            onNewChat={handleNewChat}
             onSettingsChange={(changes) => {
               if (changes.history_opt_in !== undefined && user) {
                 setUser((u) => (u ? { ...u, ...changes } : null));

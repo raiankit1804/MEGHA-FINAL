@@ -33,7 +33,7 @@ export const UI_STRINGS: Record<string, any> = {
   en: {
     heroGreeting: 'Where should we start?',
     heroSubtitle: 'Grounded meteorological intelligence, official IMD warnings, and proactive alerts.',
-    inputPlaceholder: 'Ask WeatherGPT…',
+    inputPlaceholder: 'Ask Megha App…',
     send: 'Send',
     listen: 'Listen',
     stop: 'Stop',
@@ -68,7 +68,7 @@ export const UI_STRINGS: Record<string, any> = {
   hi: {
     heroGreeting: 'हम कहाँ से शुरू करें?',
     heroSubtitle: 'सत्यापित मौसम डेटा, आधिकारिक आईएमडी चेतावनियां और सक्रिय अलर्ट।',
-    inputPlaceholder: 'WeatherGPT से पूछें…',
+    inputPlaceholder: 'Megha App से पूछें…',
     send: 'भेजें',
     listen: 'सुनें',
     stop: 'रोकें',
@@ -894,6 +894,8 @@ export function getModernLandingStrings(langCode: string): ModernLandingStrings 
 
 export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> = {
   en: {
+    downloadPdf: 'Download PDF',
+    generatingPdf: 'Generating PDF…',
     currentConditions: 'Current conditions',
     aqi: 'AQI',
     uvIndex: 'UV index',
@@ -922,6 +924,10 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     moreDetails: 'More weather details & charts',
     hideDetails: 'Hide weather details',
     feelsLike: 'Feels like',
+    mm: 'mm',
+    mb: 'mb',
+    kmh: 'km/h',
+    km: 'km',
     low: 'Low',
     moderate: 'Moderate',
     high: 'High',
@@ -947,6 +953,8 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     'Violent showers': 'Violent showers',
   },
   hi: {
+    downloadPdf: 'पीडीएफ डाउनलोड करें',
+    generatingPdf: 'पीडीएफ तैयार हो रहा है…',
     currentConditions: 'वर्तमान स्थिति',
     aqi: 'वायु गुणवत्ता (AQI)',
     uvIndex: 'यूवी सूचकांक',
@@ -975,6 +983,10 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     moreDetails: 'विस्तृत मौसम एवं चार्ट देखें',
     hideDetails: 'मौसम विवरण छुपाएं',
     feelsLike: 'महसूस हो रहा',
+    mm: 'मिमी',
+    mb: 'मिलीबार',
+    kmh: 'किमी/घंटा',
+    km: 'किमी',
     low: 'कम',
     moderate: 'मध्यम',
     high: 'उच्च',
@@ -999,6 +1011,8 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     'Violent showers': 'मूसलाधार बौछारें',
   },
   kn: {
+    downloadPdf: 'ಪಿಡಿಎಫ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ',
+    generatingPdf: 'ಪಿಡಿಎಫ್ ಸಿದ್ಧಪಡಿಸಲಾಗುತ್ತಿದೆ…',
     currentConditions: 'ಪ್ರಸ್ತುತ ಹವಾಮಾನ',
     aqi: 'ವಾಯು ಗುಣಮಟ್ಟ (AQI)',
     uvIndex: 'ಯುವಿ ಸೂಚ್ಯಂಕ',
@@ -1027,6 +1041,10 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     moreDetails: 'ಹೆಚ್ಚಿನ ಹವಾಮಾನ ವಿವರಗಳು ಮತ್ತು ಚಾರ್ಟ್‌ಗಳು',
     hideDetails: 'ವಿವರಗಳನ್ನು ಮರೆಮಾಡಿ',
     feelsLike: 'ಅನುಭವವಾಗುವುದು',
+    mm: 'ಮಿಮೀ',
+    mb: 'ಮಿಲಿಬಾರ್',
+    kmh: 'ಕಿಮೀ/ಗಂ',
+    km: 'ಕಿ.ಮೀ',
     low: 'ಕಡಿಮೆ',
     moderate: 'ಮಧ್ಯಮ',
     high: 'ಹೆಚ್ಚು',
@@ -1051,6 +1069,8 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     'Violent showers': 'ಧಾರಾಕಾರ ಮಳೆ',
   },
   ta: {
+    downloadPdf: 'பிடிஎஃப் பதிவிறக்கவும்',
+    generatingPdf: 'பிடிஎஃப் உருவாக்கப்படுகிறது…',
     currentConditions: 'தற்போதைய வானிலை',
     aqi: 'காற்றுத் தரம் (AQI)',
     uvIndex: 'புற ஊதாக் குறியீடு',
@@ -1078,7 +1098,11 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     satelliteRadar: 'INSAT-3DS செயற்கைக்கோள் & டாப்ளர் ரேடார்',
     moreDetails: 'கூடுதல் விவரங்கள் & வரைபடங்கள்',
     hideDetails: 'விவரங்களை மறை',
-    feelsLike: 'உணரப்படுவது',
+    feelsLike: 'உணரப்படும் வெப்பநிலை',
+    mm: 'மிமீ',
+    mb: 'மில்லிபார்',
+    kmh: 'கிமீ/மணி',
+    km: 'கி.மீ',
     low: 'குறைவு',
     moderate: 'மிதமானது',
     high: 'அதிகம்',
@@ -1103,6 +1127,8 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     'Violent showers': 'கடும் மழைப்பொழிவு',
   },
   te: {
+    downloadPdf: 'పీడీఎఫ్‌ను డౌన్‌లోడ్ చేయండి',
+    generatingPdf: 'పీడీఎఫ్ సిద్ధమవుతోంది…',
     currentConditions: 'ప్రస్తుత వాతావరణం',
     aqi: 'గాలి నాణ్యత (AQI)',
     uvIndex: 'UV సూచిక',
@@ -1130,7 +1156,11 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     satelliteRadar: 'INSAT-3DS శాటిలైట్ & డాప్లర్ రాడార్',
     moreDetails: 'మరిన్ని వివరాలు & చార్ట్‌లు',
     hideDetails: 'వివరాలు దాచండి',
-    feelsLike: 'అనిపిస్తుంది',
+    feelsLike: 'అనిపించే ఉష్ಣోగ్రత',
+    mm: 'మి.మీ',
+    mb: 'మిల్లీబార్',
+    kmh: 'కి.మీ/గం',
+    km: 'కి.మీ',
     low: 'తక్కువ',
     moderate: 'మధ్యస్థం',
     high: 'ఎక్కువ',
@@ -1155,6 +1185,8 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     'Violent showers': 'కుంభవృష్టి జల్లులు',
   },
   bn: {
+    downloadPdf: 'পিডিএফ ডাউনলোড করুন',
+    generatingPdf: 'পিডিএফ তৈরি হচ্ছে…',
     currentConditions: 'বর্তমান আবহাওয়া',
     aqi: 'বায়ুমান সূচক (AQI)',
     uvIndex: 'ইউভি সূচক',
@@ -1182,7 +1214,11 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     satelliteRadar: 'ইনস্যাট-৩ডিএস স্যাটেলাইট ও ডপলার রাডার',
     moreDetails: 'বিস্তারিত আবহাওয়া ও চার্ট দেখুন',
     hideDetails: 'বিবরণ লুকান',
-    feelsLike: 'অনুভূত হচ্ছে',
+    feelsLike: 'অনুভূত তাপমাত্রা',
+    mm: 'মিমি',
+    mb: 'মিলিবার',
+    kmh: 'কিমি/ঘণ্টা',
+    km: 'কিমি',
     low: 'কম',
     moderate: 'মাঝারি',
     high: 'বেশি',
@@ -1207,6 +1243,8 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     'Violent showers': 'মুষলধারে বৃষ্টি',
   },
   mr: {
+    downloadPdf: 'पीडीएफ डाउनलोड करा',
+    generatingPdf: 'पीडीएफ तयार होत आहे…',
     currentConditions: 'सध्याचे हवामान',
     aqi: 'हवा गुणवत्ता (AQI)',
     uvIndex: 'यूव्ही निर्देशांक',
@@ -1234,7 +1272,11 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     satelliteRadar: 'इनसॅट-३डीएस उपग्रह व डॉप्लर रडार',
     moreDetails: 'सविस्तर हवामान व तक्ते पहा',
     hideDetails: 'तपशील लपवा',
-    feelsLike: 'जाणवत आहे',
+    feelsLike: 'जावणारे तापमान',
+    mm: 'मिमी',
+    mb: 'मिलीबार',
+    kmh: 'किमी/तास',
+    km: 'किमी',
     low: 'कमी',
     moderate: 'मध्यम',
     high: 'जास्त',
@@ -1259,6 +1301,8 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     'Violent showers': 'मुसळधार सरी',
   },
   gu: {
+    downloadPdf: 'પીડીએફ ડાઉનલોડ કરો',
+    generatingPdf: 'પીડીએફ બની રહી છે…',
     currentConditions: 'હાલનું હવામાન',
     aqi: 'હવાની ગુણવત્તા (AQI)',
     uvIndex: 'યુવી ઈન્ડેક્સ',
@@ -1286,7 +1330,11 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
     satelliteRadar: 'INSAT-3DS સેટેલાઇટ અને ડૉપ્લર રડાર',
     moreDetails: 'વિગતવાર હવામાન અને ચાર્ટ',
     hideDetails: 'વિગતો છુપાવો',
-    feelsLike: 'અનુભવાય છે',
+    feelsLike: 'અનુભવાતું તાપમાન',
+    mm: 'મીમી',
+    mb: 'મિલીબાર',
+    kmh: 'કિમી/કલાક',
+    km: 'કિમી',
     low: 'ઓછું',
     moderate: 'મધ્યમ',
     high: 'વધુ',
@@ -1313,16 +1361,409 @@ export const WEATHER_CARD_TRANSLATIONS: Record<string, Record<string, string>> =
 };
 
 export function getCardTranslation(langCode: string | undefined, key: string, fallback?: string): string {
+  if (!key) return fallback || '';
   const code = langCode || 'en';
   const dict = WEATHER_CARD_TRANSLATIONS[code] || WEATHER_CARD_TRANSLATIONS['en'];
-  if (dict && dict[key]) {
-    return dict[key];
+  if (dict) {
+    if (dict[key]) return dict[key];
+    const lower = key.toLowerCase();
+    if (dict[lower]) return dict[lower];
+    const camel = key.charAt(0).toLowerCase() + key.slice(1);
+    if (dict[camel]) return dict[camel];
+    const capitalized = key.charAt(0).toUpperCase() + key.slice(1).toLowerCase();
+    if (dict[capitalized]) return dict[capitalized];
   }
   const enDict = WEATHER_CARD_TRANSLATIONS['en'];
-  if (enDict && enDict[key]) {
-    return enDict[key];
+  if (enDict) {
+    if (enDict[key]) return enDict[key];
+    const lower = key.toLowerCase();
+    if (enDict[lower]) return enDict[lower];
   }
   return fallback || key;
+}
+
+export const INDIAN_LOCATIONS: Record<string, Record<string, string>> = {
+  hi: {
+    'bengaluru': 'बेंगलुरु', 'bangalore': 'बेंगलुरु', 'karnataka': 'कर्नाटक',
+    'delhi': 'दिल्ली', 'new delhi': 'नई दिल्ली', 'mumbai': 'मुंबई', 'bombay': 'मुंबई',
+    'chennai': 'चेन्नई', 'madras': 'चेन्नई', 'kolkata': 'कोलकाता', 'calcutta': 'कोलकाता',
+    'hyderabad': 'हैदराबाद', 'ahmedabad': 'अहमदाबाद', 'pune': 'पुणे', 'jaipur': 'जयपुर',
+    'lucknow': 'लखनऊ', 'chandigarh': 'चंडीगढ़', 'patna': 'पटना', 'bhopal': 'भोपाल',
+    'indore': 'इंदौर', 'kochi': 'कोच्चि', 'cochin': 'कोच्चि', 'thiruvananthapuram': 'तिरुवनंतपुरम',
+    'mysuru': 'मैसूर', 'mysore': 'मैसूर', 'mangaluru': 'मंगलुरु', 'mangalore': 'मंगलुरु',
+    'hubballi': 'हुबली', 'hubli': 'हुबली', 'belagavi': 'बेलगावी', 'belgaum': 'बेलगावी',
+    'srinagar': 'श्रीनगर', 'shimla': 'शिमला', 'dehradun': 'देहरादून', 'ranchi': 'रांची',
+    'raipur': 'रायपुर', 'bhubaneswar': 'भुवनेश्वर', 'surat': 'सूरत', 'vadodara': 'वडोदरा',
+    'baroda': 'वडोदरा', 'nagpur': 'नागपुर', 'coimbatore': 'कोयंबटूर', 'madurai': 'मदुरै',
+    'visakhapatnam': 'विशाखापट्टनम', 'vizag': 'विशाखापट्टनम', 'vijayawada': 'विजयवाड़ा',
+    'varanasi': 'वाराणसी', 'agra': 'आगरा', 'kanpur': 'कानपुर', 'noida': 'नोएडा',
+    'gurugram': 'गुरुग्राम', 'gurgaon': 'गुरुग्राम', 'whitefield': 'व्हाइटफील्ड',
+    'koramangala': 'कोरमंगला', 'indiranagar': 'इंदिरानगर', 'yelahanka': 'यलहंका',
+    'ittagalpura': 'इत्तगलपुरा', 'presidency university': 'प्रेसिडेंसी यूनिवर्सिटी',
+    'maharashtra': 'महाराष्ट्र', 'tamil nadu': 'तमिलनाडु', 'andhra pradesh': 'आंध्र प्रदेश',
+    'telangana': 'तेलंगाना', 'kerala': 'केरल', 'uttar pradesh': 'उत्तर प्रदेश',
+    'west bengal': 'पश्चिम बंगाल', 'gujarat': 'गुजरात', 'rajasthan': 'राजस्थान',
+    'punjab': 'पंजाब', 'haryana': 'हरियाणा', 'bihar': 'बिहार', 'odisha': 'ओडिशा',
+    'madhya pradesh': 'मध्य प्रदेश', 'assam': 'असम', 'goa': 'गोवा', 'india': 'भारत',
+    'your area': 'आपके क्षेत्र',
+  },
+  kn: {
+    'bengaluru': 'ಬೆಂಗಳೂರು', 'bangalore': 'ಬೆಂಗಳೂರು', 'karnataka': 'ಕರ್ನಾಟಕ',
+    'delhi': 'ದೆಹಲಿ', 'new delhi': 'ನವದೆಹಲಿ', 'mumbai': 'ಮುಂಬೈ', 'bombay': 'ಮುಂಬೈ',
+    'chennai': 'ಚೆನ್ನೈ', 'madras': 'ಚೆನ್ನೈ', 'kolkata': 'ಕೋಲ್ಕತ್ತಾ', 'calcutta': 'ಕೋಲ್ಕತ್ತಾ',
+    'hyderabad': 'ಹೈದರಾಬಾದ್', 'ahmedabad': 'ಅಹಮದಾಬಾದ್', 'pune': 'ಪುಣೆ', 'jaipur': 'ಜೈಪುರ',
+    'lucknow': 'ಲಕ್ನೋ', 'chandigarh': 'ಚಂಡೀಗಢ', 'patna': 'ಪಾಟ್ನಾ', 'bhopal': 'ಭೋಪಾಲ್',
+    'indore': 'ಇಂದೋರ್', 'kochi': 'ಕೊಚ್ಚಿ', 'cochin': 'ಕೊಚ್ಚಿ', 'thiruvananthapuram': 'ತಿರುವನಂತಪುರಂ',
+    'mysuru': 'ಮೈಸೂರು', 'mysore': 'ಮೈಸೂರು', 'mangaluru': 'ಮಂಗಳೂರು', 'mangalore': 'ಮಂಗಳೂರು',
+    'hubballi': 'ಹುಬ್ಬಳ್ಳಿ', 'hubli': 'ಹುಬ್ಬಳ್ಳಿ', 'belagavi': 'ಬೆಳಗಾವಿ', 'belgaum': 'ಬೆಳಗಾವಿ',
+    'srinagar': 'ಶ್ರೀನಗರ', 'shimla': 'ಶಿಮ್ಲಾ', 'dehradun': 'ಡೆಹ್ರಾಡೂನ್', 'ranchi': 'ರಾಂಚಿ',
+    'raipur': 'ರಾಯ್‌ಪುರ', 'bhubaneswar': 'ಭುವನೇಶ್ವರ', 'surat': 'ಸೂರತ್', 'vadodara': 'ವಡೋದರಾ',
+    'baroda': 'ವಡೋದರಾ', 'nagpur': 'ನಾಗ್ಪುರ', 'coimbatore': 'ಕೊಯಮತ್ತೂರು', 'madurai': 'ಮಧುರೈ',
+    'visakhapatnam': 'ವಿಶಾಖಪಟ್ಟಣ', 'vizag': 'ವಿಶಾಖಪಟ್ಟಣ', 'vijayawada': 'ವಿಜಯವಾಡ',
+    'varanasi': 'ವಾರಣಾಸಿ', 'agra': 'ಆಗ್ರಾ', 'kanpur': 'ಕಾನ್ಪುರ', 'noida': 'ನೋಯ್ಡಾ',
+    'gurugram': 'ಗುರುಗ್ರಾಮ', 'gurgaon': 'ಗುರುಗ್ರಾಮ', 'whitefield': 'ವೈಟ್‌ಫೀಲ್ಡ್',
+    'koramangala': 'ಕೋರಮಂಗಲ', 'indiranagar': 'ಇಂದಿರಾನಗರ', 'yelahanka': 'ಯಲಹಂಕ',
+    'ittagalpura': 'ಇತ್ತಗಲಪುರ', 'presidency university': 'ಪ್ರೆಸಿಡೆನ್ಸಿ ವಿಶ್ವವಿದ್ಯಾಲಯ',
+    'maharashtra': 'ಮಹಾರಾಷ್ಟ್ರ', 'tamil nadu': 'ತಮಿಳುನಾಡು', 'andhra pradesh': 'ಆಂಧ್ರ ಪ್ರದೇಶ',
+    'telangana': 'ತೆಲಂಗಾಣ', 'kerala': 'ಕೇರಳ', 'uttar pradesh': 'ಉತ್ತರ ಪ್ರದೇಶ',
+    'west bengal': 'ಪಶ್ಚಿಮ ಬಂಗಾಳ', 'gujarat': 'ಗುಜರಾತ್', 'rajasthan': 'ರಾಜಸ್ಥಾನ',
+    'punjab': 'ಪಂಜಾಬ್', 'haryana': 'ಹರಿಯಾಣ', 'bihar': 'ಬಿಹಾರ', 'odisha': 'ಒಡಿಶಾ',
+    'madhya pradesh': 'ಮಧ್ಯ ಪ್ರದೇಶ', 'assam': 'ಅಸ್ಸಾಂ', 'goa': 'ಗೋವಾ', 'india': 'ಭಾರತ',
+    'your area': 'ನಿಮ್ಮ ಪ್ರದೇಶ',
+  },
+  bn: {
+    'bengaluru': 'বেঙ্গালুরু', 'bangalore': 'বেঙ্গালুরু', 'karnataka': 'কর্ণাটক',
+    'delhi': 'দিল্লি', 'new delhi': 'নয়াদিল্লি', 'mumbai': 'মুম্বাই', 'bombay': 'মুম্বাই',
+    'chennai': 'চেন্নাই', 'madras': 'চেন্নাই', 'kolkata': 'কলকাতা', 'calcutta': 'কলকাতা',
+    'hyderabad': 'হায়দ্রাবাদ', 'ahmedabad': 'আহমেদাবাদ', 'pune': 'পুনে', 'jaipur': 'জয়পুর',
+    'lucknow': 'লখনউ', 'chandigarh': 'চণ্ডীগড়', 'patna': 'পাটনা', 'bhopal': 'ভোপাল',
+    'indore': 'ইন্দোর', 'kochi': 'কোচি', 'cochin': 'কোচি', 'thiruvananthapuram': 'তিরুবনন্তপুরম',
+    'mysuru': 'মহীশূর', 'mysore': 'মহীশূর', 'mangaluru': 'ম্যাঙ্গালোর', 'mangalore': 'ম্যাঙ্গালোর',
+    'hubballi': 'হুবলি', 'hubli': 'হুবলি', 'belagavi': 'বেলগাম', 'belgaum': 'বেলগাম',
+    'srinagar': 'শ্রীনগর', 'shimla': 'শিমলা', 'dehradun': 'দেরাদুন', 'ranchi': 'রাঁচি',
+    'raipur': 'রায়পুর', 'bhubaneswar': 'ভুবনেশ্বর', 'surat': 'সুরাট', 'vadodara': 'ভাদোদরা',
+    'baroda': 'ভাদোদরা', 'nagpur': 'নাগপুর', 'coimbatore': 'কোয়েম্বাটুর', 'madurai': 'মাদুরাই',
+    'visakhapatnam': 'বিশাখাপত্তনম', 'vizag': 'বিশাখাপত্তনম', 'vijayawada': 'বিজয়ওয়াড়া',
+    'varanasi': 'বারাণসী', 'agra': 'আগ্রা', 'kanpur': 'কানপুর', 'noida': 'নয়ডা',
+    'gurugram': 'গুরুগ্রাম', 'gurgaon': 'গুরুগ্রাম', 'whitefield': 'হোয়াইটফিল্ড',
+    'koramangala': 'কোরামঙ্গলা', 'indiranagar': 'ইন্দিরানগর', 'yelahanka': 'য়েলাহাঙ্কা',
+    'ittagalpura': 'ইত্তাগালপুরা', 'presidency university': 'প্রেসিডেন্সি বিশ্ববিদ্যালয়',
+    'maharashtra': 'মহারাষ্ট্র', 'tamil nadu': 'তামিলনাড়ু', 'andhra pradesh': 'অন্ধ্রপ্রদেশ',
+    'telangana': 'তেলেঙ্গানা', 'kerala': 'কেরালা', 'uttar pradesh': 'উত্তর প্রদেশ',
+    'west bengal': 'পশ্চিমবঙ্গ', 'gujarat': 'গুজরাট', 'rajasthan': 'রাজস্থান',
+    'punjab': 'পাঞ্জাব', 'haryana': 'হরিয়ানা', 'bihar': 'বিহার', 'odisha': 'ওড়িশা',
+    'madhya pradesh': 'মধ্যপ্রদেশ', 'assam': 'আসাম', 'goa': 'গোয়া', 'india': 'ভারত',
+    'your area': 'আপনার এলাকা',
+  },
+  te: {
+    'bengaluru': 'బెంగళూరు', 'bangalore': 'బెంగళూరు', 'karnataka': 'కర్ణాటక',
+    'delhi': 'ఢిల్లీ', 'new delhi': 'న్యూ ఢిల్లీ', 'mumbai': 'ముంబై', 'bombay': 'ముంబై',
+    'chennai': 'చెన్నై', 'madras': 'చెన్నై', 'kolkata': 'కోల్‌కతా', 'calcutta': 'కోల్‌కతా',
+    'hyderabad': 'హైదరాబాద్', 'ahmedabad': 'అహ్మదాబాద్', 'pune': 'పూణే', 'jaipur': 'జైపూర్',
+    'lucknow': 'లక్నో', 'chandigarh': 'చండీగఢ్', 'patna': 'పాట్నా', 'bhopal': 'భోపాల్',
+    'indore': 'ఇండోర్', 'kochi': 'కొచ్చి', 'cochin': 'కొచ్చి', 'thiruvananthapuram': 'తిరువనంతపురం',
+    'mysuru': 'మైసూరు', 'mysore': 'మైసూరు', 'mangaluru': 'మంగళూరు', 'mangalore': 'మంగళూరు',
+    'hubballi': 'హుబ్లీ', 'hubli': 'హుబ్లీ', 'belagavi': 'బెళగావి', 'belgaum': 'బెళగావి',
+    'srinagar': 'శ్రీనగర్', 'shimla': 'సిమ్లా', 'dehradun': 'డెహ్రాడూన్', 'ranchi': 'రాంచీ',
+    'raipur': 'రాయ్‌పూర్', 'bhubaneswar': 'భువనేశ్వర్', 'surat': 'సూరత్', 'vadodara': 'వడోదర',
+    'baroda': 'వడోదర', 'nagpur': 'నాగ్‌పూర్', 'coimbatore': 'కోయంబత్తూరు', 'madurai': 'మదురై',
+    'visakhapatnam': 'విశాఖపట్నం', 'vizag': 'విశాఖపట్నం', 'vijayawada': 'విజయవాడ',
+    'varanasi': 'వారణాసి', 'agra': 'ఆగ్రా', 'kanpur': 'కాన్పూర్', 'noida': 'నోయిడా',
+    'gurugram': 'గురుగ్రామ్', 'gurgaon': 'గురుగ్రామ్', 'whitefield': 'వైట్‌ఫీల్డ్',
+    'koramangala': 'కోరమంగళ', 'indiranagar': 'ఇందిరానగర్', 'yelahanka': 'యలహంక',
+    'ittagalpura': 'ఇత్తగల్‌పుర', 'presidency university': 'ప్రెసిడెన్సీ విశ్వవిద్యాలయం',
+    'maharashtra': 'మహారాష్ట్ర', 'tamil nadu': 'తమిళనాడు', 'andhra pradesh': 'ఆంధ్రప్రదేశ్',
+    'telangana': 'తెలంగాణ', 'kerala': 'కేరళ', 'uttar pradesh': 'ఉత్తర ప్రదేశ్',
+    'west bengal': 'పశ్చిమ బెంగాల్', 'gujarat': 'గుజరాత్', 'rajasthan': 'రాజస్థాన్',
+    'punjab': 'పంజాబ్', 'haryana': 'హర్యానా', 'bihar': 'బీహార్', 'odisha': 'ఒడిశా',
+    'madhya pradesh': 'మధ్యప్రదేశ్', 'assam': 'అస్సాం', 'goa': 'గోవా', 'india': 'భారతదేశం',
+    'your area': 'మీ ప్రాంతం',
+  },
+  ta: {
+    'bengaluru': 'பெங்களூரு', 'bangalore': 'பெங்களூரு', 'karnataka': 'கர்நாடகா',
+    'delhi': 'டெல்லி', 'new delhi': 'புது தில்லி', 'mumbai': 'மும்பை', 'bombay': 'மும்பை',
+    'chennai': 'சென்னை', 'madras': 'சென்னை', 'kolkata': 'கொல்கத்தா', 'calcutta': 'கொல்கத்தா',
+    'hyderabad': 'ஹைதராபாத்', 'ahmedabad': 'அகமதாபாத்', 'pune': 'புனே', 'jaipur': 'ஜெய்ப்பூர்',
+    'lucknow': 'லக்னோ', 'chandigarh': 'சண்டிகர்', 'patna': 'பாட்னா', 'bhopal': 'போபால்',
+    'indore': 'இந்தூர்', 'kochi': 'கொச்சி', 'cochin': 'கொச்சி', 'thiruvananthapuram': 'திருவனந்தபுரம்',
+    'mysuru': 'மைசூர்', 'mysore': 'மைசூர்', 'mangaluru': 'மங்களூரு', 'mangalore': 'மங்களூரு',
+    'hubballi': 'ஹூப்ளி', 'hubli': 'ஹூப்ளி', 'belagavi': 'பெலகாவி', 'belgaum': 'பெலகாவி',
+    'srinagar': 'ஸ்ரீநகர்', 'shimla': 'சிம்லா', 'dehradun': 'டேராடூன்', 'ranchi': 'ராஞ்சி',
+    'raipur': 'ராய்ப்பூர்', 'bhubaneswar': 'புவனேஸ்வர்', 'surat': 'சூரத்', 'vadodara': 'வடோதரா',
+    'baroda': 'வடோதரா', 'nagpur': 'நாக்பூர்', 'coimbatore': 'கோயம்புத்தூர்', 'madurai': 'மதுரை',
+    'visakhapatnam': 'விசாகப்பட்டினம்', 'vizag': 'விசாகப்பட்டினம்', 'vijayawada': 'விஜயவாடா',
+    'varanasi': 'வாரணாசி', 'agra': 'ஆக்ரா', 'kanpur': 'கான்பூர்', 'noida': 'நொய்டா',
+    'gurugram': 'குருகிராம்', 'gurgaon': 'குருகிராம்', 'whitefield': 'ஒயிட்பீல்ட்',
+    'koramangala': 'கோரமங்களா', 'indiranagar': 'இந்திரா நகர்', 'yelahanka': 'எலஹங்கா',
+    'ittagalpura': 'இத்தகல்புரா', 'presidency university': 'பிரசிடென்சி பல்கலைக்கழகம்',
+    'maharashtra': 'மகாராஷ்டிரா', 'tamil nadu': 'தமிழ்நாடு', 'andhra pradesh': 'ஆந்திர பிரதேசம்',
+    'telangana': 'தெலங்கானா', 'kerala': 'கேரளா', 'uttar pradesh': 'உத்தரப் பிரதேசம்',
+    'west bengal': 'மேற்கு வங்காளம்', 'gujarat': 'குஜராத்', 'rajasthan': 'ராஜஸ்தான்',
+    'punjab': 'பஞ்சாப்', 'haryana': 'ஹரியானா', 'bihar': 'பீகார்', 'odisha': 'ஒடிசா',
+    'madhya pradesh': 'மத்தியப் பிரதேசம்', 'assam': 'அசாம்', 'goa': 'கோவா', 'india': 'இந்தியா',
+    'your area': 'உங்கள் பகுதி',
+  },
+  mr: {
+    'bengaluru': 'बंगळुरू', 'bangalore': 'बंगळुरू', 'karnataka': 'कर्नाटक',
+    'delhi': 'दिल्ली', 'new delhi': 'नवी दिल्ली', 'mumbai': 'मुंबई', 'bombay': 'मुंबई',
+    'chennai': 'चेन्नई', 'madras': 'चेन्नई', 'kolkata': 'कोलकाता', 'calcutta': 'कोलकाता',
+    'hyderabad': 'हैदराबाद', 'ahmedabad': 'अहमदाबाद', 'pune': 'पुणे', 'jaipur': 'जयपूर',
+    'lucknow': 'लखनौ', 'chandigarh': 'चंदीगड', 'patna': 'पाटणा', 'bhopal': 'भोपाळ',
+    'indore': 'इंदूर', 'kochi': 'कोची', 'cochin': 'कोची', 'thiruvananthapuram': 'तिरुवनंतपुरम',
+    'mysuru': 'म्हैसूर', 'mysore': 'म्हैसूर', 'mangaluru': 'मंगळुरू', 'mangalore': 'मंगळुरू',
+    'hubballi': 'हुबळी', 'hubli': 'हुबळी', 'belagavi': 'बेळगाव', 'belgaum': 'बेळगाव',
+    'srinagar': 'श्रीनगर', 'shimla': 'शिमला', 'dehradun': 'डेहराडून', 'ranchi': 'रांची',
+    'raipur': 'रायपूर', 'bhubaneswar': 'भुवनेश्वर', 'surat': 'सुरत', 'vadodara': 'वडोदरा',
+    'baroda': 'वडोदरा', 'nagpur': 'नागपूर', 'coimbatore': 'कोईम्बतूर', 'madurai': 'मदुराई',
+    'visakhapatnam': 'विशाखापट्टणम', 'vizag': 'विशाखापट्टणम', 'vijayawada': 'विजयवाडा',
+    'varanasi': 'वाराणसी', 'agra': 'आग्रा', 'kanpur': 'कानपूर', 'noida': 'नोएडा',
+    'gurugram': 'गुरुग्राम', 'gurgaon': 'गुरुग्राम', 'whitefield': 'व्हाईटफील्ड',
+    'koramangala': 'कोरामंगला', 'indiranagar': 'इंदिरानगर', 'yelahanka': 'यलहंका',
+    'ittagalpura': 'इत्तगलपुरा', 'presidency university': 'प्रेसिडेंसी युनिव्हर्सिटी',
+    'maharashtra': 'महाराष्ट्र', 'tamil nadu': 'तामिळनाडू', 'andhra pradesh': 'आंध्र प्रदेश',
+    'telangana': 'तेलंगणा', 'kerala': 'केरळ', 'uttar pradesh': 'उत्तर प्रदेश',
+    'west bengal': 'पश्चिम बंगाल', 'gujarat': 'गुजरात', 'rajasthan': 'राजस्थान',
+    'punjab': 'पंजाब', 'haryana': 'हरियाणा', 'bihar': 'बिहार', 'odisha': 'ओडिशा',
+    'madhya pradesh': 'मध्य प्रदेश', 'assam': 'आसाम', 'goa': 'गोवा', 'india': 'भारत',
+    'your area': 'तुमचा परिसर',
+  },
+  gu: {
+    'bengaluru': 'બેંગલુરુ', 'bangalore': 'બેંગલુરુ', 'karnataka': 'કર્ણાટક',
+    'delhi': 'દિલ્હી', 'new delhi': 'નવી દિલ્હી', 'mumbai': 'મુંબઈ', 'bombay': 'મુંબઈ',
+    'chennai': 'ચેન્નાઈ', 'madras': 'ચેન્નાઈ', 'kolkata': 'કોલકાતા', 'calcutta': 'કોલકાતા',
+    'hyderabad': 'હૈદરાબાદ', 'ahmedabad': 'અમદાવાદ', 'pune': 'પુણે', 'jaipur': 'જયપુર',
+    'lucknow': 'લખનૌ', 'chandigarh': 'ચંદીગઢ', 'patna': 'પટના', 'bhopal': 'ભોપાલ',
+    'indore': 'ઈન્દોર', 'kochi': 'કોચી', 'cochin': 'કોચી', 'thiruvananthapuram': 'તિરુવનંતપુરમ',
+    'mysuru': 'મૈસૂર', 'mysore': 'મૈસૂર', 'mangaluru': 'મેંગલોર', 'mangalore': 'મેંગલોર',
+    'hubballi': 'હુબલી', 'hubli': 'હુબલી', 'belagavi': 'બેલગામ', 'belgaum': 'બેલગામ',
+    'srinagar': 'શ્રીનગર', 'shimla': 'શિમલા', 'dehradun': 'દેહરાદૂન', 'ranchi': 'રાંચી',
+    'raipur': 'રાયપુર', 'bhubaneswar': 'ભુવનેશ્વર', 'surat': 'સુરત', 'vadodara': 'વડોદરા',
+    'baroda': 'વડોદરા', 'nagpur': 'નાગપુર', 'coimbatore': 'કોઈમ્બતૂર', 'madurai': 'મદુરાઈ',
+    'visakhapatnam': 'વિશાખાપટ્ટનમ', 'vizag': 'વિશાખાપટ્ટનમ', 'vijayawada': 'વિજયવાડા',
+    'varanasi': 'વારાણસી', 'agra': 'આગ્રા', 'kanpur': 'કાનપુર', 'noida': 'નોઈડા',
+    'gurugram': 'ગુરુગ્રામ', 'gurgaon': 'ગુરુગ્રામ', 'whitefield': 'વ્હાઈટફીલ્ડ',
+    'koramangala': 'કોરમંગલા', 'indiranagar': 'ઈન્દિરાનગર', 'yelahanka': 'યેલહંકા',
+    'ittagalpura': 'ઇત્તગલપુરા', 'presidency university': 'પ્રેસિડેન્સી યુનિવર્સિટી',
+    'maharashtra': 'મહારાષ્ટ્ર', 'tamil nadu': 'તમિલનાડુ', 'andhra pradesh': 'આંધ્ર પ્રદેશ',
+    'telangana': 'તેલંગાણા', 'kerala': 'કેરળ', 'uttar pradesh': 'ઉત્તર પ્રદેશ',
+    'west bengal': 'પશ્ચિમ બંગાળ', 'gujarat': 'ગુજરાત', 'rajasthan': 'રાજસ્થાન',
+    'punjab': 'પંજાબ', 'haryana': 'હરિયાણા', 'bihar': 'બિહાર', 'odisha': 'ઓડિશા',
+    'madhya pradesh': 'મધ્ય પ્રદેશ', 'assam': 'આસામ', 'goa': 'ગોવા', 'india': 'ભારત',
+    'your area': 'તમારો વિસ્તાર',
+  },
+};
+
+export function translateLocation(locationStr: string | undefined, lang: string | undefined): string {
+  if (!locationStr) return '';
+  const code = lang || 'en';
+  if (code === 'en') return locationStr;
+  const dict = INDIAN_LOCATIONS[code];
+  if (!dict) return locationStr;
+
+  if (locationStr.includes(',')) {
+    const parts = locationStr.split(',').map((p) => p.trim());
+    const translatedParts = parts.map((part) => {
+      const lower = part.toLowerCase();
+      return dict[lower] || part;
+    });
+    return translatedParts.join(', ');
+  }
+
+  const lower = locationStr.trim().toLowerCase();
+  return dict[lower] || locationStr;
+}
+
+export function translateSourceName(sourceName: string | undefined, lang: string | undefined): string {
+  if (!sourceName) return 'Open-Meteo (IMD-aligned)';
+  const code = lang || 'en';
+  if (code === 'en') return sourceName;
+
+  const names: Record<string, Record<string, string>> = {
+    hi: {
+      'Open-Meteo (IMD-aligned)': 'ओपन-मेटिओ (आईएमडी-संरेखित)',
+      'Synthetic estimate': 'अनुमानित डेटा',
+      'Open-Meteo': 'ओपन-मेटिओ',
+      'IMD': 'भारत मौसम विज्ञान विभाग (आईएमडी)',
+    },
+    kn: {
+      'Open-Meteo (IMD-aligned)': 'ಓಪನ್-ಮೆಟಿಯೋ (ಐಎಂಡಿ-ಸಂಯೋಜಿತ)',
+      'Synthetic estimate': 'ಅಂದಾಜು ಡೇಟಾ',
+      'Open-Meteo': 'ಓಪನ್-ಮೆಟಿಯೋ',
+      'IMD': 'ಭಾರತೀಯ ಹವಾಮಾನ ಇಲಾಖೆ (ಐಎಂಡಿ)',
+    },
+    bn: {
+      'Open-Meteo (IMD-aligned)': 'ওপেন-মেটিও (আইএমডি-সংযুক্ত)',
+      'Synthetic estimate': 'আনুমানিক তথ্য',
+      'Open-Meteo': 'ওপেন-মেটিও',
+      'IMD': 'ভারত আবহাওয়া অধিদপ্তর (আইএমডি)',
+    },
+    te: {
+      'Open-Meteo (IMD-aligned)': 'ఓపెన్-మెటియో (IMD-అలైన్డ్)',
+      'Synthetic estimate': 'అంచనా వేసిన డేటా',
+      'Open-Meteo': 'ఓపెన్-మెటియో',
+      'IMD': 'భారత వాతావరణ శాఖ (ఐఎండీ)',
+    },
+    ta: {
+      'Open-Meteo (IMD-aligned)': 'ஓபன்-மீட்டியோ (IMD-இணைந்தது)',
+      'Synthetic estimate': 'மதிப்பிடப்பட்ட தரவு',
+      'Open-Meteo': 'ஓபன்-மீட்டியோ',
+      'IMD': 'இந்திய வானிலை ஆய்வுத் துறை (IMD)',
+    },
+    mr: {
+      'Open-Meteo (IMD-aligned)': 'ओपन-मेटिओ (आयएमडी-संरेखित)',
+      'Synthetic estimate': 'अंदाजित डेटा',
+      'Open-Meteo': 'ओपन-मेटिओ',
+      'IMD': 'भारतीय हवामान विभाग (IMD)',
+    },
+    gu: {
+      'Open-Meteo (IMD-aligned)': 'ઓપન-મેટિઓ (IMD-આધારિત)',
+      'Synthetic estimate': 'અંદાજિત ડેટા',
+      'Open-Meteo': 'ઓપન-મેટિઓ',
+      'IMD': 'ભારત હવામાન વિભાગ (IMD)',
+    },
+  };
+
+  const dict = names[code];
+  if (dict) {
+    if (dict[sourceName]) return dict[sourceName];
+    if (sourceName.includes('Open-Meteo')) return dict['Open-Meteo (IMD-aligned)'];
+    if (sourceName.includes('Synthetic')) return dict['Synthetic estimate'];
+  }
+  return sourceName;
+}
+
+export const WARNING_HAZARD_TRANSLATIONS: Record<string, Record<string, string>> = {
+  kn: {
+    'Yellow Watch for Thunderstorms & Lightning': 'ಗುಡುಗು ಮತ್ತು ಸಿಡಿಲು ಎಚ್ಚರಿಕೆ (ಹಳದಿ ವಾಚ್)',
+    'Orange Warning for Severe Thunderstorms & Hail': 'ತೀವ್ರ ಗುಡುಗು ಮತ್ತು ಆಲಿಕಲ್ಲು ಮಳೆ ಕಿತ್ತಳೆ ಎಚ್ಚರಿಕೆ',
+    'Orange Alert for Heavy Rainfall': 'ಭಾರಿ ಮಳೆಯ ಕಿತ್ತಳೆ ಎಚ್ಚರಿಕೆ',
+    'Yellow Watch for Moderate to Heavy Rain': 'ಮಧ್ಯಮದಿಂದ ಭಾರಿ ಮಳೆಯ ಹಳದಿ ಎಚ್ಚರಿಕೆ',
+    'Yellow Watch for Squally Winds': 'ಬಿರುಗಾಳಿಯ ಹಳದಿ ಎಚ್ಚರಿಕೆ',
+    'Yellow Watch for Weather Conditions': 'ಹವಾಮಾನ ಪರಿಸ್ಥಿತಿಗಳ ಹಳದಿ ಎಚ್ಚರಿಕೆ',
+  },
+  hi: {
+    'Yellow Watch for Thunderstorms & Lightning': 'मेघगर्जन एवं आकाशीय बिजली की चेतावनी (येलो वॉच)',
+    'Orange Warning for Severe Thunderstorms & Hail': 'तीव्र मेघगर्जन व ओलावृष्टि की ऑरेंज चेतावनी',
+    'Orange Alert for Heavy Rainfall': 'भारी वर्षा का ऑरेंज अलर्ट',
+    'Yellow Watch for Moderate to Heavy Rain': 'मध्यम से भारी बारिश की येलो वॉच',
+    'Yellow Watch for Squally Winds': 'तेज हवाओं की येलो वॉच',
+    'Yellow Watch for Weather Conditions': 'मौसम परिस्थितियों की येलो वॉच',
+  },
+  bn: {
+    'Yellow Watch for Thunderstorms & Lightning': 'বজ্রবিদ্যুৎ সহ ঝড়ের হলুদ সতর্কতা',
+    'Orange Warning for Severe Thunderstorms & Hail': 'তীব্র ঝড় ও শিলাবৃষ্টির কমলা সতর্কতা',
+    'Orange Alert for Heavy Rainfall': 'ভারী বৃষ্টির কমলা সতর্কতা',
+    'Yellow Watch for Moderate to Heavy Rain': 'মাঝারি থেকে ভারী বৃষ্টির হলুদ সতর্কতা',
+    'Yellow Watch for Squally Winds': 'দমকা বাতাসের হলুদ সতর্কতা',
+    'Yellow Watch for Weather Conditions': 'আবহাওয়ার হলুদ সতর্কতা',
+  },
+  te: {
+    'Yellow Watch for Thunderstorms & Lightning': 'ఉరుములు మరియు మెరుపుల పసుపు హెచ్చరిక',
+    'Orange Warning for Severe Thunderstorms & Hail': 'తీవ్రమైన ఉరుములు మరియు వడగండ్ల నారింజ హెచ్చరిక',
+    'Orange Alert for Heavy Rainfall': 'భారీ వర్షం నారింజ హెచ్చరిక',
+    'Yellow Watch for Moderate to Heavy Rain': 'మధ్యస్థం నుండి భారీ వర్షం పసుపు హెచ్చరిక',
+    'Yellow Watch for Squally Winds': 'ఈదురు గాలుల హెచ్చరిక',
+    'Yellow Watch for Weather Conditions': 'వాతావరణ పరిస్థితుల పసుపు హెచ్చరిక',
+  },
+  ta: {
+    'Yellow Watch for Thunderstorms & Lightning': 'இடியுடன் கூடிய மின்னல் மஞ்சள் எச்சரிக்கை',
+    'Orange Warning for Severe Thunderstorms & Hail': 'கடும் இடியுடன் கூடிய ஆலங்கட்டி மழை ஆரஞ்சு எச்சரிக்கை',
+    'Orange Alert for Heavy Rainfall': 'கனமழை ஆரஞ்சு எச்சரிக்கை',
+    'Yellow Watch for Moderate to Heavy Rain': 'மிதமானது முதல் கனமழைக்கான மஞ்சள் எச்சரிக்கை',
+    'Yellow Watch for Squally Winds': 'சூறாவளி காற்று எச்சரிக்கை',
+    'Yellow Watch for Weather Conditions': 'வானிலை மஞ்சள் எச்சரிக்கை',
+  },
+  mr: {
+    'Yellow Watch for Thunderstorms & Lightning': 'मेघगर्जना आणि विजांचा पिवळा इशारा',
+    'Orange Warning for Severe Thunderstorms & Hail': 'तीव्र मेघगर्जना आणि गारपिटीचा नारंगी इशारा',
+    'Orange Alert for Heavy Rainfall': 'मुसळधार पावसाचा नारंगी इशारा',
+    'Yellow Watch for Moderate to Heavy Rain': 'मध्यम ते मुसळधार पावसाचा पिवळा इशारा',
+    'Yellow Watch for Squally Winds': 'वादळी वाऱ्यांचा पिवळा इशारा',
+    'Yellow Watch for Weather Conditions': 'हवामानाचा पिवळा इशारा',
+  },
+  gu: {
+    'Yellow Watch for Thunderstorms & Lightning': 'ગાજવીજ અને વીજળીની પીળી ચેતવણી',
+    'Orange Warning for Severe Thunderstorms & Hail': 'ભારે ગાજવીજ અને કરા સાથેની ઓરેન્જ ચેતવણી',
+    'Orange Alert for Heavy Rainfall': 'ભારે વરસાદની ઓરેન્જ ચેતવણી',
+    'Yellow Watch for Moderate to Heavy Rain': 'મધ્યમથી ભારે વરસાદની પીળી ચેતવણી',
+    'Yellow Watch for Squally Winds': 'તોફાની પવનની ચેતવણી',
+    'Yellow Watch for Weather Conditions': 'હવામાનની પીળી ચેતવણી',
+  },
+};
+
+export function translateWarningHazard(hazard: string | undefined, lang: string | undefined): string {
+  if (!hazard) return 'Yellow Watch for Weather Conditions';
+  const code = lang || 'en';
+  if (code === 'en') return hazard;
+  const dict = WARNING_HAZARD_TRANSLATIONS[code];
+  if (dict && dict[hazard]) return dict[hazard];
+  return hazard;
+}
+
+export const WARNING_DESC_TEMPLATES: Record<string, { thunderstorm: (loc: string) => string; seasonal: (loc: string) => string }> = {
+  kn: {
+    thunderstorm: (loc) => `${loc} ಪ್ರದೇಶದಲ್ಲಿ ಗುಡುಗು ಮತ್ತು ಸಿಡಿಲು ಸಹಿತ ಮಳೆಯ ಹಳದಿ ಎಚ್ಚರಿಕೆ (ಯೆಲ್ಲೋ ವಾಚ್) ಜಾರಿಯಲ್ಲಿದೆ. ಸಿಡಿಲು ಬಡಿಯುವ ಸಾಧ್ಯತೆ, ಬಿರುಗಾಳಿ ಮತ್ತು ಹಠಾತ್ ಮಳೆಯ ನಿರೀಕ್ಷೆಯಿದೆ. ಐಎಂಡಿ ಸುರಕ್ಷತಾ ಸಲಹೆ: ಸಿಡಿಲು ಬಡಿಯುವಾಗ ಮನೆಯೊಳಗೇ ಇರಿ; ವಿದ್ಯುತ್ ಉಪಕರಣಗಳನ್ನು ಅನ್‌ಪ್ಲಗ್ ಮಾಡಿ ಮತ್ತು ಪ್ರತ್ಯೇಕ ಮರಗಳ ಕೆಳಗೆ ಆಶ್ರಯ ಪಡೆಯುವುದನ್ನು ತಪ್ಪಿಸಿ.`,
+    seasonal: (loc) => `${loc} ಗಾಗಿ ಐಎಂಡಿ ಋತುಮಾನದ ಗುಡುಗು ಸಹಿತ ಮಳೆಯ ನಿಗಾ ಸಕ್ರಿಯವಾಗಿದೆ. ಮಧ್ಯಾಹ್ನ ಪ್ರತ್ಯೇಕ ಸ್ಥಳಗಳಲ್ಲಿ ಗುಡುಗು, ಸಿಡಿಲು ಮತ್ತು ಬಿರುಗಾಳಿಯ ಸಾಧ್ಯತೆಯಿದೆ. ಲೈವ್ ರೇಡಾರ್ ಮೂಲಕ ಅಪ್‌ಡೇಟ್ ಆಗಿರಿ.`,
+  },
+  hi: {
+    thunderstorm: (loc) => `${loc} के लिए मेघगर्जन एवं आकाशीय बिजली की पीली चेतावनी (येलो वॉच) प्रभावी है। अलग-अलग स्थानों पर बिजली गिरने, तेज हवाओं और अचानक गरज के साथ बौछारें पड़ने की संभावना है। आईएमडी सुरक्षा सलाह: बिजली चमकने के दौरान घरों के भीतर रहें; संवेदनशील बिजली के उपकरणों को अनप्लग करें और अकेले पेड़ों के नीचे शरण लेने से बचें।`,
+    seasonal: (loc) => `${loc} के लिए आईएमडी मौसमी मेघगर्जन वॉच सक्रिय है। दोपहर में छिटपुट गरज-चमक और तेज हवाओं की संभावना है। लाइव रडार से अपडेट रहें।`,
+  },
+  bn: {
+    thunderstorm: (loc) => `${loc} এলাকায় বজ্রবিদ্যুৎ সহ ঝড়ের সতর্কতা কার্যকর। বজ্রপাত, তীব্র দমকা বাতাস এবং হঠাৎ বৃষ্টির সম্ভাবনা রয়েছে। আইএমডি নিরাপত্তা নির্দেশিকা: বজ্রপাতের সময় ঘরের ভেতরে থাকুন; বৈদ্যুতিক ডিভাইস সংযোগ বিচ্ছিন্ন করুন।`,
+    seasonal: (loc) => `${loc}-এর জন্য আইএমডি মরশুমি বজ্রঝড়ের সতর্কতা সক্রিয়। বিচ্ছিন্ন বজ্রঝড় ও দমকা বাতাসের সম্ভাবনা রয়েছে।`,
+  },
+  te: {
+    thunderstorm: (loc) => `${loc} ప్రాంతంలో ఉరుములు మరియు మెరుపుల హెచ్చరిక అమలులో ఉంది. పిడుగులు పడే అవకాశం, ఈదురుగాలులు మరియు ఆకస్మిక వర్షం వచ్చే సూచన ఉంది. ఐఎండీ భద్రతా సలహా: మెరుపులు వచ్చే సమయంలో ఇళ్లలోనే ఉండండి; సున్నితమైన విద్యుత్ ఉపకరణాలను అన్‌ప్లగ్ చేయండి.`,
+    seasonal: (loc) => `${loc} కొరకు ఐఎండీ సీజనల్ హెచ్చరిక యాక్టివ్ గా ఉంది.`,
+  },
+  ta: {
+    thunderstorm: (loc) => `${loc} பகுதியில் இடியுடன் கூடிய மின்னல் எச்சரிக்கை விடுக்கப்பட்டுள்ளது. மின்னல் தாக்குதல், சூறாவளி காற்று மற்றும் திடீர் இடியுடன் கூடிய மழை பெய்ய வாய்ப்புள்ளது. ஐஎம்டி பாதுகாப்பு வழிகாட்டுதல்: மின்னல் வெட்டும் போது வீட்டுக்குள்ளேயே இருங்கள்; மின்சாதனங்களை அணைக்கவும்.`,
+    seasonal: (loc) => `${loc}-க்கு ஐஎம்டி பருவகால இடிமின்னல் எச்சரிக்கை அமலில் உள்ளது.`,
+  },
+  mr: {
+    thunderstorm: (loc) => `${loc} भागात मेघगर्जना आणि विजांचा इशारा लागू आहे. काही ठिकाणी वीज पडण्याची शक्यता, सोसाट्याचा वारा आणि अचानक पाऊस येण्याचा अंदाज आहे. आयएमडी सुरक्षा सल्ला: विजेच्या गडगडाटादरम्यान घरामध्येच राहा; संवेदनशील उपकरणे अनप्लग करा.`,
+    seasonal: (loc) => `${loc} साठी आयएमडी हंगामी इशारा सक्रिय आहे.`,
+  },
+  gu: {
+    thunderstorm: (loc) => `${loc} વિસ્તારમાં ગાજવીજ અને વીજળીની ચેતવણી અમલમાં છે. વીજળી પડવાની શક્યતા, તેજ પવન અને અચાનક વરસાદની આગાહી છે. આઈએમડી સુરક્ષા સલાહ: વીજળીના કડાકા વખતે ઘરમાં જ રહો; ઇલેક્ટ્રોનિક ઉપકરણો અનપ્લગ કરો.`,
+    seasonal: (loc) => `${loc} માટે આઈએમડી મોસમી ચેતવણી સક્રિય છે.`,
+  },
+};
+
+export function translateWarningDesc(desc: string | undefined, location: string | undefined, lang: string | undefined): string {
+  if (!desc) return 'Official meteorological advisory in effect.';
+  const code = lang || 'en';
+  if (code === 'en') return desc;
+  const rawLoc = location || 'your area';
+  const loc = translateLocation(rawLoc, code);
+  const templates = WARNING_DESC_TEMPLATES[code];
+  if (templates) {
+    if (desc.includes('Seasonal Convective Watch') || desc.includes('Seasonal')) {
+      return templates.seasonal(loc);
+    }
+    if (desc.includes('Thunderstorm') || desc.includes('lightning') || desc.includes('Lightning')) {
+      return templates.thunderstorm(loc);
+    }
+  }
+  return desc;
+}
+
+export function getWarningSourceText(lang: string | undefined): string {
+  const sources: Record<string, string> = {
+    kn: 'ಮೂಲ: ಭಾರತೀಯ ಹವಾಮಾನ ಇಲಾಖೆ (ಐಎಂಡಿ)',
+    hi: 'स्रोत: भारत मौसम विज्ञान विभाग (आईएमडी)',
+    bn: 'উৎস: ভারত আবহাওয়া অধিদপ্তর (আইএমডি)',
+    te: 'మూలం: భారత వాతావరణ శాఖ (ఐఎండీ)',
+    ta: 'ஆதாரம்: இந்திய வானிலை ஆய்வுத் துறை (ஐஎம்டி)',
+    mr: 'स्रोत: भारतीय हवामान विभाग (आयएमडी)',
+    gu: 'સ્રોત: ભારત હવામાન વિભાગ (આઈએમડી)',
+    ml: 'ഉറവിടം: ഇന്ത്യൻ കാലാവസ്ഥാ വകുപ്പ് (IMD)',
+    pa: 'ਸਰੋਤ: ਭਾਰਤ ਮੌਸਮ ਵਿਗਿਆਨ ਵਿਭਾਗ (IMD)',
+    or: 'ଉତ୍ସ: ଭାରତ ପାଣିପାଗ ବିଭାਗ (IMD)',
+    ur: 'ماخذ: محکمہ موسمیات ہند (IMD)',
+  };
+  return sources[lang || 'en'] || 'Source: India Meteorological Department (IMD)';
 }
 
 export const WARNING_MODAL_TRANSLATIONS: Record<string, Record<string, string>> = {

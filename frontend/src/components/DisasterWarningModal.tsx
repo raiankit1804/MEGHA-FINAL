@@ -35,9 +35,9 @@ export default function DisasterWarningModal({
     const perm = await Notification.requestPermission();
     setNotifPermission(perm);
     if (perm === 'granted') {
-      new Notification('WeatherGPT Alerts Activated', {
+      new Notification('Megha App Alerts Activated', {
         body: `You will now receive proactive disaster and severe weather warnings for ${locationName || 'your area'}.`,
-        icon: 'https://cdn-icons-png.flaticon.com/512/1163/1163624.png',
+        icon: '/megha_setu_phone.png',
       });
     }
   };

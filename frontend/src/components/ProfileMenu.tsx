@@ -11,10 +11,11 @@ export interface ProfileMenuProps {
   user?: UserProfile | null;
   onClose: () => void;
   onSettingsChange?: (changes: Partial<UserProfile>) => void;
+  onNewChat?: () => void;
 }
 
-export default function ProfileMenu({ user, onClose, onSettingsChange }: ProfileMenuProps) {
-  const { interfaceStyle, setInterfaceStyle } = useTheme();
+export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat }: ProfileMenuProps) {
+  const { interfaceStyle, setInterfaceStyle, colorScheme, setColorScheme } = useTheme();
   const [historyOptIn, setHistoryOptIn] = useState(user?.history_opt_in ?? false);
   const [clearing, setClearing] = useState(false);
 
@@ -58,6 +59,13 @@ export default function ProfileMenu({ user, onClose, onSettingsChange }: Profile
   const updateInterfaceStyle = (style: string) => {
     setInterfaceStyle(style);
     if (user) api.patch('/api/user', { interface_style: style }).catch(() => {});
+    onNewChat?.();
+    onClose();
+  };
+
+  const updateColorScheme = (scheme: string) => {
+    setColorScheme(scheme);
+    if (user) api.patch('/api/user', { color_scheme: scheme }).catch(() => {});
   };
 
   return (
@@ -111,6 +119,29 @@ export default function ProfileMenu({ user, onClose, onSettingsChange }: Profile
             ))}
           </div>
         </div>
+
+        {/* Theme Mode (Dark / Light) — only available in Minimal mode, Modern mode is default dark */}
+        {interfaceStyle !== 'modern' && (
+          <div style={section}>
+            <label style={sectionLabel}>Theme Mode</label>
+            <div style={toggleRow}>
+              {[['dark', '🌙 Dark'], ['light', '☀️ Light']].map(([val, lbl]) => (
+                <button
+                  key={val}
+                  style={{
+                    ...toggleChip,
+                    borderColor: colorScheme === val ? 'var(--accent-primary)' : 'var(--border-subtle)',
+                    color: colorScheme === val ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                    background: colorScheme === val ? 'var(--badge-bg)' : 'var(--bg-glass)',
+                  }}
+                  onClick={() => updateColorScheme(val)}
+                >
+                  {lbl}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Chat History */}
         <div style={section}>

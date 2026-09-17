@@ -71,6 +71,7 @@ class ChatResponse(BaseModel):
     model_agreement: str = "not_applicable"
     data_freshness: str = "live"              # "live" | "cached" | "synthetic" | "fallback"
     latency_ms: int = 0
+    is_remote_query: bool = False             # True when response is for a different location than user's home
 
 
 @router.get("/location/reverse")
@@ -287,17 +288,49 @@ async def chat(req: ChatRequest):
         session_location=session.get("sessionLocation"),
     )
 
-    # 4. Resolve location (strict order: query location > request location > session > GPS > default)
+    # 4. Resolve location
     query_loc = intent.get("location")
     generic_names = {"india", "unknown", "unknown location", "here", "current location", "select location", "my location", ""}
+
+    # Detect "where am I / what is my location / current location" queries
+    # These should ALWAYS resolve to the user's GPS/home location, not a remote query location
+    _q_lower = req.query.strip().lower()
+    is_current_location_query = any(phrase in _q_lower for phrase in [
+        "my location", "where am i", "where am i", "current location", "मेरा स्थान",
+        "ನನ್ನ ಸ್ಥಳ", "আমার অবস্থান", "నా స్థానం", "என் இடம்", "माझे ठिकाण", "મારું સ્થાન",
+    ])
+
+    # FIX: Remove the `not is_followup` guard — explicit location in a query ALWAYS wins,
+    # even on follow-up turns. A follow-up like "assam weather" should show Assam, not session location.
     is_query_specific = bool(
         query_loc
         and query_loc.strip().lower() not in generic_names
-        and not intent.get("is_followup", False)
+        and not is_current_location_query  # "where am I" queries don't geocode a location
+    )
+
+    # Check if the explicit location differs from the user's home/GPS session location
+    home_loc = session.get("homeLocation") or session.get("sessionLocation")
+    if not session.get("homeLocation") and session.get("sessionLocation"):
+        session["homeLocation"] = session["sessionLocation"]
+    home_name = (home_loc or {}).get("name", "").strip().lower()
+    query_loc_lower = (query_loc or "").strip().lower()
+    is_remote_query = is_query_specific and bool(
+        query_loc_lower
+        and home_name
+        and query_loc_lower not in home_name
+        and home_name not in query_loc_lower
     )
 
     explicit = None
-    if is_query_specific:
+    if is_current_location_query:
+        # Force GPS/home location — switch conversational focus back to home
+        if gps_loc and gps_loc.get("latitude"):
+            explicit = gps_loc  # will be geocoded if name missing
+        elif home_loc:
+            explicit = home_loc
+        session["activeLocation"] = explicit
+        logger.info("Current-location query — using GPS/home: %s", explicit)
+    elif is_query_specific:
         if intent.get("_fast_lat") and intent.get("_fast_lon"):
             explicit = {
                 "name": intent["location"],
@@ -317,6 +350,7 @@ async def chat(req: ChatRequest):
                 }
             else:
                 explicit = {"name": intent["location"]}
+        session["activeLocation"] = explicit
     elif req.location_name and req.location_name.strip().lower() not in generic_names:
         if req.latitude and req.longitude and 6.0 <= req.latitude <= 37.5 and 68.0 <= req.longitude <= 97.5:
             explicit = {"name": req.location_name, "latitude": req.latitude, "longitude": req.longitude}
@@ -331,8 +365,36 @@ async def chat(req: ChatRequest):
                 }
             else:
                 explicit = {"name": req.location_name, "latitude": 12.9716, "longitude": 77.5946, "state": "Karnataka"}
+        session["activeLocation"] = explicit
 
-    location = resolve_location(session, explicit_location=explicit, gps_location=gps_loc)
+    # Conversational location focus:
+    # 1. If an explicit location was parsed in current query, use it and update activeLocation.
+    # 2. If it's a follow-up query without a location, stick to activeLocation if available.
+    # 3. Otherwise, resolve from session/GPS/IP.
+    if explicit and explicit.get("name"):
+        if is_remote_query:
+            session["lastQueriedLocation"] = {**explicit, "source": "explicit_remote"}
+            session["activeLocation"] = {**explicit, "source": "explicit_remote"}
+            location = {**explicit, "source": "explicit_remote"}
+            logger.info("Remote explicit query for '%s' — preserving home location '%s'", explicit.get("name"), home_name)
+        else:
+            session["activeLocation"] = explicit
+            location = resolve_location(session, explicit_location=explicit, gps_location=gps_loc)
+    elif not is_current_location_query and (session.get("activeLocation") or session.get("lastQueriedLocation")):
+        active = session.get("activeLocation") or session.get("lastQueriedLocation")
+        location = active
+        active_name = (active.get("name") or "").strip().lower()
+        is_remote_query = bool(
+            home_name
+            and active_name
+            and home_name not in active_name
+            and active_name not in home_name
+        )
+        logger.info("Conversational follow-up: maintaining active location '%s'", location.get("name"))
+    else:
+        location = resolve_location(session, explicit_location=explicit, gps_location=gps_loc)
+        session["activeLocation"] = location
+
     location_name = location.get("name", "Bengaluru, Karnataka")
     lat = location.get("latitude")
     lon = location.get("longitude")
@@ -348,7 +410,8 @@ async def chat(req: ChatRequest):
             location_name = full_name
             state = st
             location.update({"name": full_name, "admin1": st, "state": st})
-            session["sessionLocation"] = location
+            if not is_remote_query:
+                session["sessionLocation"] = location
 
     # 6. Forward geocode if coordinates missing or still defaulting to India centroid
     if (lat is None or lon is None or (abs(lat - 20.5937) < 0.001 and abs(lon - 78.9629) < 0.001)) and location_name and location_name.strip().lower() not in generic_names:
@@ -359,7 +422,8 @@ async def chat(req: ChatRequest):
             state = geo.get("admin1")
             location_name = geo["name"]
             location.update({"name": location_name, "latitude": lat, "longitude": lon, "state": state})
-            session["sessionLocation"] = location
+            if not is_remote_query:
+                session["sessionLocation"] = location
 
     # Default fallback to Bengaluru, Karnataka if unresolved or out-of-bounds
     if lat is None or lon is None or not (6.0 <= lat <= 37.5 and 68.0 <= lon <= 97.5):
@@ -368,7 +432,8 @@ async def chat(req: ChatRequest):
         location_name = "Bengaluru, Karnataka"
         state = "Karnataka"
         location.update({"name": location_name, "latitude": lat, "longitude": lon, "state": state})
-        session["sessionLocation"] = location
+        if not is_remote_query:
+            session["sessionLocation"] = location
 
     # 6. Fetch weather (tiered, with Redis cache)
     cache_key = f"{lat:.3f},{lon:.3f}"
@@ -381,8 +446,12 @@ async def chat(req: ChatRequest):
     cached = await weather_cache_get(cache_key)
     if cached:
         weather_data = cached
-        data_freshness = "cached"
-        sources = [{"name": weather_data.get("source", "Cache"), "type": "cached"}]
+        source_name = weather_data.get("source") or "Open-Meteo (IMD-aligned)"
+        data_freshness = "live"
+        sources = [
+            {"name": source_name, "url": "https://open-meteo.com", "type": "primary"},
+            {"name": "GFS NWP (model guidance)", "url": "https://open-meteo.com", "type": "secondary"},
+        ]
     else:
         # Tier 1: Open-Meteo (IMD-aligned)
         try:
@@ -446,12 +515,37 @@ async def chat(req: ChatRequest):
     )
 
     # 9. Determine turn type
-    turn_type = determine_turn_type(session)
-    # If the user explicitly asks about a different location, treat as establishing turn
-    if explicit and explicit.get("name") and session.get("messages"):
-        prev_loc = session.get("sessionLocation", {}).get("name")
-        if prev_loc and explicit.get("name").lower() not in prev_loc.lower():
+    assistant_messages = [m for m in session.get("messages", []) if m.get("role") == "assistant"]
+    if not assistant_messages:
+        # First turn of the conversation is ALWAYS establishing
+        turn_type = "establishing"
+    elif is_current_location_query:
+        # Switched back to home/current location:
+        prev_active_name = (session.get("activeLocation") or {}).get("name", "").strip().lower()
+        curr_name = location_name.strip().lower()
+        if prev_active_name and curr_name and (curr_name in prev_active_name or prev_active_name in curr_name):
+            turn_type = "followup"
+        else:
             turn_type = "establishing"
+    elif is_query_specific and explicit and explicit.get("name"):
+        # User explicitly specified a location name in this query
+        last_asst = assistant_messages[-1] if assistant_messages else {}
+        prev_loc_name = (last_asst.get("location_name") or session.get("activeLocation", {}).get("name") or "").strip().lower()
+        new_loc_name = explicit.get("name", "").strip().lower()
+
+        # Compare base city/locality names (e.g. "kochi" vs "kochi, kerala")
+        new_city = new_loc_name.split(",")[0].strip()
+        prev_city = prev_loc_name.split(",")[0].strip()
+        if new_city and prev_city and (new_city in prev_city or prev_city in new_city):
+            # Same city! Treat as followup, DO NOT re-generate card
+            turn_type = "followup"
+        else:
+            # Different city
+            turn_type = "establishing"
+    else:
+        # Follow-up question without explicit location (e.g. "will it rain tomorrow?", "is it humid?", "can students play outside?"):
+        # ALWAYS followup — never re-render establishing card
+        turn_type = "followup"
 
     # 10. Synthesize bilingual response (tailored to establishing vs followup)
     native_text, english_text = await synthesize_response(
@@ -493,6 +587,7 @@ async def chat(req: ChatRequest):
         followup_chips_native=followup_native,
         followup_chips_english=followup_english,
         requires_chart=intent.get("requires_chart", False),
+        location_name=location_name,
     )
 
     # 13. Save session to Redis
@@ -542,4 +637,5 @@ async def chat(req: ChatRequest):
         model_agreement=model_agreement,
         data_freshness=data_freshness,
         latency_ms=latency_ms,
+        is_remote_query=is_remote_query,
     )

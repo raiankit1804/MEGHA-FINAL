@@ -3,6 +3,7 @@ import styles from './LeftRail.module.css';
 import { getTranslation } from '../i18n/translations';
 import { UserProfile } from '../types/chat';
 import { useTheme } from '../theme/ThemeProvider';
+import { api } from '../api/client';
 
 export const DOMAIN_MODES = [
   { id: 'normal', icon: '🏙️', label: 'City', desc: 'Urban weather & rain updates' },
@@ -49,7 +50,7 @@ export default function LeftRail({
   domainFilter = 'normal',
   onDomainChange,
 }: LeftRailProps) {
-  const { interfaceStyle } = useTheme();
+  const { interfaceStyle, setInterfaceStyle } = useTheme();
   const [isHovered, setIsHovered] = useState(false);
   const currentModeObj = DOMAIN_MODES.find((m) => m.id === domainFilter) || DOMAIN_MODES[0];
 
@@ -67,24 +68,6 @@ export default function LeftRail({
       >
         {/* Top Section */}
         <div className={styles.topGroup}>
-          {/* Hamburger Menu button at top (toggles drawer on any screen) */}
-          <button
-            type="button"
-            className={styles.railHamburgerBtn}
-            onClick={onOpenMobileDrawer}
-            title="Open Menu (☰)"
-            aria-label="Open Navigation Menu"
-          >
-            <span className={styles.btnIcon}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            </span>
-            <span className={styles.btnLabel} style={{ fontWeight: 600 }}>Menu</span>
-          </button>
-
           {/* MEGHA SETU Brand Logo with gentle micro-animation */}
           <div className={styles.logoBtn} onClick={onNewChat} title="MEGHA SETU — Home" aria-label="MEGHA SETU Home">
             <img
@@ -130,6 +113,24 @@ export default function LeftRail({
             <span className={styles.btnLabel}>{getTranslation(language, 'history', 'Chat history')}</span>
           </button>
 
+          {/* Live Warnings */}
+          <button
+            type="button"
+            className={`${styles.railBtn} ${hasWarnings ? styles.railBtnWarning : ''}`}
+            onClick={onOpenWarnings}
+            title={getTranslation(language, 'disasterAlert', 'Disaster & Weather Warnings')}
+            aria-label="Disaster warnings"
+          >
+            <span className={styles.btnIcon} style={{ fontSize: '1.15rem' }}>
+              ⚠️
+              {hasWarnings && <span className={styles.warningDot} />}
+            </span>
+            <span className={styles.btnLabel}>
+              {getTranslation(language, 'disasterAlert', 'Live Warnings')}
+            </span>
+            {hasWarnings && <span className={styles.expandedBadge}>Alert</span>}
+          </button>
+
           {/* 22 Indian Languages */}
           <button
             type="button"
@@ -147,6 +148,27 @@ export default function LeftRail({
 
         {/* Bottom Section: Settings & User Profile */}
         <div className={styles.bottomGroup}>
+
+          {/* Interface Style Toggle (Modern / Minimal) */}
+          <button
+            type="button"
+            className={styles.railBtn}
+            onClick={() => {
+              const next = interfaceStyle === 'modern' ? 'minimal' : 'modern';
+              setInterfaceStyle(next);
+              if (user) api.patch('/api/user', { interface_style: next }).catch(() => {});
+              onNewChat?.();
+            }}
+            title={interfaceStyle === 'modern' ? 'Active: Modern View (Click for Minimal)' : 'Active: Minimal View (Click for Modern)'}
+            aria-label="Toggle Modern / Minimal View"
+          >
+            <span className={styles.btnIcon} style={{ fontSize: '1.15rem' }}>
+              {interfaceStyle === 'modern' ? '✨' : '📄'}
+            </span>
+            <span className={styles.btnLabel}>
+              {interfaceStyle === 'modern' ? 'Modern View' : 'Minimal View'}
+            </span>
+          </button>
 
           {/* Settings */}
           <button
@@ -288,6 +310,22 @@ export default function LeftRail({
                 <span className={styles.itemLabel}>{getTranslation(language, 'history', 'Chat history')}</span>
               </button>
 
+              {/* Live Warnings */}
+              <button
+                type="button"
+                className={styles.mobileMenuItem}
+                onClick={() => {
+                  onOpenWarnings?.();
+                  onCloseMobileDrawer?.();
+                }}
+              >
+                <span className={styles.itemIcon}>⚠️</span>
+                <span className={styles.itemLabel}>
+                  {getTranslation(language, 'disasterAlert', 'Disaster & Weather Warnings')}
+                </span>
+                {hasWarnings && <span className={styles.mobileBadge}>Alert</span>}
+              </button>
+
               {/* 22 Languages */}
               <button
                 type="button"
@@ -300,6 +338,27 @@ export default function LeftRail({
                 <span className={styles.itemIcon}>🌐</span>
                 <span className={styles.itemLabel}>
                   Languages ({language.toUpperCase()})
+                </span>
+              </button>
+
+              {/* Interface Style Toggle (Modern / Minimal) */}
+              <button
+                type="button"
+                className={styles.mobileMenuItem}
+                onClick={() => {
+                  const next = interfaceStyle === 'modern' ? 'minimal' : 'modern';
+                  setInterfaceStyle(next);
+                  if (user) api.patch('/api/user', { interface_style: next }).catch(() => {});
+                  onNewChat?.();
+                  onCloseMobileDrawer?.();
+                }}
+              >
+                <span className={styles.itemIcon}>{interfaceStyle === 'modern' ? '✨' : '📄'}</span>
+                <span className={styles.itemLabel}>
+                  Interface: {interfaceStyle === 'modern' ? 'Modern Mode' : 'Minimal Mode'}
+                </span>
+                <span className={styles.mobileBadge} style={{ background: 'var(--badge-bg)', color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}>
+                  {interfaceStyle === 'modern' ? 'MODERN' : 'MINIMAL'}
                 </span>
               </button>
 

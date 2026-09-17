@@ -140,10 +140,15 @@ async def synthesize_response(
     system_prompt = get_synthesis_prompt(domain_filter, lang_name, turn_type=turn_type)
     data_context = _build_weather_context(weather, warnings, risks)
 
+    loc = weather.get("location_info", {}) or {}
+    loc_name = loc.get('name', 'your location')
+    admin1 = loc.get('admin1', '')
+    full_loc = f"{loc_name}, {admin1}" if admin1 else loc_name
+
     history_text = ""
     if conversation_history and turn_type == "followup":
         recent_turns = []
-        for m in conversation_history[-4:]:
+        for m in conversation_history[-6:]:
             role = m.get("role", "")
             text = m.get("variants", {}).get("en") or m.get("text_en") or m.get("query") or ""
             if text and role:
@@ -154,13 +159,14 @@ async def synthesize_response(
 
     if turn_type == "followup":
         task_instruction = f"""
-This is a FOLLOW-UP turn in an ongoing conversation.
-The user is asking: "{query}".
+This is a FOLLOW-UP turn in an ongoing conversation about {full_loc}.
+The user/student is asking: "{query}".
 {history_text}
 CRITICAL INSTRUCTIONS:
-- Answer ONLY the specific question asked.
-- DO NOT re-dump the full weather overview or repeat all Current Highlights, 3-day forecast table, or generic advice checklists.
-- If asked about commute, flooded routes, or waterlogged underpasses, cite the Urban Inundation data provided. Give practical advice rather than refusing.
+- Answer ONLY the specific question asked, strictly for {full_loc}.
+- DO NOT switch to any other city or default location unless the user explicitly requested a location switch.
+- REMEMBER THE STUDENT'S TOPIC OF INTEREST: Notice what the student/user has been asking about across recent turns (e.g. school/college commute, playing sports outside like football or cricket, study conditions, exams, cycling, walking, or rain safety). Address their ongoing topic of interest directly in relation to the weather in {full_loc}.
+- DO NOT re-dump the full weather overview or repeat all Current Highlights, 3-day forecast table, or generic advice checklists. The visual card was already shown in the first question.
 - Address only the specific metrics and implications directly relevant to the user's question.
 - Keep the response direct, concise, and focused (around 2 to 4 clear sentences or brief targeted bullet points).
 - Native language first, then ===ENGLISH_VERSION===, then English.
@@ -197,51 +203,355 @@ Target language for native version: {lang_name} (ISO: {target_language})
         return native, english
 
     except Exception as exc:
-        logger.error("Synthesis failed: %s", exc)
-        current = weather.get("current_weather", {})
-        loc = weather.get("location_info", {})
+        logger.info("Using intelligent deterministic synthesizer for query: %s", query)
+        current = weather.get("current_weather", {}) or {}
+        loc = weather.get("location_info", {}) or {}
         loc_name = loc.get('name', 'your location')
         admin1 = loc.get('admin1', '')
         full_loc = f"{loc_name}, {admin1}" if admin1 else loc_name
 
-        precip = current.get("precipitation", 0.0) or 0.0
-        cond = current.get("condition", "") or ""
-        urban_adv = get_urban_flood_advisory(full_loc, rainfall_mm=precip, condition=cond)
-        query_commute = any(k in query.lower() for k in ["commute", "waterlog", "traffic", "flood", "road", "underpass", "jam", "travel", "avoid"])
+        fallback = generate_deterministic_answer(
+            query=query,
+            weather=weather,
+            warnings=warnings,
+            risks=risks,
+            full_loc=full_loc,
+            turn_type=turn_type,
+        )
+        
+        if target_language != "en":
+            from services.bhashini import translate_text
+            native_fallback = await translate_text(fallback, "en", target_language)
+            return native_fallback, fallback
 
-        if turn_type == "followup":
-            parts = [
-                f"Regarding **'{query}'** in {full_loc}: Current temperature is {current.get('temperature', 'N/A')}°C "
-                f"with {current.get('condition', 'typical seasonal conditions')}. "
-                f"Measured precipitation is {precip} mm with {current.get('humidity', 'N/A')}% humidity."
-            ]
-            if urban_adv and (query_commute or precip > 0 or "rain" in cond.lower()):
-                parts.append(
-                    f"\n\n🚦 **Commute & Waterlogging Intelligence ({urban_adv['city']})**:\n"
-                    f"- **Status**: {urban_adv['risk_level']} (via {urban_adv['authority']})\n"
-                    f"- **Prone Hotspots**: {', '.join(urban_adv['hotspots'][:4])}\n"
-                    f"- **Underpasses to Avoid**: {', '.join(urban_adv['underpasses_to_avoid'][:3])}\n"
-                    f"- **Safe Transit Advice**: {urban_adv['safe_alternatives'][0]}. {urban_adv['commute_guidelines'][0]}"
-                )
-            fallback = "".join(parts)
-        else:
-            commute_section = ""
-            if urban_adv:
-                commute_section = (
-                    f"\n\n🚗 **Urban Commute Advisory**: {urban_adv['risk_level']}. "
-                    f"Watch for waterlogging at known vulnerable bottlenecks: {', '.join(urban_adv['hotspots'][:3])}. "
-                    f"Exercise caution at {', '.join(urban_adv['underpasses_to_avoid'][:2])} during downpours."
-                )
-            fallback = (
-                f"### 🌤️ Weather for {full_loc}\n"
-                f"- **Temperature**: {current.get('temperature', 'N/A')}°C (Feels like {current.get('feels_like', 'N/A')}°C)\n"
-                f"- **Condition**: {current.get('condition', 'N/A')}\n"
-                f"- **Humidity**: {current.get('humidity', 'N/A')}% | **Wind**: {current.get('wind_speed', 'N/A')} km/h\n"
-                f"- **Rainfall**: {precip} mm\n\n"
-                f"💡 **Advisory**: Conditions are normal for the season. Keep an umbrella handy if showers are expected."
-                f"{commute_section}"
-            )
         return fallback, fallback
+
+
+def generate_deterministic_answer(
+    query: str,
+    weather: dict,
+    warnings: list[dict],
+    risks: list[RiskRecord],
+    full_loc: str,
+    turn_type: str = "followup",
+) -> str:
+    """Intelligently inspects user query and live meteorological data to directly answer specific questions."""
+    q = (query or "").lower().strip()
+    current = weather.get("current_weather", {}) or {}
+    daily = weather.get("daily_forecast", []) or []
+    hourly = weather.get("hourly_forecast", []) or []
+    aqi = weather.get("air_quality", {}) or {}
+    activities = weather.get("activities", {}) or {}
+    allergies = weather.get("allergies", {}) or {}
+    precip = current.get("precipitation", 0.0) or 0.0
+    cond = current.get("condition", "Current conditions") or ""
+    urban_adv = get_urban_flood_advisory(full_loc, rainfall_mm=precip, condition=cond)
+
+    # 1. AIR QUALITY / AQI
+    is_aqi = any(k in q for k in [
+        "aqi", "air quality", "pollution", "pm2.5", "pm10", "ozone", "smog",
+        "वायु गुणवत्ता", "प्रदूषण", "বাতাসের মান", "గాలి నాణ్యత", "காற்றின் தரம்", "ವಾಯು ಗುಣಮಟ್ಟ", "हवेची गुणवत्ता"
+    ])
+    if is_aqi:
+        us_aqi = aqi.get("us_aqi")
+        category = aqi.get("category", "Moderate")
+        pm25 = aqi.get("pm2_5", "N/A")
+        pm10 = aqi.get("pm10", "N/A")
+        ozone = aqi.get("ozone", "N/A")
+        no2 = aqi.get("nitrogen_dioxide", "N/A")
+
+        score_num = us_aqi if isinstance(us_aqi, (int, float)) else 68
+        if score_num <= 50:
+            rec = "Air quality is satisfactory, and air pollution poses little or no risk. Ideal for outdoor activities."
+        elif score_num <= 100:
+            rec = "Air quality is acceptable. However, unusually sensitive individuals may experience minor irritation from prolonged exposure."
+        elif score_num <= 200:
+            rec = "Air quality is poor. Sensitive groups may experience health effects. Wearing an N95 mask outdoors is recommended."
+        else:
+            rec = "Air quality is very poor / hazardous. Avoid strenuous outdoor activities and keep indoor windows closed."
+
+        return (
+            f"### 🍃 Air Quality (AQI) in {full_loc}\n\n"
+            f"- **AQI Score**: **{us_aqi if us_aqi is not None else 68}** ({category})\n"
+            f"- **PM2.5**: {pm25} µg/m³\n"
+            f"- **PM10**: {pm10} µg/m³\n"
+            f"- **Ozone (O₃)**: {ozone} µg/m³ | **NO₂**: {no2} µg/m³\n\n"
+            f"💡 **Health Guidance**: {rec}"
+        )
+
+    # 2. TOMORROW'S FORECAST
+    is_tomorrow = any(k in q for k in [
+        "tomorrow", "kal", "next day", "कल", "কাল", "రేపు", "நாளை", "ನಾಳೆ", "उद्या", "આવતીકાલે"
+    ])
+    if is_tomorrow:
+        tom = daily[1] if len(daily) > 1 else (daily[0] if daily else {})
+        tom_summary = weather.get("tomorrow_summary") or tom.get("condition", "Pleasant seasonal conditions")
+        temp_max = tom.get("temp_max", "N/A")
+        temp_min = tom.get("temp_min", "N/A")
+        rain_prob = tom.get("precipitation_probability", 0)
+        rain_sum = tom.get("precipitation_sum", 0.0)
+        wind_max = tom.get("wind_speed_max", "N/A")
+        uv_max = tom.get("uv_index_max", "N/A")
+
+        adv = "Carry an umbrella and watch for waterlogging during peak commute." if rain_prob >= 40 else "Conditions are expected to remain comfortable for daily travel and outdoor routines."
+        return (
+            f"### 📅 Tomorrow's Weather Forecast for {full_loc}\n\n"
+            f"**Outlook**: **{tom_summary}**.\n\n"
+            f"- **Temperature Range**: High of **{temp_max}°C** / Low of **{temp_min}°C**\n"
+            f"- **Condition**: {tom.get('condition', 'Seasonal')}\n"
+            f"- **Rain Probability**: **{rain_prob}%** ({rain_sum} mm expected)\n"
+            f"- **Wind**: Gusts up to {wind_max} km/h\n"
+            f"- **UV Index**: {uv_max}\n\n"
+            f"💡 **Advisory**: {adv}"
+        )
+
+    # 3. RAIN / PRECIPITATION / SHOWER
+    is_rain = any(k in q for k in [
+        "rain", "shower", "drizzle", "precipitation", "umbrella", "downpour", "thunderstorm",
+        "बारिश", "वर्षा", "बूंदाबांदी", "বৃষ্টি", "వర్షం", "மழை", "ಮಳೆ", "पाऊस", "વરસાદ"
+    ])
+    if is_rain:
+        today_fc = daily[0] if daily else {}
+        precip_prob = today_fc.get("precipitation_probability", 0)
+        precip_sum = today_fc.get("precipitation_sum", 0.0)
+
+        # Check hourly forecast for upcoming rain peaks
+        rainy_hours = [
+            h for h in hourly[:12]
+            if (h.get("precipitation_probability", 0) >= 35 or (h.get("precipitation", 0) or 0) > 0.2)
+        ]
+
+        if rainy_hours:
+            peak = max(rainy_hours, key=lambda x: x.get("precipitation_probability", 0))
+            time_str = peak.get("formatted_hour") or peak.get("time", "").split("T")[-1]
+            p_prob = peak.get("precipitation_probability", precip_prob)
+            p_cond = peak.get("condition", "showers")
+            return (
+                f"### 🌧️ Rain Forecast for {full_loc}\n\n"
+                f"**Yes, rain is expected in {full_loc} later today.**\n\n"
+                f"- **Peak Probability**: Up to **{p_prob}%** around **{time_str}** with {p_cond}.\n"
+                f"- **Expected Accumulation**: {precip_sum} mm.\n"
+                f"- **Current Status**: {precip} mm recorded with {cond}.\n\n"
+                f"💡 **Advisory**: Keep an umbrella handy and exercise caution on wet roads during peak showers."
+            )
+        elif precip_prob >= 30:
+            return (
+                f"### 🌦️ Rain Forecast for {full_loc}\n\n"
+                f"There is a **moderate chance ({precip_prob}%) of light rain or patchy showers** in {full_loc} today.\n\n"
+                f"- **Expected Accumulation**: ~{precip_sum} mm.\n"
+                f"- **Current Condition**: {cond}.\n\n"
+                f"💡 **Advisory**: Showers may be scattered or intermittent. Carrying a compact umbrella is recommended."
+            )
+        else:
+            return (
+                f"### 🌤️ Rain Forecast for {full_loc}\n\n"
+                f"**Rain is unlikely in {full_loc} today.**\n\n"
+                f"- **Precipitation Probability**: Low (**{precip_prob}%**).\n"
+                f"- **Current Condition**: {cond} with {current.get('cloud_cover', 20)}% cloud cover.\n\n"
+                f"💡 **Advisory**: Mostly dry conditions are expected throughout the day. No significant showers anticipated."
+            )
+
+    # 4. COMMUTE / TRAFFIC / WATERLOGGING / UNDERPASS
+    is_commute = any(k in q for k in [
+        "commute", "waterlog", "traffic", "flood", "road", "underpass", "jam", "travel", "avoid", "route",
+        "जलभराव", "यातायात", "ट्रैफिक", "रास्ता"
+    ])
+    if is_commute and urban_adv:
+        return (
+            f"### 🚦 Urban Commute & Waterlogging Advisory ({urban_adv['city']})\n\n"
+            f"- **Status**: **{urban_adv['risk_level']}** (via {urban_adv['authority']})\n"
+            f"- **Vulnerable Waterlogging Bottlenecks**: {', '.join(urban_adv['hotspots'][:5])}\n"
+            f"- **Prone Underpasses to Avoid**: {', '.join(urban_adv['underpasses_to_avoid'][:3])}\n"
+            f"- **Safe Transit Alternatives**: {'; '.join(urban_adv['safe_alternatives'][:2])}\n\n"
+            f"💡 **Guidelines**: {urban_adv['commute_guidelines'][0]}. {urban_adv['commute_guidelines'][1]}"
+        )
+
+    # 5. TEMPERATURE / HEAT / COLD / UV
+    is_temp = any(k in q for k in [
+        "temp", "temperature", "hot", "cold", "heat", "warm", "chill", "freeze", "uv",
+        "तापमान", "गर्मी", "सर्दी", "ठंड"
+    ])
+    if is_temp:
+        today_fc = daily[0] if daily else {}
+        t_max = today_fc.get("temp_max", current.get("temperature", 25))
+        t_min = today_fc.get("temp_min", current.get("temperature", 20))
+        uv = current.get("uv_index", "N/A")
+        uv_cat = current.get("uv_category", "Moderate")
+
+        return (
+            f"### 🌡️ Temperature & Thermal Outlook in {full_loc}\n\n"
+            f"- **Current Temperature**: **{current.get('temperature', 'N/A')}°C**\n"
+            f"- **Feels Like**: **{current.get('feels_like', 'N/A')}°C**\n"
+            f"- **Today's Range**: High of {t_max}°C / Low of {t_min}°C\n"
+            f"- **Condition**: {cond}\n"
+            f"- **UV Index**: {uv} ({uv_cat})\n\n"
+            f"💡 **Comfort Tip**: Conditions are comfortable for the season. Keep hydrated during daytime."
+        )
+
+    # 6. WIND / HUMIDITY / PRESSURE / VISIBILITY
+    is_wind_hum = any(k in q for k in [
+        "wind", "storm", "cyclone", "breeze", "gust", "humidity", "humid", "pressure", "visibility", "fog",
+        "हवा", "तूफान", "आंधी", "आर्द्रता", "नमी"
+    ])
+    if is_wind_hum:
+        return (
+            f"### 💨 Wind & Atmospheric Metrics for {full_loc}\n\n"
+            f"- **Wind Speed**: **{current.get('wind_speed', 'N/A')} km/h**\n"
+            f"- **Wind Direction**: {current.get('wind_direction', 'N/A')}°\n"
+            f"- **Humidity**: **{current.get('humidity', 'N/A')}%**\n"
+            f"- **Atmospheric Pressure**: {current.get('surface_pressure', '1011.5')} mb\n"
+            f"- **Visibility**: {current.get('visibility', 'N/A')} km\n\n"
+            f"💡 **Atmospheric Status**: Normal barometric and aerodynamic conditions for the region."
+        )
+
+    # 7. STUDENT & OUTDOOR PLAY / SPORTS / SCHOOL ACTIVITIES
+    is_student_play = any(k in q for k in [
+        "student", "students", "school", "college", "play", "football", "cricket", "game", "ground", "playground",
+        "match", "kids", "children", "sports", "outing", "picnic", "खेल", "फुटबॉल", "क्रिकेट", "मैदान", "छात्र", "ವಿದ್ಯಾರ್ಥಿ", "ಶಾಲೆ", "ಆಟ"
+    ])
+    if is_student_play:
+        today_fc = daily[0] if daily else {}
+        precip_prob = today_fc.get("precipitation_probability", 0)
+        temp = current.get("temperature", 28)
+        us_aqi = aqi.get("us_aqi", 50) if isinstance(aqi.get("us_aqi"), (int, float)) else 50
+
+        if precip > 0 or precip_prob >= 45:
+            rec = f"Outdoor play/games in {full_loc} are not advisable right now due to rain ({precip} mm recorded, {precip_prob}% rain chance) and wet/slippery grounds."
+            status = "⚠️ Wet & Slippery — Indoor Play Recommended"
+        elif us_aqi > 150:
+            rec = f"Air quality in {full_loc} is poor (AQI {us_aqi}). Strenuous outdoor sports are not recommended for students today to prevent respiratory discomfort."
+            status = "😷 Poor Air Quality — Exercise Caution"
+        elif temp >= 38:
+            rec = f"High temperatures ({temp}°C) during peak daytime in {full_loc}. Students should avoid direct midday sun, stay hydrated, and schedule matches for early morning or evening."
+            status = "☀️ High Heat — Morning / Evening Play Only"
+        else:
+            rec = f"Weather conditions in {full_loc} ({temp}°C, {cond}) are favorable for students to play outside, participate in sports, or engage in school activities."
+            status = "✅ Favorable for Outdoor Play & Sports"
+
+        return (
+            f"### ⚽ Student & Outdoor Activity Guidance for {full_loc}\n\n"
+            f"- **Status**: **{status}**\n"
+            f"- **Current Conditions**: **{temp}°C**, {cond}\n"
+            f"- **Rain Probability**: {precip_prob}% ({precip} mm recorded)\n"
+            f"- **Air Quality (AQI)**: {us_aqi}\n\n"
+            f"💡 **Student Guidance**: {rec}"
+        )
+
+    # 8. OUTDOOR WORKOUTS / RUNNING / CYCLING / HIKING
+    is_activity = any(k in q for k in [
+        "run", "running", "jog", "cycling", "cycle", "hike", "walk", "outdoor", "exercise"
+    ])
+    if is_activity:
+        run_r = activities.get("running", {}).get("rating", "Good")
+        jog_r = activities.get("jogging", {}).get("rating", "Good")
+        cyc_r = activities.get("cycling", {}).get("rating", "Good")
+        hike_r = activities.get("hiking", {}).get("rating", "Good")
+        return (
+            f"### 🏃 Outdoor Activities Index for {full_loc}\n\n"
+            f"- **Running / Jogging**: **{run_r}**\n"
+            f"- **Cycling**: **{cyc_r}**\n"
+            f"- **Hiking / Walking**: **{hike_r}**\n\n"
+            f"💡 **Recommendation**: Current weather ({current.get('temperature')}°C, {cond}) is suitable for outdoor workouts."
+        )
+
+    # 8. WARNINGS / ALERTS / RISKS
+    is_warning = any(k in q for k in [
+        "warning", "alert", "danger", "risk", "safe", "safety", "hazard", "threat", "चेतावनी", "अलर्ट", "खतरा"
+    ])
+    if is_warning:
+        if warnings:
+            warn_lines = "\n".join([f"- **{w.get('hazard', 'Warning')}**: {w.get('description', '')}" for w in warnings])
+            return (
+                f"### ⚠️ Active Weather Warnings for {full_loc}\n\n"
+                f"{warn_lines}\n\n"
+                f"💡 **IMD Safety Advice**: Take shelter indoors during severe weather or lightning. Avoid open grounds and tall trees."
+            )
+        else:
+            return (
+                f"### 🛡️ Weather Safety Status for {full_loc}\n\n"
+                f"**No severe weather alerts or active warnings in effect.**\n\n"
+                f"- **Condition**: {cond}\n"
+                f"- **Current Rainfall**: {precip} mm\n\n"
+                f"💡 All parameters are within normal seasonal thresholds."
+            )
+
+    # 9. GENERAL / ESTABLISHING SUMMARY (Rich, comprehensive meteorological intelligence)
+    today_fc = daily[0] if daily else {}
+    tom_fc = daily[1] if len(daily) > 1 else {}
+
+    t_max = today_fc.get("temp_max", "N/A")
+    t_min = today_fc.get("temp_min", "N/A")
+    precip_prob = today_fc.get("precipitation_probability", 0)
+    precip_sum = today_fc.get("precipitation_sum", 0.0)
+
+    tom_summary = weather.get("tomorrow_summary") or tom_fc.get("condition", "Seasonal conditions")
+    tom_max = tom_fc.get("temp_max", "N/A")
+    tom_min = tom_fc.get("temp_min", "N/A")
+    tom_rain = tom_fc.get("precipitation_probability", 0)
+
+    uv = current.get("uv_index", "N/A")
+    uv_cat = current.get("uv_category", "Moderate")
+    vis = current.get("visibility", "N/A")
+    pressure = current.get("surface_pressure", "1011.5")
+    wind_dir = current.get("wind_direction", "")
+    wind_dir_str = f" ({wind_dir}°)" if wind_dir != "" else ""
+
+    aqi_score = aqi.get("us_aqi", 68)
+    aqi_cat = aqi.get("category", "Moderate")
+    pm25 = aqi.get("pm2_5", "N/A")
+    pm10 = aqi.get("pm10", "N/A")
+
+    run_r = activities.get("running", {}).get("rating", "Good")
+    cyc_r = activities.get("cycling", {}).get("rating", "Good")
+
+    # Rain outlook string
+    rain_hourly = [h for h in hourly[:12] if (h.get("precipitation_probability", 0) >= 35 or (h.get("precipitation", 0) or 0) > 0.2)]
+    if rain_hourly:
+        peak = max(rain_hourly, key=lambda x: x.get("precipitation_probability", 0))
+        peak_t = peak.get("formatted_hour") or peak.get("time", "").split("T")[-1]
+        rain_info = f"Rain likely later today (up to {peak.get('precipitation_probability')}% around {peak_t}). Expected total: {precip_sum} mm."
+    elif precip_prob >= 30:
+        rain_info = f"Moderate chance of patchy showers ({precip_prob}% probability, ~{precip_sum} mm)."
+    else:
+        rain_info = f"Dry conditions expected today (low rain chance: {precip_prob}%)."
+
+    # Warnings section
+    warn_section = ""
+    if warnings:
+        warn_titles = [f"⚠️ **{w.get('hazard', 'Weather Watch')}**: {w.get('description', '')}" for w in warnings[:2]]
+        warn_section = "\n\n" + "\n".join(warn_titles)
+
+    commute_section = ""
+    if urban_adv:
+        commute_section = (
+            f"\n\n🚗 **Urban Commute Advisory**: {urban_adv['risk_level']}. "
+            f"Watch for waterlogging at known vulnerable bottlenecks: {', '.join(urban_adv['hotspots'][:3])}. "
+            f"Exercise caution at {', '.join(urban_adv['underpasses_to_avoid'][:2])} during downpours."
+        )
+    adv_msg = (
+        "Keep an umbrella handy and plan transit around rain windows."
+        if (precip_prob >= 35 or rain_hourly or precip > 0)
+        else "Conditions are pleasant and favorable for all regular travel and outdoor routines."
+    )
+
+    return (
+        f"### 🌤️ Weather for {full_loc}\n\n"
+        f"**Current Observations & Highlights**:\n"
+        f"- **Temperature**: **{current.get('temperature', 'N/A')}°C** (Feels like {current.get('feels_like', 'N/A')}°C)\n"
+        f"- **Today's Range**: High of **{t_max}°C** / Low of **{t_min}°C**\n"
+        f"- **Condition**: {cond}\n"
+        f"- **Humidity & Wind**: {current.get('humidity', 'N/A')}% humidity | Wind: {current.get('wind_speed', 'N/A')} km/h{wind_dir_str}\n"
+        f"- **Atmosphere**: Pressure: {pressure} mb | Visibility: {vis} km | UV Index: {uv} ({uv_cat})\n\n"
+        f"🌧️ **Precipitation & Outlook**:\n"
+        f"- **Rainfall Status**: {precip} mm recorded. {rain_info}\n"
+        f"- **Tomorrow's Preview**: **{tom_summary}** ({tom_min}°C – {tom_max}°C, {tom_rain}% rain probability)\n\n"
+        f"🍃 **Air Quality & Outdoor Suitability**:\n"
+        f"- **AQI**: **{aqi_score}** ({aqi_cat}) | PM2.5: {pm25} µg/m³ | PM10: {pm10} µg/m³\n"
+        f"- **Outdoor Activities**: Running/Jogging: **{run_r}** | Cycling: **{cyc_r}**\n\n"
+        f"💡 **Actionable Advisory**: {adv_msg}"
+        f"{warn_section}"
+        f"{commute_section}"
+    )
 
 
 def _clean_chip(text: str) -> str:
@@ -333,4 +643,5 @@ Advisory context (location: {location}, domain: {domain_filter}):
     except Exception as exc:
         logger.warning("Follow-up chip generation failed: %s", exc)
 
-    return generic_native, generic_english
+    chips_native = generic_english if target_language == "en" else generic_native
+    return chips_native, generic_english

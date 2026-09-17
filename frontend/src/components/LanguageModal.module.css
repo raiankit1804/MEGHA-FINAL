@@ -117,6 +117,7 @@
   cursor: pointer;
   transition: all 0.18s ease;
   text-align: left;
+  font-family: var(--font-body);
 }
 
 .langCard:hover {
@@ -143,6 +144,7 @@
   font-weight: 700;
   color: var(--accent-primary);
   flex-shrink: 0;
+  font-family: var(--font-body);
 }
 
 .langInfo {
@@ -159,6 +161,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  font-family: var(--font-body);
 }
 
 .langNative {
@@ -167,6 +170,7 @@
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  font-family: var(--font-body);
 }
 
 .checkIcon {

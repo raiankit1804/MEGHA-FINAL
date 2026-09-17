@@ -161,6 +161,7 @@
   cursor: pointer;
   overflow: hidden;
   transition: background 0.18s ease, color 0.18s ease;
+  font-family: var(--font-body);
 }
 
 .railBtn:hover {
@@ -200,6 +201,7 @@
   color: var(--text-primary);
   pointer-events: none;
   transition: opacity 0.2s ease, max-width 0.25s ease;
+  font-family: var(--font-body);
 }
 
 .rail:hover .btnLabel,

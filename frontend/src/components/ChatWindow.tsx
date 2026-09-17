@@ -11,7 +11,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { marked } from 'marked';
 import WeatherCard from './WeatherCard';
-import { getTranslation, getModernLandingStrings } from '../i18n/translations';
+import { getTranslation, getModernLandingStrings, getCardTranslation } from '../i18n/translations';
+import { generateAdvisoryPdf } from '../utils/pdfExport';
 import styles from './ChatWindow.module.css';
 import { ChatMessage, DomainModeId, SessionLocation, UserProfile } from '../types/chat';
 import { useTheme } from '../theme/ThemeProvider';
@@ -54,6 +55,26 @@ export default function ChatWindow({
 
   const isLanding = messages.length === 0 && !loading;
 
+  // Only render WeatherCard for the first establishing question of a location in this conversation.
+  // Never generate card again and again for follow-up turns or repeated city mentions.
+  const shouldRenderCard = (index: number): boolean => {
+    const current = messages[index];
+    if (current.role !== 'assistant' || current.turn_type !== 'establishing' || !current.weather_data) {
+      return false;
+    }
+    const currentLoc = (current.resolved_location || '').split(',')[0].trim().toLowerCase();
+    // Check if any earlier assistant message already rendered a card for this city
+    const hasPriorCard = messages.slice(0, index).some((prev) => {
+      if (prev.role !== 'assistant' || prev.turn_type !== 'establishing' || !prev.weather_data) {
+        return false;
+      }
+      const prevLoc = (prev.resolved_location || '').split(',')[0].trim().toLowerCase();
+      if (!currentLoc || !prevLoc) return true;
+      return prevLoc === currentLoc || prevLoc.includes(currentLoc) || currentLoc.includes(prevLoc);
+    });
+    return !hasPriorCard;
+  };
+
   return (
     <div
       className={`${styles.window} ${isLanding ? styles.windowLanding : ''}`}
@@ -72,13 +93,14 @@ export default function ChatWindow({
           isListening={isListening}
         />
       )}
-      {messages.map((msg) => (
+      {messages.map((msg, idx) => (
         <MessageGroup
-          key={msg.id || msg.timestamp}
+          key={msg.id || msg.timestamp || idx}
           msg={msg}
           language={language}
           onSend={onSend}
           onOpenSatellite={onOpenSatellite}
+          showCard={shouldRenderCard(idx)}
         />
       ))}
       {loading && <LoadingBubble />}
@@ -92,11 +114,32 @@ interface MessageGroupProps {
   language: string;
   onSend?: (query: string) => void;
   onOpenSatellite?: (mode?: string) => void;
+  showCard?: boolean;
 }
 
-function MessageGroup({ msg, language, onSend, onOpenSatellite }: MessageGroupProps) {
+function MessageGroup({ msg, language, onSend, onOpenSatellite, showCard }: MessageGroupProps) {
   const [speaking, setSpeaking] = useState(false);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const handleDownloadPdf = async () => {
+    if (downloadingPdf) return;
+    setDownloadingPdf(true);
+    try {
+      await generateAdvisoryPdf({
+        location: msg.resolved_location || 'India',
+        language: language,
+        advisoryText: text,
+        weatherData: msg.weather_data,
+        warnings: msg.warnings,
+        domainFilter: msg.domain_filter,
+      });
+    } catch (err) {
+      console.error('Failed to generate PDF:', err);
+    } finally {
+      setDownloadingPdf(false);
+    }
+  };
 
   if (msg.role === 'user') {
     return (
@@ -255,14 +298,14 @@ function MessageGroup({ msg, language, onSend, onOpenSatellite }: MessageGroupPr
 
   return (
     <div className={`${styles.row} ${styles.rowAssistant}`}>
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', width: '100%' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', width: '100%', minWidth: 0, maxWidth: '100%' }}>
         <div className={styles.avatar} aria-hidden="true">
-          🌦️
+          <img src="/megha_setu_phone.png" alt="Megha App" className={styles.avatarImg} />
         </div>
-        <div style={{ flex: 1, minWidth: 0 }}>
-          {/* Establishing turn: full interactive weather card */}
-          {msg.turn_type === 'establishing' && msg.weather_data && (
-            <div style={{ marginBottom: '0.75rem' }}>
+        <div style={{ flex: 1, minWidth: 0, maxWidth: '100%', overflow: 'hidden' }}>
+          {/* Establishing turn: full interactive weather card (rendered only for first question of location) */}
+          {showCard && msg.weather_data && (
+            <div style={{ marginBottom: '0.75rem', width: '100%', maxWidth: '100%', minWidth: 0 }}>
               <WeatherCard
                 weather={msg.weather_data}
                 warnings={msg.warnings}
@@ -274,6 +317,7 @@ function MessageGroup({ msg, language, onSend, onOpenSatellite }: MessageGroupPr
                 sources={msg.sources}
                 requiresChart={msg.requires_chart}
                 onOpenSatellite={onOpenSatellite}
+                onDownloadPdf={handleDownloadPdf}
               />
             </div>
           )}
@@ -295,26 +339,45 @@ function MessageGroup({ msg, language, onSend, onOpenSatellite }: MessageGroupPr
                 </span>
               </div>
 
-              {/* Voice playback button */}
-              <button
-                type="button"
-                className={`${styles.listenBtn} ${speaking ? styles.listenBtnPlaying : ''}`}
-                onClick={() => handleListen(text, language)}
-                aria-label={speaking ? 'Stop listening' : 'Listen to response'}
-                title={speaking ? 'Stop listening' : 'Listen to response'}
-              >
-                {speaking ? (
-                  <>
-                    <span>⏹</span>
-                    <span>Stop</span>
-                  </>
-                ) : (
-                  <>
-                    <span>🔊</span>
-                    <span>Listen</span>
-                  </>
-                )}
-              </button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                {/* PDF Download button */}
+                <button
+                  type="button"
+                  className={`${styles.pdfBtn} ${downloadingPdf ? styles.pdfBtnDownloading : ''}`}
+                  onClick={handleDownloadPdf}
+                  disabled={downloadingPdf}
+                  aria-label={downloadingPdf ? getCardTranslation(language, 'generatingPdf', 'Generating PDF…') : getCardTranslation(language, 'downloadPdf', 'Download PDF')}
+                  title={downloadingPdf ? getCardTranslation(language, 'generatingPdf', 'Generating PDF…') : getCardTranslation(language, 'downloadPdf', 'Download PDF')}
+                >
+                  <span>{downloadingPdf ? '⏳' : '📥'}</span>
+                  <span>
+                    {downloadingPdf
+                      ? getCardTranslation(language, 'generatingPdf', 'Generating PDF…')
+                      : getCardTranslation(language, 'downloadPdf', 'Download PDF')}
+                  </span>
+                </button>
+
+                {/* Voice playback button */}
+                <button
+                  type="button"
+                  className={`${styles.listenBtn} ${speaking ? styles.listenBtnPlaying : ''}`}
+                  onClick={() => handleListen(text, language)}
+                  aria-label={speaking ? 'Stop listening' : 'Listen to response'}
+                  title={speaking ? 'Stop listening' : 'Listen to response'}
+                >
+                  {speaking ? (
+                    <>
+                      <span>⏹</span>
+                      <span>Stop</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>🔊</span>
+                      <span>Listen</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
 
@@ -358,7 +421,9 @@ function cleanFollowupChip(raw: string): string {
 }
 
 function FollowupChips({ native, english, language, onChipClick }: FollowupChipsProps) {
-  const rawChips = language !== 'en' ? (native?.length ? native : english) : english;
+  const rawChips = language !== 'en'
+    ? (native?.length ? native : english)
+    : (english?.length ? english : native);
   const cleanedChips = (rawChips || [])
     .map(cleanFollowupChip)
     .filter((c) => Boolean(c) && !c.toLowerCase().includes('here is the translation'));
@@ -387,7 +452,7 @@ function LoadingBubble() {
     <div className={`${styles.row} ${styles.rowAssistant}`}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
         <div className={styles.avatar} aria-hidden="true">
-          🌦️
+          <img src="/megha_setu_phone.png" alt="Megha App" className={styles.avatarImg} />
         </div>
         <div
           className={`${styles.bubble} ${styles.bubbleAssistant}`}
@@ -532,8 +597,10 @@ function EmptyState({ onSend, location, domainFilter, language, heroInput, onNew
 }
 
 function getVariant(msg: ChatMessage, language: string): string {
-  if (!msg.variants) return msg.response_text_english || msg.text_en || '';
-  return msg.variants[language] || msg.variants['en'] || msg.response_text || '';
+  if (language === 'en') {
+    return msg.variants?.['en'] || msg.response_text_english || msg.text_en || msg.response_text || '';
+  }
+  return msg.variants?.[language] || msg.response_text || msg.response_text_english || '';
 }
 
 function domainEmoji(domain?: string): string {

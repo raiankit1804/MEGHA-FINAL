@@ -23,10 +23,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const savedInterface = localStorage.getItem('wgpt_interface') || 'modern';
-    const savedColor = localStorage.getItem('wgpt_color') || 'dark';
+    const savedColor = savedInterface === 'modern' ? 'dark' : (localStorage.getItem('wgpt_color') || 'dark');
     setInterfaceStyleState(savedInterface);
-    // Modern mode is strictly dark
-    setColorSchemeState(savedInterface === 'modern' ? 'dark' : savedColor);
+    setColorSchemeState(savedColor);
     setMounted(true);
   }, []);
 
@@ -35,15 +34,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   };
 
   const setInterfaceStyle = (style: string) => {
+    setInterfaceStyleState(style);
     if (style === 'modern') {
-      setShowModernFlash(true);
       setColorSchemeState('dark');
     }
-    setInterfaceStyleState(style);
   };
 
   const setColorScheme = (scheme: string) => {
-    // Strictly no light mode for modern mode!
+    // In modern mode, light mode is disabled and dark mode is forced
     if (interfaceStyle === 'modern') {
       setColorSchemeState('dark');
       return;
@@ -51,7 +49,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     setColorSchemeState(scheme);
   };
 
-  // Modern mode is always locked to dark!
+  // Modern mode is strictly dark mode
   const effectiveColorScheme = interfaceStyle === 'modern' ? 'dark' : colorScheme;
   const themeKey = `${interfaceStyle}-${effectiveColorScheme}`;
 

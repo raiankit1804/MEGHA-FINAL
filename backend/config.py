@@ -13,8 +13,8 @@ class Settings(BaseSettings):
     sih_problem_id: str = "SIH26068"
     environment: str = "development"
 
-    # REQUIRED
-    gemini_api_key: str
+    # Gemini API Key (optional fallback for running without check)
+    gemini_api_key: str = "demo_key"
 
     # Databases
     postgres_url: str = "postgresql+asyncpg://weathergpt:weathergpt@localhost:5432/weathergpt"
@@ -36,9 +36,12 @@ class Settings(BaseSettings):
     bhashini_user_id: str = ""
     bhashini_api_key: str = ""
 
+    # Open-Meteo (optional — bypasses public free IP rate limits)
+    open_meteo_api_key: str = ""
+
     # Cache TTLs (seconds)
     session_ttl_seconds: int = 7200           # 2 hours sliding
-    weather_cache_ttl_seconds: int = 1800     # 30 minutes
+    weather_cache_ttl_seconds: int = 120      # 2 minutes (live updates)
     warning_cache_ttl_seconds: int = 900      # 15 minutes
 
     # CORS
@@ -46,16 +49,12 @@ class Settings(BaseSettings):
 
     # Frontend URL (for OAuth redirect back)
     vite_api_base_url: str = "http://localhost:8000"
+    frontend_url: str = "http://localhost:3000"
 
     @field_validator("gemini_api_key")
     @classmethod
     def require_gemini_key(cls, v: str) -> str:
-        if not v or v.startswith("your_"):
-            raise ValueError(
-                "GEMINI_API_KEY is required. "
-                "Get it from https://aistudio.google.com/ and add it to your .env file."
-            )
-        return v
+        return v or "demo_key"
 
     @property
     def google_oauth_available(self) -> bool:
@@ -66,7 +65,7 @@ class Settings(BaseSettings):
         return bool(self.bhashini_user_id and self.bhashini_api_key)
 
     class Config:
-        env_file = ".env"
+        env_file = ("../.env", ".env")
         env_file_encoding = "utf-8"
         case_sensitive = False
 

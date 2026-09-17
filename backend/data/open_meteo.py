@@ -10,6 +10,7 @@ Never retry in a loop — fail fast, hand off to the next tier.
 import logging
 from typing import Optional
 import httpx
+from config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +52,7 @@ def is_in_india(lat: float, lon: float) -> bool:
 
 
 LOCALITY_ALIASES = {
+    # ── Bengaluru micro-localities ──────────────────────────────────────────────
     "ittagalpura": {
         "name": "Ittagalpura, Bengaluru",
         "raw_name": "Ittagalpura",
@@ -96,7 +98,54 @@ LOCALITY_ALIASES = {
         "admin2": "Bengaluru Urban",
         "country_code": "IN",
     },
+
+    # ── Indian States → state capital coordinates ───────────────────────────────
+    "assam": {"name": "Guwahati, Assam", "raw_name": "Guwahati", "latitude": 26.1445, "longitude": 91.7362, "admin1": "Assam", "country_code": "IN"},
+    "kerala": {"name": "Thiruvananthapuram, Kerala", "raw_name": "Thiruvananthapuram", "latitude": 8.5241, "longitude": 76.9366, "admin1": "Kerala", "country_code": "IN"},
+    "rajasthan": {"name": "Jaipur, Rajasthan", "raw_name": "Jaipur", "latitude": 26.9124, "longitude": 75.7873, "admin1": "Rajasthan", "country_code": "IN"},
+    "gujarat": {"name": "Ahmedabad, Gujarat", "raw_name": "Ahmedabad", "latitude": 23.0225, "longitude": 72.5714, "admin1": "Gujarat", "country_code": "IN"},
+    "maharashtra": {"name": "Mumbai, Maharashtra", "raw_name": "Mumbai", "latitude": 19.0760, "longitude": 72.8777, "admin1": "Maharashtra", "country_code": "IN"},
+    "punjab": {"name": "Chandigarh, Punjab", "raw_name": "Chandigarh", "latitude": 30.7333, "longitude": 76.7794, "admin1": "Punjab", "country_code": "IN"},
+    "haryana": {"name": "Chandigarh, Haryana", "raw_name": "Chandigarh", "latitude": 30.7333, "longitude": 76.7794, "admin1": "Haryana", "country_code": "IN"},
+    "himachal pradesh": {"name": "Shimla, Himachal Pradesh", "raw_name": "Shimla", "latitude": 31.1048, "longitude": 77.1734, "admin1": "Himachal Pradesh", "country_code": "IN"},
+    "uttarakhand": {"name": "Dehradun, Uttarakhand", "raw_name": "Dehradun", "latitude": 30.3165, "longitude": 78.0322, "admin1": "Uttarakhand", "country_code": "IN"},
+    "uttar pradesh": {"name": "Lucknow, Uttar Pradesh", "raw_name": "Lucknow", "latitude": 26.8467, "longitude": 80.9462, "admin1": "Uttar Pradesh", "country_code": "IN"},
+    "up": {"name": "Lucknow, Uttar Pradesh", "raw_name": "Lucknow", "latitude": 26.8467, "longitude": 80.9462, "admin1": "Uttar Pradesh", "country_code": "IN"},
+    "madhya pradesh": {"name": "Bhopal, Madhya Pradesh", "raw_name": "Bhopal", "latitude": 23.2599, "longitude": 77.4126, "admin1": "Madhya Pradesh", "country_code": "IN"},
+    "mp": {"name": "Bhopal, Madhya Pradesh", "raw_name": "Bhopal", "latitude": 23.2599, "longitude": 77.4126, "admin1": "Madhya Pradesh", "country_code": "IN"},
+    "chhattisgarh": {"name": "Raipur, Chhattisgarh", "raw_name": "Raipur", "latitude": 21.2514, "longitude": 81.6296, "admin1": "Chhattisgarh", "country_code": "IN"},
+    "odisha": {"name": "Bhubaneswar, Odisha", "raw_name": "Bhubaneswar", "latitude": 20.2961, "longitude": 85.8245, "admin1": "Odisha", "country_code": "IN"},
+    "orissa": {"name": "Bhubaneswar, Odisha", "raw_name": "Bhubaneswar", "latitude": 20.2961, "longitude": 85.8245, "admin1": "Odisha", "country_code": "IN"},
+    "west bengal": {"name": "Kolkata, West Bengal", "raw_name": "Kolkata", "latitude": 22.5726, "longitude": 88.3639, "admin1": "West Bengal", "country_code": "IN"},
+    "bihar": {"name": "Patna, Bihar", "raw_name": "Patna", "latitude": 25.5941, "longitude": 85.1376, "admin1": "Bihar", "country_code": "IN"},
+    "jharkhand": {"name": "Ranchi, Jharkhand", "raw_name": "Ranchi", "latitude": 23.3441, "longitude": 85.3096, "admin1": "Jharkhand", "country_code": "IN"},
+    "andhra pradesh": {"name": "Amaravati, Andhra Pradesh", "raw_name": "Amaravati", "latitude": 16.5154, "longitude": 80.5156, "admin1": "Andhra Pradesh", "country_code": "IN"},
+    "ap": {"name": "Amaravati, Andhra Pradesh", "raw_name": "Amaravati", "latitude": 16.5154, "longitude": 80.5156, "admin1": "Andhra Pradesh", "country_code": "IN"},
+    "telangana": {"name": "Hyderabad, Telangana", "raw_name": "Hyderabad", "latitude": 17.3850, "longitude": 78.4867, "admin1": "Telangana", "country_code": "IN"},
+    "tamil nadu": {"name": "Chennai, Tamil Nadu", "raw_name": "Chennai", "latitude": 13.0827, "longitude": 80.2707, "admin1": "Tamil Nadu", "country_code": "IN"},
+    "tn": {"name": "Chennai, Tamil Nadu", "raw_name": "Chennai", "latitude": 13.0827, "longitude": 80.2707, "admin1": "Tamil Nadu", "country_code": "IN"},
+    "karnataka": {"name": "Bengaluru, Karnataka", "raw_name": "Bengaluru", "latitude": 12.9716, "longitude": 77.5946, "admin1": "Karnataka", "country_code": "IN"},
+    "goa": {"name": "Panaji, Goa", "raw_name": "Panaji", "latitude": 15.4909, "longitude": 73.8278, "admin1": "Goa", "country_code": "IN"},
+    "nagaland": {"name": "Kohima, Nagaland", "raw_name": "Kohima", "latitude": 25.6751, "longitude": 94.1086, "admin1": "Nagaland", "country_code": "IN"},
+    "manipur": {"name": "Imphal, Manipur", "raw_name": "Imphal", "latitude": 24.8170, "longitude": 93.9368, "admin1": "Manipur", "country_code": "IN"},
+    "mizoram": {"name": "Aizawl, Mizoram", "raw_name": "Aizawl", "latitude": 23.7307, "longitude": 92.7173, "admin1": "Mizoram", "country_code": "IN"},
+    "tripura": {"name": "Agartala, Tripura", "raw_name": "Agartala", "latitude": 23.8315, "longitude": 91.2868, "admin1": "Tripura", "country_code": "IN"},
+    "meghalaya": {"name": "Shillong, Meghalaya", "raw_name": "Shillong", "latitude": 25.5788, "longitude": 91.8933, "admin1": "Meghalaya", "country_code": "IN"},
+    "arunachal pradesh": {"name": "Itanagar, Arunachal Pradesh", "raw_name": "Itanagar", "latitude": 27.0844, "longitude": 93.6053, "admin1": "Arunachal Pradesh", "country_code": "IN"},
+    "sikkim": {"name": "Gangtok, Sikkim", "raw_name": "Gangtok", "latitude": 27.3389, "longitude": 88.6065, "admin1": "Sikkim", "country_code": "IN"},
+    "jammu and kashmir": {"name": "Srinagar, Jammu and Kashmir", "raw_name": "Srinagar", "latitude": 34.0837, "longitude": 74.7973, "admin1": "Jammu and Kashmir", "country_code": "IN"},
+    "jk": {"name": "Srinagar, Jammu and Kashmir", "raw_name": "Srinagar", "latitude": 34.0837, "longitude": 74.7973, "admin1": "Jammu and Kashmir", "country_code": "IN"},
+    "ladakh": {"name": "Leh, Ladakh", "raw_name": "Leh", "latitude": 34.1526, "longitude": 77.5771, "admin1": "Ladakh", "country_code": "IN"},
+    "delhi": {"name": "New Delhi, Delhi", "raw_name": "New Delhi", "latitude": 28.6139, "longitude": 77.2090, "admin1": "Delhi", "country_code": "IN"},
+    "new delhi": {"name": "New Delhi, Delhi", "raw_name": "New Delhi", "latitude": 28.6139, "longitude": 77.2090, "admin1": "Delhi", "country_code": "IN"},
+    "puducherry": {"name": "Puducherry", "raw_name": "Puducherry", "latitude": 11.9416, "longitude": 79.8083, "admin1": "Puducherry", "country_code": "IN"},
+    "pondicherry": {"name": "Puducherry", "raw_name": "Puducherry", "latitude": 11.9416, "longitude": 79.8083, "admin1": "Puducherry", "country_code": "IN"},
+    "chandigarh": {"name": "Chandigarh", "raw_name": "Chandigarh", "latitude": 30.7333, "longitude": 76.7794, "admin1": "Chandigarh", "country_code": "IN"},
+    "andaman": {"name": "Port Blair, Andaman and Nicobar Islands", "raw_name": "Port Blair", "latitude": 11.6234, "longitude": 92.7265, "admin1": "Andaman and Nicobar Islands", "country_code": "IN"},
+    "lakshadweep": {"name": "Kavaratti, Lakshadweep", "raw_name": "Kavaratti", "latitude": 10.5626, "longitude": 72.6369, "admin1": "Lakshadweep", "country_code": "IN"},
+    "dadra": {"name": "Daman, Dadra and Nagar Haveli", "raw_name": "Daman", "latitude": 20.4283, "longitude": 72.8397, "admin1": "Dadra and Nagar Haveli and Daman and Diu", "country_code": "IN"},
 }
+
 
 
 async def geocode_location(name: str) -> Optional[dict]:
@@ -307,6 +356,8 @@ async def _fetch_forecast(lat: float, lon: float, model: Optional[str] = None) -
     }
     if model:
         params["models"] = model
+    if getattr(settings, "open_meteo_api_key", None):
+        params["apikey"] = settings.open_meteo_api_key
 
     async with httpx.AsyncClient(headers=HEADERS, timeout=15) as client:
         resp = await client.get(f"{BASE_URL}/forecast", params=params)

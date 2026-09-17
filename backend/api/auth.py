@@ -137,8 +137,8 @@ async def google_callback(code: str, response: Response):
     )
 
     # Redirect to frontend
-    frontend_url = settings.vite_api_base_url.replace(":8000", ":5173")
-    return RedirectResponse(url=f"{frontend_url}?login=success")
+    frontend_url = settings.frontend_url.rstrip("/")
+    return RedirectResponse(url=f"{frontend_url}?login=success&token={app_token}")
 
 
 @router.post("/auth/logout")

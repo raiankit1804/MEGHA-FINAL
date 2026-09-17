@@ -181,20 +181,30 @@ def heuristic_intent(query: str, domain_filter: str = "normal") -> dict:
     is_followup = any(w in q for w in ["what about", "will the", "aur kal", "then?"])
 
     # Location heuristic extraction:
-    # Match patterns like: "in Kammanahalli", "at Whitefield", "near Indiranagar", "for Koramangala", "Kammanahalli weather"
+    # Match patterns like: "in Bengaluru, Karnataka", "at Whitefield", "near Indiranagar", "for Koramangala", "Kammanahalli weather"
     extracted_location = None
-    m = re.search(r'\b(?:in|at|for|near|around)\s+([A-Za-z0-9\s\-]+?)(?:\s+(?:today|tomorrow|now|tonight|this|next|weather|forecast|rain)|\?|\.|$)', query, re.IGNORECASE)
+    question_stopwords = {
+        "will it", "is it", "does it", "can it", "what is", "how is", "what about", "tell me",
+        "show me", "please tell", "will", "is", "can", "what", "how", "why", "when", "where",
+        "here", "my location", "current location", "india", "unknown",
+    }
+
+    m = re.search(
+        r'\b(?:in|at|for|near|around)\s+([A-Za-z0-9\s\-,]+?)(?:\s+(?:later today|today|tomorrow|now|tonight|this|next|weather|forecast|rain)|\?|\.|$)',
+        query,
+        re.IGNORECASE,
+    )
     if m:
-        candidate = m.group(1).strip()
+        candidate = m.group(1).strip().rstrip(',')
         candidate = re.sub(r'^(the|a|an)\s+', '', candidate, flags=re.IGNORECASE)
-        if len(candidate) >= 2 and candidate.lower() not in {"here", "my location", "current location", "india"}:
+        if len(candidate) >= 2 and candidate.lower() not in question_stopwords:
             extracted_location = candidate
     else:
-        m2 = re.search(r'^([A-Za-z0-9\s\-]+?)\s+(?:weather|forecast|rain|temperature|aqi|mein|me|nalli)', query, re.IGNORECASE)
+        m2 = re.search(r'^([A-Za-z0-9\s\-,]+?)\s+(?:weather|forecast|rain|temperature|aqi|mein|me|nalli)', query, re.IGNORECASE)
         if m2:
-            candidate = m2.group(1).strip()
-            candidate = re.sub(r'^(what is the|how is the|what about the|the|a|an)\s+', '', candidate, flags=re.IGNORECASE)
-            if len(candidate) >= 2 and candidate.lower() not in {"here", "my location", "current location", "india"}:
+            candidate = m2.group(1).strip().rstrip(',')
+            candidate = re.sub(r'^(what is the|how is the|what about the|the|a|an|will it|is it)\s+', '', candidate, flags=re.IGNORECASE)
+            if len(candidate) >= 2 and candidate.lower() not in question_stopwords:
                 extracted_location = candidate
 
     return {
@@ -276,27 +286,39 @@ async def extract_intent(
             intent[k] = v
 
     # 4. Location resolution order:
-    # Prefer specific location extracted from user query (e.g. "Kammanahalli", "Whitefield", "Bandra")
+    # Prefer specific location extracted from user query (e.g. "Kammanahalli", "Bengaluru, Karnataka")
     # over generic coarse fast-path city ("Bengaluru", "Mumbai").
+    question_stopwords = {
+        "will it", "is it", "does it", "can it", "what is", "how is", "what about", "tell me",
+        "show me", "please tell", "will", "is", "can", "what", "how", "why", "when", "where",
+        "here", "my location", "current location", "india", "unknown",
+    }
     llm_loc = intent.get("location")
-    is_specific_llm_loc = (
+    is_valid_llm_loc = (
         llm_loc
-        and llm_loc.strip().lower() not in {"india", "unknown", "here", "current location"}
+        and llm_loc.strip().lower() not in question_stopwords
+        and len(llm_loc.strip()) >= 2
     )
 
-    if is_specific_llm_loc:
+    if is_valid_llm_loc:
         location_name = llm_loc.strip()
-        # Only use fast coords if the specific location is literally just the fast city name
-        has_exact_fast_match = bool(fast_location_name and location_name.lower() == fast_location_name.lower())
+        # Use fast coords if fast city matches exactly or is contained (e.g., "Bengaluru, Karnataka")
+        has_fast_match = bool(
+            fast_location_name
+            and (
+                fast_location_name.lower() == location_name.lower()
+                or fast_location_name.lower() in location_name.lower()
+            )
+        )
     elif fast_location_name:
         location_name = fast_location_name
-        has_exact_fast_match = True
+        has_fast_match = True
     elif session_location and session_location.get("name"):
         location_name = session_location["name"]
-        has_exact_fast_match = False
+        has_fast_match = False
     else:
         location_name = "India"
-        has_exact_fast_match = False
+        has_fast_match = False
 
     return {
         "location": location_name,
@@ -306,8 +328,7 @@ async def extract_intent(
         "requires_chart": intent.get("requires_chart", False),
         "detected_language": intent.get("detected_language", detected_lang),
         "domain_filter": domain_filter,
-        # Only pass fast-path coords if we matched the exact coarse city without a more specific sub-locality
-        "_fast_lat": fast_city[1] if (fast_city and has_exact_fast_match) else None,
-        "_fast_lon": fast_city[2] if (fast_city and has_exact_fast_match) else None,
-        "_fast_state": fast_city[3] if (fast_city and has_exact_fast_match) else None,
+        "_fast_lat": fast_city[1] if (fast_city and has_fast_match) else None,
+        "_fast_lon": fast_city[2] if (fast_city and has_fast_match) else None,
+        "_fast_state": fast_city[3] if (fast_city and has_fast_match) else None,
     }
