@@ -52,6 +52,7 @@ class ChatRequest(BaseModel):
 
 
 class ChatResponse(BaseModel):
+    model_config = {"protected_namespaces": ()}
     session_id: str
     message_id: str
     turn_type: str                            # "establishing" | "followup"

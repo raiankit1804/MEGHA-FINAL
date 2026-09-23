@@ -39,10 +39,13 @@ async def lifespan(app: FastAPI):
     except Exception as exc:
         logger.warning("⚠️ Gemini live model verification skipped/failed (using candidate fallback): %s", exc)
 
-    # 2. PostgreSQL
+    # 2. PostgreSQL / SQLite
     logger.info("Initialising PostgreSQL tables...")
-    await init_db()
-    logger.info("✅ PostgreSQL ready")
+    try:
+        await init_db()
+        logger.info("✅ PostgreSQL ready")
+    except Exception as exc:
+        logger.warning("⚠️ Database init skipped (%s). Proceeding with startup.", exc)
 
     # 3. MongoDB
     logger.info("Connecting to MongoDB...")

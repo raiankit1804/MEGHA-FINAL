@@ -66,10 +66,13 @@ async def init_db() -> None:
         logger.info("✅ Database initialized successfully: %s", settings.database_url)
     except Exception as exc:
         logger.warning("⚠️ PostgreSQL connection failed (%s). Falling back to local SQLite database (weathergpt.db).", exc)
-        _create_engine_and_factory("sqlite+aiosqlite:///./weathergpt.db")
-        async with engine.begin() as conn:
-            await conn.run_sync(Base.metadata.create_all)
-        logger.info("✅ SQLite fallback database initialized successfully.")
+        try:
+            _create_engine_and_factory("sqlite+aiosqlite:///./weathergpt.db")
+            async with engine.begin() as conn:
+                await conn.run_sync(Base.metadata.create_all)
+            logger.info("✅ SQLite fallback database initialized successfully.")
+        except Exception as sqlite_exc:
+            logger.warning("⚠️ SQLite fallback database initialization failed (%s). Continuing in degraded mode.", sqlite_exc)
 
 
 # ─── Base ────────────────────────────────────────────────────────────────────
