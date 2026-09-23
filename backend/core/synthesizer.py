@@ -193,7 +193,20 @@ Target language for native version: {lang_name} (ISO: {target_language})
 
     try:
         response = model.generate_content(full_prompt)
-        raw_text = response.text
+        raw_text = ""
+        try:
+            if hasattr(response, "text") and response.text:
+                raw_text = response.text
+            elif hasattr(response, "candidates") and response.candidates:
+                first_cand = response.candidates[0]
+                if hasattr(first_cand, "content") and hasattr(first_cand.content, "parts"):
+                    raw_text = "".join(p.text for p in first_cand.content.parts if hasattr(p, "text"))
+        except Exception as t_err:
+            logger.warning("Failed to extract response.text directly from Gemini candidate: %s", t_err)
+
+        if not raw_text:
+            raise ValueError("Empty or blocked response from Gemini API")
+
         native, english = _split_bilingual(raw_text)
 
         # If target is English, both versions are the same
@@ -203,7 +216,7 @@ Target language for native version: {lang_name} (ISO: {target_language})
         return native, english
 
     except Exception as exc:
-        logger.info("Using intelligent deterministic synthesizer for query: %s", query)
+        logger.info("Using intelligent deterministic synthesizer for query: %s (Reason: %s)", query, exc)
         current = weather.get("current_weather", {}) or {}
         loc = weather.get("location_info", {}) or {}
         loc_name = loc.get('name', 'your location')
@@ -220,9 +233,13 @@ Target language for native version: {lang_name} (ISO: {target_language})
         )
         
         if target_language != "en":
-            from services.bhashini import translate_text
-            native_fallback = await translate_text(fallback, "en", target_language)
-            return native_fallback, fallback
+            try:
+                from services.bhashini import translate_text
+                native_fallback = await translate_text(fallback, "en", target_language)
+                return native_fallback, fallback
+            except Exception as trans_err:
+                logger.warning("Fallback translation failed: %s — returning English fallback", trans_err)
+                return fallback, fallback
 
         return fallback, fallback
 

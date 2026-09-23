@@ -27,11 +27,11 @@ def _assess_agriculture_risk(weather: dict, warnings: list[dict]) -> list[RiskRe
     current = weather.get("current_weather", {})
     daily = weather.get("daily_forecast", [])
 
-    rainfall_7d = sum(d.get("precipitation_sum", 0) for d in daily[:7])
-    max_rain_day = max((d.get("precipitation_sum", 0) for d in daily[:7]), default=0)
-    humidity = current.get("humidity", 0)
-    temp = current.get("temperature", 25)
-    wind = current.get("wind_speed", 0)
+    rainfall_7d = sum(float(d.get("precipitation_sum") or 0.0) for d in daily[:7])
+    max_rain_day = max((float(d.get("precipitation_sum") or 0.0) for d in daily[:7]), default=0.0)
+    humidity = float(current.get("humidity") or 0.0)
+    temp = float(current.get("temperature") if current.get("temperature") is not None else 25.0)
+    wind = float(current.get("wind_speed") or 0.0)
 
     # Rainfall risk
     if max_rain_day > 64.5:
@@ -118,11 +118,11 @@ def _assess_urban_risk(weather: dict, warnings: list[dict]) -> list[RiskRecord]:
     current = weather.get("current_weather", {})
     daily = weather.get("daily_forecast", [])
 
-    max_rain = max((d.get("precipitation_sum", 0) for d in daily[:3]), default=0)
-    temp = current.get("temperature", 25)
-    wind = current.get("wind_speed", 0)
+    max_rain = max((float(d.get("precipitation_sum") or 0.0) for d in daily[:3]), default=0.0)
+    temp = float(current.get("temperature") if current.get("temperature") is not None else 25.0)
+    wind = float(current.get("wind_speed") or 0.0)
     aqi = weather.get("air_quality", {}) or {}
-    aqi_val = aqi.get("us_aqi", 0) if aqi else 0
+    aqi_val = float(aqi.get("us_aqi") or 0.0) if aqi else 0.0
 
     # Active IMD warnings take precedence
     for w in warnings:
@@ -221,10 +221,10 @@ def _assess_aviation_risk(weather: dict, warnings: list[dict]) -> list[RiskRecor
     risks = []
     current = weather.get("current_weather", {})
 
-    wind = current.get("wind_speed", 0)
-    visibility = current.get("visibility", 10)  # km
-    cloud_cover = current.get("cloud_cover", 0)
-    weather_code = current.get("weather_code", 0)
+    wind = float(current.get("wind_speed") or 0.0)
+    visibility = float(current.get("visibility") if current.get("visibility") is not None else 10.0)  # km
+    cloud_cover = float(current.get("cloud_cover") or 0.0)
+    weather_code = current.get("weather_code") or 0
 
     if wind > 60:
         risks.append(RiskRecord(
@@ -281,7 +281,7 @@ def _assess_marine_risk(weather: dict, warnings: list[dict]) -> list[RiskRecord]
     risks = []
     current = weather.get("current_weather", {})
 
-    wind = current.get("wind_speed", 0)
+    wind = float(current.get("wind_speed") or 0.0)
     # Wave height estimated from wind speed (Beaufort approximation)
     # This is a rough estimate — not a replacement for official sea state data
     wave_height_est = (wind / 3.0) ** 1.2 * 0.12 if wind > 5 else 0

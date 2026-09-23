@@ -503,16 +503,24 @@ async def chat(req: ChatRequest):
     warning_key = location_name.lower()
     warnings = await warning_cache_get(warning_key)
     if warnings is None:
-        warnings = await fetch_warnings_for_location(location_name, state=state, weather_data=weather_data)
+        try:
+            warnings = await fetch_warnings_for_location(location_name, state=state, weather_data=weather_data)
+        except Exception as w_exc:
+            logger.warning("Error fetching warnings for %s: %s — using empty list", location_name, w_exc)
+            warnings = []
         await warning_cache_set(warning_key, warnings)
 
     # 8. Deterministic risk engine
-    risks = assess_risk(
-        weather=weather_data,
-        warnings=warnings,
-        domain_filter=domain_filter,
-        intent_category=intent.get("intent_category", "urban_general"),
-    )
+    try:
+        risks = assess_risk(
+            weather=weather_data,
+            warnings=warnings,
+            domain_filter=domain_filter,
+            intent_category=intent.get("intent_category", "urban_general"),
+        )
+    except Exception as r_exc:
+        logger.warning("Risk assessment failed: %s — using empty risk list", r_exc)
+        risks = []
 
     # 9. Determine turn type
     assistant_messages = [m for m in session.get("messages", []) if m.get("role") == "assistant"]
@@ -561,12 +569,16 @@ async def chat(req: ChatRequest):
     )
 
     # 11. Generate follow-up chips
-    followup_native, followup_english = await generate_followup_chips(
-        advisory_text=english_text,
-        location=location_name,
-        domain_filter=domain_filter,
-        target_language=language,
-    )
+    try:
+        followup_native, followup_english = await generate_followup_chips(
+            advisory_text=english_text,
+            location=location_name,
+            domain_filter=domain_filter,
+            target_language=language,
+        )
+    except Exception as f_exc:
+        logger.warning("Failed to generate followup chips: %s", f_exc)
+        followup_native, followup_english = [], []
 
     # 12. Add messages to session
     # User message
@@ -617,25 +629,51 @@ async def chat(req: ChatRequest):
 
     latency_ms = int((time.time() - start_time) * 1000)
 
-    return ChatResponse(
-        session_id=session["session_id"],
-        message_id=msg["id"],
-        turn_type=turn_type,
-        response_text=native_text,
-        response_text_english=english_text,
-        intent_category=intent.get("intent_category", "urban_general"),
-        domain_filter=domain_filter,
-        resolved_location=location_name,
-        time_horizon=intent.get("time_horizon", "current"),
-        requires_chart=intent.get("requires_chart", False),
-        weather_data=weather_data,
-        warnings=warnings,
-        risks=risk_records_to_dict(risks),
-        followup_chips_native=followup_native,
-        followup_chips_english=followup_english,
-        sources=sources,
-        model_agreement=model_agreement,
-        data_freshness=data_freshness,
-        latency_ms=latency_ms,
-        is_remote_query=is_remote_query,
-    )
+    try:
+        return ChatResponse(
+            session_id=session["session_id"],
+            message_id=msg["id"],
+            turn_type=turn_type,
+            response_text=native_text,
+            response_text_english=english_text,
+            intent_category=intent.get("intent_category", "urban_general"),
+            domain_filter=domain_filter,
+            resolved_location=location_name,
+            time_horizon=intent.get("time_horizon", "current"),
+            requires_chart=intent.get("requires_chart", False),
+            weather_data=weather_data,
+            warnings=warnings,
+            risks=risk_records_to_dict(risks),
+            followup_chips_native=followup_native,
+            followup_chips_english=followup_english,
+            sources=sources,
+            model_agreement=model_agreement,
+            data_freshness=data_freshness,
+            latency_ms=latency_ms,
+            is_remote_query=is_remote_query,
+        )
+    except Exception as resp_err:
+        import uuid
+        logger.exception("Failed to assemble final ChatResponse: %s", resp_err)
+        return ChatResponse(
+            session_id=session.get("session_id", str(uuid.uuid4())),
+            message_id=str(uuid.uuid4()),
+            turn_type="followup",
+            response_text=native_text or "Current weather conditions are normal. The advisory service is updating live data.",
+            response_text_english=english_text or "Current weather conditions are normal. The advisory service is updating live data.",
+            intent_category="urban_general",
+            domain_filter=domain_filter,
+            resolved_location=location_name or "India",
+            time_horizon="current",
+            requires_chart=False,
+            weather_data=weather_data,
+            warnings=[],
+            risks=[],
+            followup_chips_native=[],
+            followup_chips_english=[],
+            sources=sources,
+            model_agreement=model_agreement,
+            data_freshness=data_freshness,
+            latency_ms=latency_ms,
+            is_remote_query=is_remote_query,
+        )

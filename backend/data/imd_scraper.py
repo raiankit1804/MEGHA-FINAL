@@ -204,26 +204,31 @@ async def fetch_warnings_for_location(
         today_d = daily[0] if daily else {}
         tom_d = daily[1] if len(daily) > 1 else {}
 
-        w_code = curr.get("weather_code", 0)
+        w_code = curr.get("weather_code") or 0
         cond_text = (
-            curr.get("condition", "")
-            + " " + today_d.get("condition", "")
-            + " " + tom_d.get("condition", "")
-            + " " + " ".join(d.get("condition", "") for d in daily[:4])
+            str(curr.get("condition") or "")
+            + " " + str(today_d.get("condition") or "")
+            + " " + str(tom_d.get("condition") or "")
+            + " " + " ".join(str(d.get("condition") or "") for d in daily[:4])
         ).lower()
 
         has_thunder = (
             w_code in [95, 96, 99]
-            or any(h.get("weather_code") in [95, 96, 99] for h in hourly)
-            or any(d.get("weather_code") in [95, 96, 99] for d in daily[:4])
+            or any((h.get("weather_code") or 0) in [95, 96, 99] for h in hourly)
+            or any((d.get("weather_code") or 0) in [95, 96, 99] for d in daily[:4])
             or "thunder" in cond_text
             or "lightning" in cond_text
             or "storm" in cond_text
         )
 
-        precip_sum = max(today_d.get("precipitation_sum", 0), tom_d.get("precipitation_sum", 0))
-        rain_prob = max(today_d.get("precipitation_probability", 0), tom_d.get("precipitation_probability", 0))
-        wind_speed = curr.get("wind_speed", 0)
+        p_today = float(today_d.get("precipitation_sum") or 0.0)
+        p_tom = float(tom_d.get("precipitation_sum") or 0.0)
+        precip_sum = max(p_today, p_tom)
+
+        prob_today = float(today_d.get("precipitation_probability") or 0.0)
+        prob_tom = float(tom_d.get("precipitation_probability") or 0.0)
+        rain_prob = max(prob_today, prob_tom)
+        wind_speed = float(curr.get("wind_speed") or 0.0)
 
         # 1. Thunderstorm with Lightning Watch (Yellow / Orange)
         if has_thunder or rain_prob >= 40 or "rain" in cond_text or "shower" in cond_text:
