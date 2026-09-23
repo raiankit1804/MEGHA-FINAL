@@ -122,6 +122,7 @@ app.include_router(news_router, prefix="/api")
 async def health():
     from llm.gemini_client import get_verified_model_id
     from db.redis_client import redis_ping
+    from api.auth import get_effective_redirect_uri
     try:
         model_id = get_verified_model_id()
     except Exception:
@@ -133,6 +134,7 @@ async def health():
         "sih_problem_id": settings.sih_problem_id,
         "verified_gemini_model": model_id,
         "google_oauth": settings.google_oauth_available,
+        "oauth_redirect_uri": get_effective_redirect_uri(),
         "bhashini": settings.bhashini_available,
         "redis": redis_ok,
     }

@@ -63,6 +63,23 @@ async def require_user(request: Request) -> dict:
     return user
 
 
+def get_effective_redirect_uri() -> str:
+    """Return verified redirect URI, preventing localhost usage in production/Render."""
+    import os
+    uri = getattr(settings, "google_redirect_uri", "")
+    if uri and "localhost" not in uri:
+        return uri
+    # Auto-resolve production Render URI if running remotely
+    if (
+        settings.environment != "development"
+        or os.getenv("RENDER")
+        or os.getenv("RENDER_SERVICE_ID")
+        or os.getenv("PORT")
+    ):
+        return "https://megha-backend-01bw.onrender.com/api/auth/callback"
+    return uri or "https://megha-backend-01bw.onrender.com/api/auth/callback"
+
+
 @router.get("/auth/google")
 async def google_login():
     """Redirect to Google OAuth consent screen."""
@@ -71,9 +88,10 @@ async def google_login():
             status_code=503,
             detail="Google OAuth not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET in .env",
         )
+    redirect_uri = get_effective_redirect_uri()
     params = {
         "client_id": settings.google_client_id,
-        "redirect_uri": settings.google_redirect_uri,
+        "redirect_uri": redirect_uri,
         "response_type": "code",
         "scope": "openid email profile",
         "access_type": "offline",
@@ -88,13 +106,14 @@ async def google_callback(code: str, response: Response):
     if not settings.google_oauth_available:
         raise HTTPException(status_code=503, detail="Google OAuth not configured")
 
+    redirect_uri = get_effective_redirect_uri()
     async with httpx.AsyncClient(timeout=10) as client:
         # Exchange code for tokens
         token_resp = await client.post(GOOGLE_TOKEN_URL, data={
             "code": code,
             "client_id": settings.google_client_id,
             "client_secret": settings.google_client_secret,
-            "redirect_uri": settings.google_redirect_uri,
+            "redirect_uri": redirect_uri,
             "grant_type": "authorization_code",
         })
         if token_resp.status_code != 200:
