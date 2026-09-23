@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     # Google OAuth (optional — degrades to guest-only mode)
     google_client_id: str = ""
     google_client_secret: str = ""
-    google_redirect_uri: str = "http://localhost:8000/api/auth/callback"
+    google_redirect_uri: str = "https://megha-backend-01bw.onrender.com/api/auth/callback"
 
     # JWT
     jwt_secret: str = "changeme-in-production-please-32chars"
@@ -45,11 +45,11 @@ class Settings(BaseSettings):
     warning_cache_ttl_seconds: int = 900      # 15 minutes
 
     # CORS
-    cors_origins: list[str] = ["http://localhost:5173", "http://localhost:3000"]
+    cors_origins: list[str] = ["http://localhost:5173", "http://localhost:3000", "https://meghasetu.online", "https://www.meghasetu.online"]
 
     # Frontend URL (for OAuth redirect back)
     vite_api_base_url: str = "http://localhost:8000"
-    frontend_url: str = "http://localhost:3000"
+    frontend_url: str = "https://meghasetu.online"
 
     @field_validator("gemini_api_key")
     @classmethod
