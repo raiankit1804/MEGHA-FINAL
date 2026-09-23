@@ -1,0 +1,22 @@
+name: Backend Keep Alive
+
+on:
+  schedule:
+    # Ping every 10 minutes to prevent Render free instance from idling
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Health Check
+        run: |
+          TARGET_URL="${{ secrets.RENDER_BACKEND_URL }}"
+          if [ -z "$TARGET_URL" ]; then
+            echo "⚠️ RENDER_BACKEND_URL secret is not set yet in GitHub Secrets."
+            echo "Add your Render URL (e.g., https://your-backend.onrender.com) to GitHub Repo -> Settings -> Secrets."
+            exit 0
+          fi
+          echo "Pinging: ${TARGET_URL}/health"
+          curl -s -I -m 15 "${TARGET_URL}/health" || true
