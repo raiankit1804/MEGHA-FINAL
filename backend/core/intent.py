@@ -5,6 +5,7 @@ Includes a pre-LLM fast-path geocoder for common Indian cities (zero latency)
 and robust domain heuristic fallback.
 """
 
+import asyncio
 import json
 import logging
 import re
@@ -259,14 +260,17 @@ async def extract_intent(
 
     intent = {}
     try:
-        response = client.models.generate_content(
-            model=model_id,
-            contents=query,
-            config=types.GenerateContentConfig(
-                system_instruction=INTENT_EXTRACTION_PROMPT,
-                tools=[intent_tool],
-                temperature=0.1,
+        response = await asyncio.wait_for(
+            client.aio.models.generate_content(
+                model=model_id,
+                contents=query,
+                config=types.GenerateContentConfig(
+                    system_instruction=INTENT_EXTRACTION_PROMPT,
+                    tools=[intent_tool],
+                    temperature=0.1,
+                ),
             ),
+            timeout=4.0,
         )
         if response.candidates and response.candidates[0].content:
             for part in response.candidates[0].content.parts:

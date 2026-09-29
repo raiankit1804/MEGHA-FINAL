@@ -177,5 +177,5 @@ async def get_me(user: dict = Depends(require_user)):
         "color_scheme": user.get("color_scheme", "dark"),
         "interface_style": user.get("interface_style", "modern"),
         "default_language": user.get("default_language", "en"),
-        "history_opt_in": user.get("history_opt_in", False),
+        "history_opt_in": user.get("history_opt_in", True),
     }

@@ -83,7 +83,7 @@ class UserProfile(BaseModel):
     color_scheme: str = "dark"
     interface_style: str = "modern"
     default_language: str = "en"
-    history_opt_in: bool = False
+    history_opt_in: bool = True
     created_at: datetime = Field(default_factory=datetime.utcnow)
     last_seen_at: datetime = Field(default_factory=datetime.utcnow)
 

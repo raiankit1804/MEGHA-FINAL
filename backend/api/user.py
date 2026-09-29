@@ -26,7 +26,7 @@ async def get_user(request: Request):
         "color_scheme": user.get("color_scheme", "dark"),
         "interface_style": user.get("interface_style", "modern"),
         "default_language": user.get("default_language", "en"),
-        "history_opt_in": user.get("history_opt_in", False),
+        "history_opt_in": user.get("history_opt_in", True),
     }
 
 
@@ -39,10 +39,8 @@ async def patch_user(body: ProfilePatch, request: Request):
 
 @router.get("/user/suggestions")
 async def get_suggestions(request: Request):
-    """Return personalization suggestions — only if history_opt_in is True."""
+    """Return personalization suggestions for logged-in user."""
     user = await require_user(request)
-    if not user.get("history_opt_in"):
-        return {"suggestions": [], "message": "Enable chat history to receive personalized suggestions."}
     summary = await get_personalization_summary(str(user["_id"]))
     suggestions = []
     if summary.get("top_location"):

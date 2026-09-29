@@ -24,19 +24,28 @@ export interface SplashScreenProps {
 }
 
 export default function SplashScreen({ onDone, mode = 'load', targetDomain = 'normal' }: SplashScreenProps) {
-  const duration = mode === 'load' ? 1500 : 700;
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const duration = mode === 'load' ? 1200 : 600;
+  const onDoneRef = useRef(onDone);
+  useEffect(() => {
+    onDoneRef.current = onDone;
+  }, [onDone]);
+
   const domainInfo = DOMAIN_DETAILS[targetDomain] || DOMAIN_DETAILS.normal;
 
   useEffect(() => {
-    timerRef.current = setTimeout(onDone, duration);
-    return () => {
-      if (timerRef.current) clearTimeout(timerRef.current);
-    };
-  }, [duration, onDone]);
+    const t = setTimeout(() => {
+      onDoneRef.current();
+    }, duration);
+    return () => clearTimeout(t);
+  }, [duration]);
 
   return (
-    <div className={styles.splashOverlay} aria-label="MEGHA SETU Loading" role="status">
+    <div
+      className={styles.splashOverlay}
+      aria-label="MEGHA SETU Loading"
+      role="status"
+      onClick={() => onDoneRef.current()}
+    >
       {/* Ambient Atmospheric Glow (Theme-adaptive) */}
       <div className={styles.glowBackdrop} aria-hidden="true" />
 

@@ -16,7 +16,7 @@ import { generateAdvisoryPdf } from '../utils/pdfExport';
 import styles from './ChatWindow.module.css';
 import { ChatMessage, DomainModeId, SessionLocation, UserProfile } from '../types/chat';
 import { useTheme } from '../theme/ThemeProvider';
-import FuturisticOrb from './FuturisticOrb';
+import { ThinkingOrb } from 'thinking-orbs';
 
 marked.setOptions({ breaks: true, gfm: true });
 
@@ -118,6 +118,7 @@ interface MessageGroupProps {
 }
 
 function MessageGroup({ msg, language, onSend, onOpenSatellite, showCard }: MessageGroupProps) {
+  const { colorScheme } = useTheme();
   const [speaking, setSpeaking] = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -296,16 +297,18 @@ function MessageGroup({ msg, language, onSend, onOpenSatellite, showCard }: Mess
     .trim();
   const parsedHtml = (marked.parse(sanitizedText) as string) || '';
 
+  const hasCard = Boolean(showCard && msg.weather_data);
+
   return (
-    <div className={`${styles.row} ${styles.rowAssistant}`}>
+    <div className={`${styles.row} ${styles.rowAssistant} ${hasCard ? styles.rowAssistantWithCard : ''}`}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', width: '100%', minWidth: 0, maxWidth: '100%' }}>
-        <div className={styles.avatar} aria-hidden="true">
+        <div className={`${styles.avatar} ${hasCard ? styles.avatarWithCard : ''}`} aria-hidden="true">
           <img src="/megha_setu_phone.png" alt="Megha App" className={styles.avatarImg} />
         </div>
         <div style={{ flex: 1, minWidth: 0, maxWidth: '100%', overflow: 'hidden' }}>
           {/* Establishing turn: full interactive weather card (rendered only for first question of location) */}
-          {showCard && msg.weather_data && (
-            <div style={{ marginBottom: '0.75rem', width: '100%', maxWidth: '100%', minWidth: 0 }}>
+          {hasCard && (
+            <div className={styles.weatherCardWrapper}>
               <WeatherCard
                 weather={msg.weather_data}
                 warnings={msg.warnings}
@@ -357,26 +360,51 @@ function MessageGroup({ msg, language, onSend, onOpenSatellite, showCard }: Mess
                   </span>
                 </button>
 
-                {/* Voice playback button */}
-                <button
-                  type="button"
-                  className={`${styles.listenBtn} ${speaking ? styles.listenBtnPlaying : ''}`}
-                  onClick={() => handleListen(text, language)}
-                  aria-label={speaking ? 'Stop listening' : 'Listen to response'}
-                  title={speaking ? 'Stop listening' : 'Listen to response'}
-                >
-                  {speaking ? (
-                    <>
+                {/* Bigger & Cooler Audio Visualizer Playback */}
+                {speaking ? (
+                  <div className={styles.activeAudioCapsule}>
+                    <div className={styles.orbGlowWrapper}>
+                      <div className={styles.audioRippleRing} />
+                      <div className={styles.audioRippleRingDelayed} />
+                      <ThinkingOrb state="weaving" size={32} theme={colorScheme === 'dark' ? 'dark' : 'light'} />
+                    </div>
+                    <div className={styles.audioInfoGroup}>
+                      <div className={styles.audioLiveBadge}>
+                        <span className={styles.liveDot} />
+                        <span>Speaking</span>
+                      </div>
+                      <div className={styles.equalizerWave}>
+                        <span className={styles.eqBar} style={{ animationDelay: '0.0s' }} />
+                        <span className={styles.eqBar} style={{ animationDelay: '0.2s' }} />
+                        <span className={styles.eqBar} style={{ animationDelay: '0.35s' }} />
+                        <span className={styles.eqBar} style={{ animationDelay: '0.15s' }} />
+                        <span className={styles.eqBar} style={{ animationDelay: '0.4s' }} />
+                        <span className={styles.eqBar} style={{ animationDelay: '0.25s' }} />
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      className={styles.audioStopBtn}
+                      onClick={() => handleListen(text, language)}
+                      aria-label="Stop audio"
+                      title="Stop audio"
+                    >
                       <span>⏹</span>
                       <span>Stop</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>🔊</span>
-                      <span>Listen</span>
-                    </>
-                  )}
-                </button>
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className={styles.listenBtn}
+                    onClick={() => handleListen(text, language)}
+                    aria-label={getCardTranslation(language, 'listen', 'Listen to response')}
+                    title={getCardTranslation(language, 'listen', 'Listen to response')}
+                  >
+                    <span>🔊</span>
+                    <span>{getCardTranslation(language, 'listen', 'Listen')}</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
@@ -448,29 +476,28 @@ function FollowupChips({ native, english, language, onChipClick }: FollowupChips
 }
 
 function LoadingBubble() {
+  const { colorScheme } = useTheme();
+  const theme = colorScheme === 'dark' ? 'dark' : 'light';
+
   return (
     <div className={`${styles.row} ${styles.rowAssistant}`}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        <div className={styles.avatar} aria-hidden="true">
-          <img src="/megha_setu_phone.png" alt="Megha App" className={styles.avatarImg} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+        <div className={styles.avatar} aria-hidden="true" style={{ background: 'transparent' }}>
+          <ThinkingOrb state="searching" size={32} theme={theme} />
         </div>
         <div
           className={`${styles.bubble} ${styles.bubbleAssistant}`}
-          style={{ padding: '0.75rem 1rem', display: 'flex', gap: 6 }}
+          style={{
+            padding: '0.65rem 1rem',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.6rem',
+            fontSize: '0.88rem',
+            color: 'var(--text-secondary)',
+          }}
         >
-          {[0, 1, 2].map((i) => (
-            <span
-              key={i}
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                background: 'var(--accent-primary)',
-                display: 'inline-block',
-                animation: `dotBounce 1.2s ease-in-out ${i * 0.2}s infinite`,
-              }}
-            />
-          ))}
+          <ThinkingOrb state="working" size={20} theme={theme} />
+          <span>Analyzing meteorology models & forecasts...</span>
         </div>
       </div>
     </div>
@@ -489,80 +516,34 @@ interface EmptyStateProps {
 }
 
 function EmptyState({ onSend, location, domainFilter, language, heroInput, onNewChat, user, isListening = false }: EmptyStateProps) {
-  const { interfaceStyle } = useTheme();
+  const { colorScheme } = useTheme();
   const locName = location?.name && location.name !== 'Select location' ? location.name : null;
 
-  // ─── STRICT MODERN MODE: Futuristic Interactive UI matching screenshot ───
-  if (interfaceStyle === 'modern') {
-    const modernT = getModernLandingStrings(language);
-
-    return (
-      <div className={styles.futuristicContainer}>
-        {/* 1. Interactive Green 3D Fluid Object (Floating Orb) */}
-        <FuturisticOrb isListening={isListening} height="clamp(165px, 21vh, 210px)" />
-
-        {/* 2. Futuristic Greeting */}
-        <div className={styles.futuristicGreeting}>
-          <div className={styles.greetingHelp}>{modernT.greeting}</div>
-        </div>
-
-        {/* 3. Three Recommendation Cards with colored pill badges */}
-        <div className={styles.futuristicCardsRow}>
-          <button
-            type="button"
-            className={styles.futuristicCard}
-            onClick={() => onSend?.(locName ? `${modernT.card1Query} (${locName})` : modernT.card1Query)}
-            title={modernT.card1Subtitle}
-          >
-            <span className={styles.cardBadgeCyan}>{modernT.card1Badge}</span>
-            <span className={styles.futuristicCardSubtitle}>{modernT.card1Subtitle}</span>
-          </button>
-
-          <button
-            type="button"
-            className={styles.futuristicCard}
-            onClick={() => onSend?.(locName ? `${modernT.card2Query} (${locName})` : modernT.card2Query)}
-            title={modernT.card2Subtitle}
-          >
-            <span className={styles.cardBadgeSalmon}>{modernT.card2Badge}</span>
-            <span className={styles.futuristicCardSubtitle}>{modernT.card2Subtitle}</span>
-          </button>
-
-          <button
-            type="button"
-            className={styles.futuristicCard}
-            onClick={() => onSend?.(locName ? `${modernT.card3Query} (${locName})` : modernT.card3Query)}
-            title={modernT.card3Subtitle}
-          >
-            <span className={styles.cardBadgeMint}>{modernT.card3Badge}</span>
-            <span className={styles.futuristicCardSubtitle}>{modernT.card3Subtitle}</span>
-          </button>
-        </div>
-
-        {/* 4. Futuristic Sleek Chat Input */}
-        {heroInput && (
-          <div className={styles.futuristicInputWrapper}>
-            {heroInput}
-          </div>
-        )}
-      </div>
-    );
-  }
-
-  // ─── CLASSICAL MINIMAL LANDING (when interfaceStyle !== 'modern') ─────────
   const rawPrompts = getTranslation(language, 'quickPrompts') || [
     "What's the rain forecast and temperature today?",
     "3-day weather outlook and storm probability",
     "What is the current Air Quality Index (AQI) and PM2.5?",
   ];
   const localizedQuestions: string[] = rawPrompts.slice(0, 3);
-
   const greeting = getTranslation(language, 'heroGreeting', 'Where should we start?');
 
   return (
     <div className={styles.geminiLanding}>
       {/* Atmospheric Gemini Glow Backdrop */}
       <div className={styles.geminiHeroGlow} aria-hidden="true" />
+
+      {/* ThinkingOrb Hero Animation */}
+      <div className={styles.heroOrbWrapper}>
+        <div className={styles.heroOrbScaler}>
+          <ThinkingOrb
+            state={isListening ? 'listening' : 'breathing'}
+            size={64}
+            dots={1.12}
+            dotSize={1.1}
+            theme={colorScheme === 'dark' ? 'dark' : 'light'}
+          />
+        </div>
+      </div>
 
       <h1 className={styles.geminiTitle}>
         {greeting}

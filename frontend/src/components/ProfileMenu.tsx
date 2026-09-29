@@ -15,8 +15,7 @@ export interface ProfileMenuProps {
 }
 
 export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat }: ProfileMenuProps) {
-  const { interfaceStyle, setInterfaceStyle, colorScheme, setColorScheme } = useTheme();
-  const [historyOptIn, setHistoryOptIn] = useState(user?.history_opt_in ?? false);
+  const { colorScheme, setColorScheme } = useTheme();
   const [clearing, setClearing] = useState(false);
 
   const handleLogin = () => {
@@ -33,18 +32,6 @@ export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat
     window.location.reload();
   };
 
-  const handleHistoryToggle = async () => {
-    const next = !historyOptIn;
-    setHistoryOptIn(next);
-    if (user) {
-      try {
-        await api.patch('/api/user', { history_opt_in: next });
-      } catch {
-        /* non-critical */
-      }
-    }
-  };
-
   const handleClearHistory = async () => {
     if (!confirm('Delete all your chat history? This cannot be undone.')) return;
     setClearing(true);
@@ -54,13 +41,6 @@ export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat
       /* non-critical */
     }
     setClearing(false);
-  };
-
-  const updateInterfaceStyle = (style: string) => {
-    setInterfaceStyle(style);
-    if (user) api.patch('/api/user', { interface_style: style }).catch(() => {});
-    onNewChat?.();
-    onClose();
   };
 
   const updateColorScheme = (scheme: string) => {
@@ -99,20 +79,20 @@ export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat
 
         <div style={divider} />
 
-        {/* Interface Style */}
+        {/* Theme Mode (Dark / Light) */}
         <div style={section}>
-          <label style={sectionLabel}>Interface Style</label>
+          <label style={sectionLabel}>Theme Mode</label>
           <div style={toggleRow}>
-            {[['modern', '✨ Modern'], ['minimal', '📄 Minimal']].map(([val, lbl]) => (
+            {[['dark', '🌙 Dark'], ['light', '☀️ Light']].map(([val, lbl]) => (
               <button
                 key={val}
                 style={{
                   ...toggleChip,
-                  borderColor: interfaceStyle === val ? 'var(--accent-primary)' : 'var(--border-subtle)',
-                  color: interfaceStyle === val ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                  background: interfaceStyle === val ? 'var(--badge-bg)' : 'var(--bg-glass)',
+                  borderColor: colorScheme === val ? 'var(--accent-primary)' : 'var(--border-subtle)',
+                  color: colorScheme === val ? 'var(--accent-primary)' : 'var(--text-secondary)',
+                  background: colorScheme === val ? 'var(--badge-bg)' : 'var(--bg-glass)',
                 }}
-                onClick={() => updateInterfaceStyle(val)}
+                onClick={() => updateColorScheme(val)}
               >
                 {lbl}
               </button>
@@ -120,46 +100,21 @@ export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat
           </div>
         </div>
 
-        {/* Theme Mode (Dark / Light) — only available in Minimal mode, Modern mode is default dark */}
-        {interfaceStyle !== 'modern' && (
-          <div style={section}>
-            <label style={sectionLabel}>Theme Mode</label>
-            <div style={toggleRow}>
-              {[['dark', '🌙 Dark'], ['light', '☀️ Light']].map(([val, lbl]) => (
-                <button
-                  key={val}
-                  style={{
-                    ...toggleChip,
-                    borderColor: colorScheme === val ? 'var(--accent-primary)' : 'var(--border-subtle)',
-                    color: colorScheme === val ? 'var(--accent-primary)' : 'var(--text-secondary)',
-                    background: colorScheme === val ? 'var(--badge-bg)' : 'var(--bg-glass)',
-                  }}
-                  onClick={() => updateColorScheme(val)}
-                >
-                  {lbl}
-                </button>
-              ))}
+        {/* Chat History for logged in users */}
+        {user && (
+          <>
+            <div style={divider} />
+            <div style={section}>
+              <label style={sectionLabel}>Chat History</label>
+              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.6rem' }}>
+                Conversations are automatically saved to your account.
+              </p>
+              <button onClick={handleClearHistory} disabled={clearing} style={clearBtn}>
+                {clearing ? 'Clearing…' : '🗑️ Clear all history'}
+              </button>
             </div>
-          </div>
+          </>
         )}
-
-        {/* Chat History */}
-        <div style={section}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <label style={sectionLabel}>Chat History (MongoDB)</label>
-            <ToggleSwitch value={historyOptIn} onChange={handleHistoryToggle} id="history-toggle" />
-          </div>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-            {historyOptIn
-              ? 'Your conversations are saved and used for personalized suggestions.'
-              : 'Chat history is off. Queries are processed but not stored.'}
-          </p>
-          {historyOptIn && user && (
-            <button onClick={handleClearHistory} disabled={clearing} style={{ ...clearBtn, marginTop: '0.5rem' }}>
-              {clearing ? 'Clearing…' : '🗑️ Clear all history'}
-            </button>
-          )}
-        </div>
 
         {user && (
           <>
@@ -171,31 +126,6 @@ export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat
         )}
       </div>
     </>
-  );
-}
-
-function ToggleSwitch({ value, onChange, id }: { value: boolean; onChange: () => void; id: string }) {
-  return (
-    <button
-      id={id}
-      type="button"
-      role="switch"
-      aria-checked={value}
-      onClick={onChange}
-      style={{
-        width: 44, height: 24, borderRadius: 12,
-        background: value ? 'var(--accent-primary)' : 'var(--border-card)',
-        border: 'none', cursor: 'pointer', position: 'relative',
-        transition: 'background var(--transition-base)', flexShrink: 0,
-      }}
-    >
-      <span style={{
-        position: 'absolute', top: 3, left: value ? 23 : 3,
-        width: 18, height: 18, borderRadius: '50%', background: '#fff',
-        transition: 'left var(--transition-base)',
-        boxShadow: '0 1px 3px rgba(0,0,0,0.3)',
-      }} />
-    </button>
   );
 }
 

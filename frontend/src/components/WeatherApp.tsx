@@ -86,8 +86,8 @@ const DOMAIN_MODES = [
 ];
 
 export default function WeatherApp() {
-  const { interfaceStyle, setInterfaceStyle } = useTheme();
-  const [showSplash, setShowSplash] = useState(true);
+  const { colorScheme, setColorScheme } = useTheme();
+  const [showSplash, setShowSplash] = useState(false);
   const [switchingMode, setSwitchingMode] = useState<string | null>(null);
   const [showProfile, setShowProfile] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -464,12 +464,13 @@ export default function WeatherApp() {
     setSession((s) => ({ ...s, domainFilter: filter }));
   }, []);
 
-  if (showSplash) {
-    return <SplashScreen onDone={() => setShowSplash(false)} mode="load" />;
-  }
-
   return (
     <div style={appContainer}>
+      {/* Splash overlay if loading */}
+      {showSplash && (
+        <SplashScreen onDone={() => setShowSplash(false)} mode="load" />
+      )}
+
       {/* Mode Switch brief transition animation */}
       {switchingMode && (
         <SplashScreen
@@ -486,7 +487,6 @@ export default function WeatherApp() {
         onOpenSatellite={() => setShowSatellite(true)}
         onOpenWarnings={() => setShowWarnings(true)}
         onOpenLanguage={() => setShowLanguageModal(true)}
-        onOpenSettings={() => setShowProfile(true)}
         onProfileClick={() => setShowProfile((v) => !v)}
         user={user}
         language={session.language}
@@ -527,20 +527,31 @@ export default function WeatherApp() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
-            {/* Quick 1-tap Modern / Minimal Style Switcher */}
+            {/* Mobile SOS Emergency Button */}
+            <button
+              type="button"
+              onClick={() => setShowSos(true)}
+              style={mobileSosBtn}
+              title="Emergency SOS & Helpline Numbers"
+              aria-label="Emergency SOS"
+            >
+              <span style={{ fontSize: '0.92rem', lineHeight: 1 }}>🚨</span>
+              <span style={{ fontWeight: 800, fontSize: '0.72rem', letterSpacing: '0.04em' }}>SOS</span>
+            </button>
+
+            {/* Quick 1-tap Dark / Light Mode Switcher */}
             <button
               type="button"
               onClick={() => {
-                const next = interfaceStyle === 'modern' ? 'minimal' : 'modern';
-                setInterfaceStyle(next);
-                if (user) api.patch('/api/user', { interface_style: next }).catch(() => {});
-                handleNewChat();
+                const next = colorScheme === 'dark' ? 'light' : 'dark';
+                setColorScheme(next);
+                if (user) api.patch('/api/user', { color_scheme: next }).catch(() => {});
               }}
               style={mobileHeaderActionBtn}
-              title={interfaceStyle === 'modern' ? 'Active: Modern View (Tap for Minimal)' : 'Active: Minimal View (Tap for Modern)'}
-              aria-label="Toggle Modern / Minimal View"
+              title={colorScheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              aria-label="Toggle Dark / Light Mode"
             >
-              <span style={{ fontSize: '0.95rem' }}>{interfaceStyle === 'modern' ? '✨' : '📄'}</span>
+              <span style={{ fontSize: '0.95rem' }}>{colorScheme === 'dark' ? '☀️' : '🌙'}</span>
             </button>
             <button
               type="button"
@@ -635,7 +646,7 @@ export default function WeatherApp() {
         <div
           style={{
             ...scrollArea,
-            overflowY: messages.length === 0 ? 'hidden' : 'auto',
+            overflowY: 'auto',
           }}
         >
           <ChatWindow
@@ -653,6 +664,7 @@ export default function WeatherApp() {
                 domainFilter={session.domainFilter}
                 onDomainChange={handleDomainFilter}
                 onOpenSatellite={() => setShowSatellite(true)}
+                onOpenSos={() => setShowSos(true)}
                 isHero={true}
                 onListeningChange={setIsListening}
               />
@@ -684,14 +696,17 @@ export default function WeatherApp() {
               domainFilter={session.domainFilter}
               onDomainChange={handleDomainFilter}
               onOpenSatellite={() => setShowSatellite(true)}
+              onOpenSos={() => setShowSos(true)}
               isHero={false}
+              onListeningChange={setIsListening}
             />
           </div>
         )}
 
-        {/* Floating Circular Emergency SOS Button (Bottom Right) */}
+        {/* Floating Circular Emergency SOS Button (Bottom Right - Hidden on Phone View) */}
         <button
           type="button"
+          className="floatingSosBtn"
           onClick={() => setShowSos(true)}
           style={floatingSosBtn}
           title="Emergency SOS & Helpline Numbers"
@@ -879,6 +894,22 @@ const mobileHeaderAvatarBtn: React.CSSProperties = {
   cursor: 'pointer',
   overflow: 'hidden',
   padding: 0,
+  flexShrink: 0,
+};
+
+const mobileSosBtn: React.CSSProperties = {
+  background: 'linear-gradient(135deg, #ef4444, #dc2626)',
+  color: '#fff',
+  border: '1.5px solid rgba(255, 255, 255, 0.3)',
+  borderRadius: '18px',
+  height: 34,
+  padding: '0 0.55rem',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.22rem',
+  cursor: 'pointer',
+  boxShadow: '0 2px 10px rgba(239, 68, 68, 0.45)',
+  lineHeight: 1,
   flexShrink: 0,
 };
 

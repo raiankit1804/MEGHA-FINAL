@@ -29,7 +29,7 @@ export default function TopBar({
   onOpenSatellite,
   hasWarnings = false,
 }: TopBarProps) {
-  const { interfaceStyle, colorScheme, setColorScheme } = useTheme();
+  const { colorScheme, setColorScheme } = useTheme();
   const [showLocPicker, setShowLocPicker] = useState(false);
 
   const locationName = session?.sessionLocation?.name || 'Bengaluru, Karnataka';
@@ -151,25 +151,23 @@ export default function TopBar({
         {/* 22 Indian Languages selector */}
         <LanguageToggle value={language} onChange={onLanguageChange} />
 
-        {/* Dark / Light Mode Toggle (Available in Minimal mode, hidden in Modern mode) */}
-        {interfaceStyle !== 'modern' && (
-          <button
-            type="button"
-            onClick={() => {
-              const next = colorScheme === 'dark' ? 'light' : 'dark';
-              setColorScheme(next);
-              if (user) api.patch('/api/user', { color_scheme: next }).catch(() => {});
-            }}
-            style={actionPillBtn}
-            title={colorScheme === 'dark' ? 'Switch to Light mode' : 'Switch to Dark mode'}
-            aria-label="Toggle theme mode"
-          >
-            <span style={{ fontSize: '0.95rem' }}>{colorScheme === 'dark' ? '☀️' : '🌙'}</span>
-            <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
-              {colorScheme === 'dark' ? 'Light' : 'Dark'}
-            </span>
-          </button>
-        )}
+        {/* Dark / Light Mode Toggle */}
+        <button
+          type="button"
+          onClick={() => {
+            const next = colorScheme === 'dark' ? 'light' : 'dark';
+            setColorScheme(next);
+            if (user) api.patch('/api/user', { color_scheme: next }).catch(() => {});
+          }}
+          style={actionPillBtn}
+          title={colorScheme === 'dark' ? 'Switch to Light mode' : 'Switch to Dark mode'}
+          aria-label="Toggle theme mode"
+        >
+          <span style={{ fontSize: '0.95rem' }}>{colorScheme === 'dark' ? '☀️' : '🌙'}</span>
+          <span style={{ fontSize: '0.8rem', fontWeight: 500, color: 'var(--text-secondary)' }}>
+            {colorScheme === 'dark' ? 'Light' : 'Dark'}
+          </span>
+        </button>
 
         {/* Far-Right Profile Menu Button */}
         <ProfileButton user={user} onClick={onProfileClick} />

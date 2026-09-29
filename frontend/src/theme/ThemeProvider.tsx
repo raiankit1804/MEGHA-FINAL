@@ -2,8 +2,6 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-import ModernFlashScreen from '../components/ModernFlashScreen';
-
 export interface ThemeContextType {
   interfaceStyle: string;
   setInterfaceStyle: (style: string) => void;
@@ -16,53 +14,53 @@ export interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [interfaceStyle, setInterfaceStyleState] = useState<string>('modern');
+  // Only minimal view is supported, with dark and light modes
+  const interfaceStyle = 'minimal';
   const [colorScheme, setColorSchemeState] = useState<string>('dark');
-  const [showModernFlash, setShowModernFlash] = useState<boolean>(false);
   const [mounted, setMounted] = useState<boolean>(false);
 
   useEffect(() => {
-    const savedInterface = localStorage.getItem('wgpt_interface') || 'modern';
-    const savedColor = savedInterface === 'modern' ? 'dark' : (localStorage.getItem('wgpt_color') || 'dark');
-    setInterfaceStyleState(savedInterface);
+    const savedColor = localStorage.getItem('wgpt_color') || 'dark';
     setColorSchemeState(savedColor);
     setMounted(true);
   }, []);
 
-  const triggerModernFlash = () => {
-    setShowModernFlash(true);
+  const setInterfaceStyle = (_style: string) => {
+    // Only minimal view is active
   };
 
-  const setInterfaceStyle = (style: string) => {
-    setInterfaceStyleState(style);
-    if (style === 'modern') {
-      setColorSchemeState('dark');
-    }
+  const triggerModernFlash = () => {
+    // No-op since modern view is removed
   };
 
   const setColorScheme = (scheme: string) => {
-    // In modern mode, light mode is disabled and dark mode is forced
-    if (interfaceStyle === 'modern') {
-      setColorSchemeState('dark');
-      return;
-    }
-    setColorSchemeState(scheme);
+    const valid = scheme === 'light' ? 'light' : 'dark';
+    setColorSchemeState(valid);
   };
 
-  // Modern mode is strictly dark mode
-  const effectiveColorScheme = interfaceStyle === 'modern' ? 'dark' : colorScheme;
-  const themeKey = `${interfaceStyle}-${effectiveColorScheme}`;
+  const themeKey = `minimal-${colorScheme}`;
 
   useEffect(() => {
     if (!mounted) return;
     document.documentElement.setAttribute('data-theme', themeKey);
-    localStorage.setItem('wgpt_interface', interfaceStyle);
-    localStorage.setItem('wgpt_color', effectiveColorScheme);
-  }, [themeKey, interfaceStyle, effectiveColorScheme, mounted]);
+    document.documentElement.setAttribute('data-color-mode', colorScheme);
+    document.documentElement.classList.remove('dark', 'light');
+    document.documentElement.classList.add(colorScheme);
+    localStorage.setItem('wgpt_color', colorScheme);
+    localStorage.setItem('wgpt_interface', 'minimal');
+  }, [themeKey, colorScheme, mounted]);
 
   return (
-    <ThemeContext.Provider value={{ interfaceStyle, setInterfaceStyle, colorScheme: effectiveColorScheme, setColorScheme, themeKey, triggerModernFlash }}>
-      {showModernFlash && <ModernFlashScreen onDone={() => setShowModernFlash(false)} />}
+    <ThemeContext.Provider
+      value={{
+        interfaceStyle,
+        setInterfaceStyle,
+        colorScheme,
+        setColorScheme,
+        themeKey,
+        triggerModernFlash,
+      }}
+    >
       {children}
     </ThemeContext.Provider>
   );
@@ -73,3 +71,4 @@ export const useTheme = (): ThemeContextType => {
   if (!ctx) throw new Error('useTheme must be used inside ThemeProvider');
   return ctx;
 };
+

@@ -28,8 +28,8 @@ HEADERS = {
 CURRENT_VARS = [
     "temperature_2m", "apparent_temperature", "relative_humidity_2m",
     "wind_speed_10m", "wind_direction_10m", "precipitation",
-    "surface_pressure", "weather_code", "cloud_cover",
-    "uv_index", "visibility",
+    "surface_pressure", "pressure_msl", "weather_code", "cloud_cover",
+    "uv_index", "visibility", "is_day",
 ]
 
 DAILY_VARS = [
@@ -40,7 +40,7 @@ DAILY_VARS = [
 
 HOURLY_VARS = [
     "temperature_2m", "precipitation", "precipitation_probability",
-    "wind_speed_10m", "weather_code",
+    "wind_speed_10m", "weather_code", "is_day",
 ]
 
 AQI_VARS = ["pm2_5", "pm10", "ozone", "nitrogen_dioxide", "us_aqi"]
@@ -387,10 +387,10 @@ async def _fetch_air_quality(lat: float, lon: float) -> Optional[dict]:
 
 async def fetch_tier1(lat: float, lon: float, location_info: dict) -> dict:
     """
-    Tier 1: Open-Meteo default model (IMD-aligned for India).
+    Tier 1: Open-Meteo GFS seamless forecast (India-optimized, high resolution, IMD-aligned).
     Raises RateLimitError or httpx.HTTPError on failure — let caller chain to Tier 2/3.
     """
-    raw = await _fetch_forecast(lat, lon, model=None)
+    raw = await _fetch_forecast(lat, lon, model="gfs_seamless")
     aqi_raw = await _fetch_air_quality(lat, lon)
     raw["location_info"] = location_info
     if aqi_raw:
@@ -400,11 +400,11 @@ async def fetch_tier1(lat: float, lon: float, location_info: dict) -> dict:
 
 async def fetch_tier2_nwp(lat: float, lon: float, location_info: dict) -> Optional[dict]:
     """
-    Tier 2: GFS NWP model guidance (secondary source, clearly labeled).
+    Tier 2: ICON seamless NWP model guidance (secondary independent source).
     Returns None on any failure — this is non-critical.
     """
     try:
-        raw = await _fetch_forecast(lat, lon, model="gfs_global")
+        raw = await _fetch_forecast(lat, lon, model="icon_seamless")
         raw["location_info"] = location_info
         return raw
     except Exception as exc:

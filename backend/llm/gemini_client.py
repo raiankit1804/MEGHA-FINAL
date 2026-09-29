@@ -4,6 +4,7 @@ MANDATORY FIRST ACTION: On startup, verify a real model ID via list_models().
 No hardcoded unverified model IDs — the confirmed ID is stored and used by all calls.
 """
 
+import asyncio
 import logging
 from typing import Optional, Any
 from google import genai
@@ -14,11 +15,12 @@ from config import settings
 logger = logging.getLogger(__name__)
 
 # ─── Model Preference Order ──────────────────────────────────────────────────
-# ─── Model Preference Order ──────────────────────────────────────────────────
 CANDIDATE_MODELS = [
-    "gemini-3.5-flash-lite",
-    "gemini-flash-latest",
+    "gemini-3.1-flash-lite",
+    "gemini-3.8-flash",
     "gemini-3.5-flash",
+    "gemini-flash-latest",
+    "gemini-flash-lite-latest",
     "gemini-3.6-flash",
     "gemini-3.7-flash",
 ]
@@ -37,7 +39,7 @@ def get_client() -> genai.Client:
 def get_verified_model_id() -> str:
     global _verified_model_id
     if not _verified_model_id:
-        return "gemini-3.5-flash"
+        return "gemini-3.1-flash-lite"
     return _verified_model_id
 
 
@@ -76,7 +78,7 @@ async def verify_and_select_model() -> str:
 
     except Exception as exc:
         logger.error("Gemini model verification failed: %s", exc)
-        _verified_model_id = "gemini-3.5-flash"
+        _verified_model_id = "gemini-3.1-flash-lite"
         return _verified_model_id
 
 
@@ -113,7 +115,7 @@ class ModelWrapper:
                 )
             except Exception as exc:
                 err_str = str(exc)
-                if "429" in err_str or "503" in err_str or "NOT_FOUND" in err_str or "RESOURCE_EXHAUSTED" in err_str:
+                if any(k in err_str for k in ["429", "503", "NOT_FOUND", "RESOURCE_EXHAUSTED", "UNAVAILABLE"]):
                     logger.warning("Model %s failed with %s, falling back...", model_id, exc)
                     last_err = exc
                     continue
@@ -141,15 +143,18 @@ class ModelWrapper:
         last_err = None
         for model_id in models_to_try:
             try:
-                return await client.aio.models.generate_content(
-                    model=model_id,
-                    contents=contents,
-                    config=config,
+                return await asyncio.wait_for(
+                    client.aio.models.generate_content(
+                        model=model_id,
+                        contents=contents,
+                        config=config,
+                    ),
+                    timeout=kwargs.get("timeout", 15.0),
                 )
-            except Exception as exc:
+            except (asyncio.TimeoutError, Exception) as exc:
                 err_str = str(exc)
-                if "429" in err_str or "503" in err_str or "NOT_FOUND" in err_str or "RESOURCE_EXHAUSTED" in err_str:
-                    logger.warning("Async model %s failed with %s, falling back...", model_id, exc)
+                if isinstance(exc, asyncio.TimeoutError) or any(k in err_str for k in ["429", "503", "NOT_FOUND", "RESOURCE_EXHAUSTED", "UNAVAILABLE"]):
+                    logger.warning("Async model %s failed or timed out (%s), falling back...", model_id, exc)
                     last_err = exc
                     continue
                 raise exc

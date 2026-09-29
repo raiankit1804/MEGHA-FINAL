@@ -61,12 +61,53 @@ WMO_CODES: dict[int, tuple[str, str]] = {
 }
 
 
-def wmo_description(code: int) -> str:
+def wmo_description(code: int, is_day: Optional[int] = 1) -> str:
+    if is_day == 0:
+        if code == 0: return "Clear night"
+        if code == 1: return "Mainly clear"
+        if code == 2: return "Partly cloudy"
     return WMO_CODES.get(code, ("Unknown", "🌡️"))[0]
 
 
-def wmo_emoji(code: int) -> str:
+def wmo_emoji(code: int, is_day: Optional[int] = 1) -> str:
+    if is_day == 0:
+        if code in (0, 1): return "🌙"
+        if code == 2: return "☁️"
     return WMO_CODES.get(code, ("Unknown", "🌡️"))[1]
+
+
+def resolve_weather_condition(
+    code: int,
+    cloud_cover: int = 0,
+    precipitation: float = 0.0,
+    is_day: int = 1,
+) -> tuple[int, str, str]:
+    """
+    Cross-validates WMO weather code against real physical sensors (cloud cover, precipitation, day/night).
+    Prevents reporting 'Clear sky' when it is actually overcast (e.g. 80-100% clouds) or raining.
+    Returns (adjusted_code, condition_text, emoji).
+    """
+    adjusted_code = code
+
+    # Precipitation overrides clear / mainly clear / partly cloudy
+    if precipitation >= 2.5:
+        adjusted_code = 65  # Heavy rain
+    elif precipitation >= 0.8:
+        adjusted_code = 63  # Moderate rain
+    elif precipitation >= 0.2:
+        adjusted_code = 61  # Slight rain
+    elif precipitation > 0.0:
+        adjusted_code = 51  # Light drizzle
+    elif adjusted_code in (0, 1) and cloud_cover >= 80:
+        adjusted_code = 3   # Overcast
+    elif adjusted_code == 0 and cloud_cover >= 50:
+        adjusted_code = 2   # Partly cloudy
+    elif adjusted_code == 0 and cloud_cover >= 20:
+        adjusted_code = 1   # Mainly clear
+
+    desc = wmo_description(adjusted_code, is_day)
+    emoji = wmo_emoji(adjusted_code, is_day)
+    return adjusted_code, desc, emoji
 
 
 # ─── AQI Categorization ──────────────────────────────────────────────────────
@@ -246,14 +287,14 @@ def generate_tomorrow_summary(daily_forecast: list[dict]) -> str:
         precip = tom.get("precipitation_sum", 0)
 
         phrase = f"{cond}"
-        if rain_prob > 60:
+        if rain_prob > 60 or precip >= 4.0:
             if precip > 4.0:
                 phrase += " with thundery showers in the afternoon"
             elif precip > 0.5:
                 phrase += " with a steady shower"
             else:
                 phrase += " with scattered drizzle"
-        elif rain_prob > 30:
+        elif rain_prob > 30 or precip > 0.5:
             phrase += " with a passing shower"
         else:
             phrase += " with pleasant, mostly dry conditions"
@@ -284,22 +325,46 @@ def normalize_open_meteo(
     lat = safe_float(loc.get("latitude", 0))
     lon = safe_float(loc.get("longitude", 0))
 
-    # Current weather
+    # Current weather with physical sensor validation & day/night awareness
+    raw_code = safe_int(current.get("weather_code"))
+    cloud_cover = safe_int(current.get("cloud_cover"))
+    precipitation = safe_float(current.get("precipitation"))
+    is_day = safe_int(current.get("is_day", 1))
+
+    resolved_code, resolved_condition, resolved_emoji = resolve_weather_condition(
+        code=raw_code,
+        cloud_cover=cloud_cover,
+        precipitation=precipitation,
+        is_day=is_day,
+    )
+
+    surface_press = safe_float(current.get("surface_pressure"))
+    msl_press = safe_float(current.get("pressure_msl"))
+    if msl_press <= 0.0:
+        if surface_press > 0.0:
+            # If surface pressure is low due to high elevation (e.g. Bengaluru ~920m is ~912 hPa),
+            # adjust to standard sea level pressure (~1013 hPa)
+            msl_press = surface_press + (100.0 if surface_press < 960.0 else 0.0)
+        else:
+            msl_press = 1013.25
+
     current_weather = {
         "temperature": safe_float(current.get("temperature_2m")),
         "feels_like": safe_float(current.get("apparent_temperature")),
         "humidity": safe_int(current.get("relative_humidity_2m")),
         "wind_speed": safe_float(current.get("wind_speed_10m")),
         "wind_direction": safe_int(current.get("wind_direction_10m")),
-        "precipitation": safe_float(current.get("precipitation")),
-        "surface_pressure": safe_float(current.get("surface_pressure")),
-        "weather_code": safe_int(current.get("weather_code")),
-        "condition": wmo_description(safe_int(current.get("weather_code"))),
-        "emoji": wmo_emoji(safe_int(current.get("weather_code"))),
+        "precipitation": precipitation,
+        "surface_pressure": surface_press,
+        "pressure_msl": msl_press,
+        "weather_code": resolved_code,
+        "condition": resolved_condition,
+        "emoji": resolved_emoji,
         "uv_index": safe_float(current.get("uv_index")),
         "uv_category": categorize_uv(safe_float(current.get("uv_index"))),
-        "cloud_cover": safe_int(current.get("cloud_cover")),
+        "cloud_cover": cloud_cover,
         "visibility": safe_float(current.get("visibility", 10000)) / 1000,  # convert m → km
+        "is_day": is_day,
     }
 
     # AQI (from air quality sub-call if present)
@@ -318,17 +383,26 @@ def normalize_open_meteo(
     daily_forecast = []
     dates = daily.get("time", [])
     for i, date in enumerate(dates[:7]):
+        d_code = safe_int(daily.get("weather_code", [0] * 10)[i])
+        d_precip = safe_float(daily.get("precipitation_sum", [0] * 10)[i])
+        if d_precip >= 5.0 and d_code < 50:
+            d_code = 65
+        elif d_precip >= 1.0 and d_code < 50:
+            d_code = 61
+        elif d_precip > 0.0 and d_code < 50:
+            d_code = 51
+
         daily_forecast.append({
             "date": date,
             "temp_max": safe_float(daily.get("temperature_2m_max", [None] * 10)[i]),
             "temp_min": safe_float(daily.get("temperature_2m_min", [None] * 10)[i]),
-            "precipitation_sum": safe_float(daily.get("precipitation_sum", [0] * 10)[i]),
+            "precipitation_sum": d_precip,
             "precipitation_probability": safe_int(daily.get("precipitation_probability_max", [0] * 10)[i]),
             "wind_speed_max": safe_float(daily.get("wind_speed_10m_max", [0] * 10)[i]),
             "wind_gusts": safe_float(daily.get("wind_gusts_10m_max", [0] * 10)[i]),
-            "weather_code": safe_int(daily.get("weather_code", [0] * 10)[i]),
-            "condition": wmo_description(safe_int(daily.get("weather_code", [0] * 10)[i])),
-            "emoji": wmo_emoji(safe_int(daily.get("weather_code", [0] * 10)[i])),
+            "weather_code": d_code,
+            "condition": wmo_description(d_code, 1),
+            "emoji": wmo_emoji(d_code, 1),
             "sunrise": daily.get("sunrise", [None] * 10)[i],
             "sunset": daily.get("sunset", [None] * 10)[i],
             "uv_index_max": safe_float(daily.get("uv_index_max", [0] * 10)[i]),
@@ -336,19 +410,31 @@ def normalize_open_meteo(
 
     # Hourly forecast (next 24 hours)
     hourly_times = hourly.get("time", [])[:24]
+    hourly_is_days = hourly.get("is_day", [1] * 25)
     hourly_forecast = []
     for i, t in enumerate(hourly_times):
         w_code = safe_int(hourly.get("weather_code", [0] * 25)[i])
+        h_is_day = safe_int(hourly_is_days[i]) if i < len(hourly_is_days) else 1
+        h_precip = safe_float(hourly.get("precipitation", [0] * 25)[i])
+
+        if h_precip >= 2.0 and w_code < 50:
+            w_code = 63
+        elif h_precip >= 0.2 and w_code < 50:
+            w_code = 61
+        elif h_precip > 0.0 and w_code < 50:
+            w_code = 51
+
         hourly_forecast.append({
             "time": t,
             "formatted_hour": format_hourly_label(t),
             "temperature": safe_float(hourly.get("temperature_2m", [None] * 25)[i]),
-            "precipitation": safe_float(hourly.get("precipitation", [0] * 25)[i]),
+            "precipitation": h_precip,
             "precipitation_probability": safe_int(hourly.get("precipitation_probability", [0] * 25)[i]),
             "wind_speed": safe_float(hourly.get("wind_speed_10m", [0] * 25)[i]),
             "weather_code": w_code,
-            "condition": wmo_description(w_code),
-            "emoji": wmo_emoji(w_code),
+            "is_day": h_is_day,
+            "condition": wmo_description(w_code, h_is_day),
+            "emoji": wmo_emoji(w_code, h_is_day),
         })
 
     # Lifestyle & activity evaluations

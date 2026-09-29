@@ -19,7 +19,6 @@ export interface LeftRailProps {
   onOpenSatellite: () => void;
   onOpenWarnings: () => void;
   onOpenLanguage: () => void;
-  onOpenSettings: () => void;
   onProfileClick: () => void;
   user?: UserProfile | null;
   language?: string;
@@ -38,7 +37,6 @@ export default function LeftRail({
   onOpenSatellite,
   onOpenWarnings,
   onOpenLanguage,
-  onOpenSettings,
   onProfileClick,
   user,
   language = 'en',
@@ -50,7 +48,7 @@ export default function LeftRail({
   domainFilter = 'normal',
   onDomainChange,
 }: LeftRailProps) {
-  const { interfaceStyle, setInterfaceStyle } = useTheme();
+  const { colorScheme, setColorScheme } = useTheme();
   const [isHovered, setIsHovered] = useState(false);
   const currentModeObj = DOMAIN_MODES.find((m) => m.id === domainFilter) || DOMAIN_MODES[0];
 
@@ -149,42 +147,24 @@ export default function LeftRail({
         {/* Bottom Section: Settings & User Profile */}
         <div className={styles.bottomGroup}>
 
-          {/* Interface Style Toggle (Modern / Minimal) */}
+          {/* Theme Mode Toggle (Dark / Light) */}
           <button
             type="button"
             className={styles.railBtn}
             onClick={() => {
-              const next = interfaceStyle === 'modern' ? 'minimal' : 'modern';
-              setInterfaceStyle(next);
-              if (user) api.patch('/api/user', { interface_style: next }).catch(() => {});
-              onNewChat?.();
+              const next = colorScheme === 'dark' ? 'light' : 'dark';
+              setColorScheme(next);
+              if (user) api.patch('/api/user', { color_scheme: next }).catch(() => {});
             }}
-            title={interfaceStyle === 'modern' ? 'Active: Modern View (Click for Minimal)' : 'Active: Minimal View (Click for Modern)'}
-            aria-label="Toggle Modern / Minimal View"
+            title={colorScheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            aria-label="Toggle Dark / Light Mode"
           >
             <span className={styles.btnIcon} style={{ fontSize: '1.15rem' }}>
-              {interfaceStyle === 'modern' ? '✨' : '📄'}
+              {colorScheme === 'dark' ? '☀️' : '🌙'}
             </span>
             <span className={styles.btnLabel}>
-              {interfaceStyle === 'modern' ? 'Modern View' : 'Minimal View'}
+              {colorScheme === 'dark' ? 'Light Mode' : 'Dark Mode'}
             </span>
-          </button>
-
-          {/* Settings */}
-          <button
-            type="button"
-            className={styles.railBtn}
-            onClick={onOpenSettings}
-            title="Settings & Appearance"
-            aria-label="Settings"
-          >
-            <span className={styles.btnIcon}>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="3" />
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
-              </svg>
-            </span>
-            <span className={styles.btnLabel}>Settings</span>
           </button>
 
           {/* User Profile Avatar (at the very bottom left) */}
@@ -341,38 +321,24 @@ export default function LeftRail({
                 </span>
               </button>
 
-              {/* Interface Style Toggle (Modern / Minimal) */}
+              {/* Theme Mode Toggle (Dark / Light) */}
               <button
                 type="button"
                 className={styles.mobileMenuItem}
                 onClick={() => {
-                  const next = interfaceStyle === 'modern' ? 'minimal' : 'modern';
-                  setInterfaceStyle(next);
-                  if (user) api.patch('/api/user', { interface_style: next }).catch(() => {});
-                  onNewChat?.();
+                  const next = colorScheme === 'dark' ? 'light' : 'dark';
+                  setColorScheme(next);
+                  if (user) api.patch('/api/user', { color_scheme: next }).catch(() => {});
                   onCloseMobileDrawer?.();
                 }}
               >
-                <span className={styles.itemIcon}>{interfaceStyle === 'modern' ? '✨' : '📄'}</span>
+                <span className={styles.itemIcon}>{colorScheme === 'dark' ? '☀️' : '🌙'}</span>
                 <span className={styles.itemLabel}>
-                  Interface: {interfaceStyle === 'modern' ? 'Modern Mode' : 'Minimal Mode'}
+                  Theme: {colorScheme === 'dark' ? 'Light Mode' : 'Dark Mode'}
                 </span>
                 <span className={styles.mobileBadge} style={{ background: 'var(--badge-bg)', color: 'var(--accent-primary)', borderColor: 'var(--accent-primary)' }}>
-                  {interfaceStyle === 'modern' ? 'MODERN' : 'MINIMAL'}
+                  {colorScheme.toUpperCase()}
                 </span>
-              </button>
-
-              {/* Settings */}
-              <button
-                type="button"
-                className={styles.mobileMenuItem}
-                onClick={() => {
-                  onOpenSettings?.();
-                  onCloseMobileDrawer?.();
-                }}
-              >
-                <span className={styles.itemIcon}>⚙️</span>
-                <span className={styles.itemLabel}>Settings & Appearance</span>
               </button>
             </div>
 

@@ -17,8 +17,6 @@ async def get_history(request: Request):
     from api.auth import require_user
     from db.mongo import get_user_history
     user = await require_user(request)
-    if not user.get("history_opt_in"):
-        return {"history": [], "message": "Chat history is disabled. Enable it in your profile settings."}
     history = await get_user_history(str(user["_id"]))
     return {"history": history, "count": len(history)}
 

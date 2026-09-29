@@ -1,16 +1,21 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   Apple Weather-Style Frosted Glassmorphic WeatherCard
+   Atmospheric dynamic sky canvas with glass tiles & crisp typography.
+   ════════════════════════════════════════════════════════════════════════════ */
+
 .card {
-  background: var(--bg-card);
-  backdrop-filter: var(--backdrop);
-  -webkit-backdrop-filter: var(--backdrop);
-  border-radius: var(--radius-lg, 24px);
-  border: 1px solid var(--border-card);
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+  position: relative;
   overflow: hidden;
-  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.08) inset;
   margin-bottom: 1.25rem;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
+  background: #111a2e; /* Fallback base before canvas renders */
+  color: #ffffff;
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ── Top Header ─────────────────────────────────────────────── */
@@ -18,105 +23,157 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 1.25rem 0.5rem;
+  padding: 1.35rem 1.35rem 0.5rem;
 }
 
 .locationTitleGroup {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
+  min-width: 0;
+  flex: 1;
 }
 
 .locationPin {
-  font-size: 1.2rem;
-  color: var(--accent-primary, #3b82f6);
+  font-size: 1.25rem;
+  color: #38bdf8;
+  filter: drop-shadow(0 2px 6px rgba(56, 189, 248, 0.4));
+  flex-shrink: 0;
 }
 
 .locationName {
-  font-family: var(--font-headline);
-  font-size: 1.35rem;
+  font-family: var(--font-headline, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif);
+  font-size: 1.45rem;
   font-weight: 700;
-  color: var(--text-headline);
-  letter-spacing: -0.01em;
+  color: #ffffff;
+  letter-spacing: -0.015em;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .headerActions {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
+  flex-shrink: 0;
+}
+
+.sourceBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.74rem;
+  padding: 0.28rem 0.65rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+.sourceBadgeIcon {
+  font-size: 0.85rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.sourceBadgeText {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .iconBtn {
-  background: var(--bg-glass);
-  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 50%;
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-secondary);
+  color: #ffffff;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .iconBtn:hover {
-  background: var(--bg-glass-hover);
-  color: var(--text-primary);
-  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.22);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: scale(1.06);
 }
 
 /* ── Hero Temperature ───────────────────────────────────────── */
 .heroSection {
-  padding: 0.75rem 1.25rem 1.25rem;
+  padding: 0.6rem 1.35rem 1.15rem;
 }
 
 .heroRow {
   display: flex;
   align-items: baseline;
-  gap: 1rem;
+  gap: 1.1rem;
 }
 
 .heroTemp {
-  font-family: var(--font-headline);
-  font-size: 4.2rem;
-  font-weight: 800;
+  font-family: var(--font-headline, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif);
+  font-size: 4.8rem;
+  font-weight: 700;
   line-height: 1;
-  color: var(--text-headline);
+  color: #ffffff;
   letter-spacing: -0.04em;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.45);
 }
 
 .heroMeta {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.3rem;
 }
 
 .heroCondition {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--text-primary);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .heroRange {
-  font-size: 0.95rem;
-  color: var(--text-secondary);
+  font-size: 0.96rem;
+  color: rgba(255, 255, 255, 0.85);
   font-weight: 500;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 /* ── Official IMD Warning Banner ────────────────────────────── */
 .warningCard {
-  margin: 0 1.25rem 1rem;
+  margin: 0 1.35rem 1rem;
   padding: 1rem 1.15rem;
-  border-radius: 18px;
+  border-radius: 20px;
   display: flex;
   align-items: flex-start;
-  gap: 0.85rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  gap: 0.9rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
 }
 
 .warningIconWrapper {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   flex-shrink: 0;
   padding-top: 2px;
 }
@@ -127,84 +184,287 @@
 
 .warningTitle {
   font-weight: 700;
-  font-size: 1rem;
-  margin-bottom: 0.25rem;
+  font-size: 1.02rem;
+  margin-bottom: 0.3rem;
   letter-spacing: -0.01em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
 .warningDesc {
-  font-size: 0.85rem;
-  color: var(--text-secondary);
-  line-height: 1.4;
+  font-size: 0.86rem;
+  color: rgba(255, 255, 255, 0.92);
+  line-height: 1.45;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .warningSource {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  margin-top: 0.35rem;
+  font-size: 0.74rem;
+  color: rgba(255, 255, 255, 0.75);
+  margin-top: 0.4rem;
   font-weight: 500;
 }
 
-/* ── Section Titles ─────────────────────────────────────────── */
+/* ── Section Titles (Apple Weather Subtitles) ────────────────── */
 .sectionTitle {
-  font-family: var(--font-headline);
-  font-size: 1.1rem;
+  font-family: var(--font-headline, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif);
+  font-size: 0.82rem;
   font-weight: 700;
-  color: var(--text-headline);
-  margin: 1.25rem 1.25rem 0.65rem;
-  letter-spacing: -0.01em;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 1.25rem 1.35rem 0.65rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 .sectionSubtitle {
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: none;
+  letter-spacing: normal;
 }
 
-/* ── 2x3 Current Conditions Grid ────────────────────────────── */
+/* ── 2x3 Current Conditions Grid (Apple Frosted Glass Tiles) ── */
 .conditionsGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
-  padding: 0 1.25rem;
+  gap: 0.75rem;
+  padding: 0 1.35rem;
   box-sizing: border-box;
   width: 100%;
 }
 
 @media (min-width: 640px) {
   .conditionsGrid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.95rem;
   }
 }
 
+.appleWidget {
+  background: rgba(18, 26, 44, 0.52);
+  backdrop-filter: blur(25px) saturate(180%);
+  -webkit-backdrop-filter: blur(25px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  padding: 0.95rem 1.05rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 155px;
+  box-sizing: border-box;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.appleWidget:hover {
+  background: rgba(26, 38, 62, 0.65);
+  border-color: rgba(255, 255, 255, 0.26);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+}
+
+.widgetHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.widgetHeaderIcon {
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.widgetMainVal {
+  font-family: var(--font-headline, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif);
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  margin-top: 0.25rem;
+}
+
+.widgetSubLabel {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-top: 2px;
+}
+
+.widgetFooterText {
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: auto;
+  padding-top: 0.4rem;
+}
+
+/* ── Specific Widget Visuals ────────────────────────────────── */
+
+/* 1. Gauge Bar (UV & AQI) */
+.barContainer {
+  position: relative;
+  width: 100%;
+  height: 5px;
+  border-radius: 999px;
+  margin: 0.55rem 0 0.2rem;
+}
+
+.uvBar {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #22c55e 0%, #eab308 25%, #f97316 55%, #ef4444 80%, #a855f7 100%);
+}
+
+.aqiBar {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #22c55e 0%, #eab308 22%, #f97316 48%, #ef4444 75%, #a855f7 100%);
+}
+
+.barDot {
+  position: absolute;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid #0f172a;
+  box-shadow: 0 0 6px rgba(0, 0, 0, 0.5);
+  transform: translate(-50%, -50%);
+}
+
+/* 2. Sun Arc SVG */
+.sunArcWrapper {
+  width: 100%;
+  margin: 0.15rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sunArcSvg {
+  width: 100%;
+  height: 44px;
+  overflow: visible;
+}
+
+/* 3. Compass Dial (Wind) */
+.windBody {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0.15rem 0;
+}
+
+.windData {
+  display: flex;
+  flex-direction: column;
+}
+
+.compassWrapper {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.compassSvg {
+  width: 76px;
+  height: 76px;
+  overflow: visible;
+  filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.35));
+}
+
+/* 4. Pressure Radial Barometer Gauge */
+.pressureGaugeWrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0.1rem 0;
+}
+
+.pressureSvg {
+  width: 135px;
+  height: 74px;
+  overflow: visible;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+}
+
+/* 5. Moon Phase Widget */
+.moonWidgetBody {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0.15rem 0;
+}
+
+.moonData {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.moonGraphicWrapper {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.moonSvg {
+  width: 52px;
+  height: 52px;
+  overflow: visible;
+  filter: drop-shadow(0 2px 12px rgba(0, 0, 0, 0.45));
+}
+
+/* Legacy Pill Fallback */
 .conditionPill {
-  background: var(--bg-glass, rgba(255, 255, 255, 0.04));
-  border: 1px solid var(--border-subtle);
-  border-radius: 18px;
-  padding: 0.85rem 1rem;
+  background: rgba(18, 26, 44, 0.52);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  padding: 0.9rem 1.05rem;
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  transition: transform 0.15s ease, background 0.15s ease;
   min-width: 0;
   box-sizing: border-box;
   overflow: hidden;
-}
-
-.conditionPill:hover {
-  background: var(--bg-glass-hover, rgba(255, 255, 255, 0.07));
-  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .conditionIcon {
   font-size: 1.35rem;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -220,116 +480,191 @@
 }
 
 .conditionLabel {
-  font-size: 0.8rem;
-  color: var(--text-secondary);
-  font-weight: 500;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .conditionValue {
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
   margin-top: 2px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 100%;
 }
 
-/* ── Weather Tomorrow Banner ────────────────────────────────── */
+/* ── Weather Tomorrow Banner (Frosted Glass Tile) ───────────── */
 .tomorrowCard {
-  margin: 1rem 1.25rem 0;
-  padding: 1rem 1.15rem;
-  background: var(--bg-glass, rgba(255, 255, 255, 0.04));
-  border: 1px solid var(--border-subtle);
-  border-radius: 18px;
+  margin: 1rem 1.35rem 0;
+  padding: 1rem 1.25rem;
+  background: rgba(18, 26, 44, 0.52);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .tomorrowTitle {
-  font-size: 0.85rem;
+  font-size: 0.86rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
   margin-bottom: 0.35rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .tomorrowDesc {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
+  font-size: 0.94rem;
+  color: #ffffff;
   line-height: 1.45;
+  font-weight: 500;
 }
 
-/* ── Hourly Forecast Rail ───────────────────────────────────── */
+/* ── Hourly Forecast Rail (Apple Weather Style) ─────────────── */
 .hourlyRail {
   display: flex;
-  gap: 0.65rem;
+  gap: 0.7rem;
   overflow-x: auto;
-  padding: 0 1.25rem 0.5rem;
-  scrollbar-width: none;
+  overflow-y: hidden;
+  padding: 0 1.35rem 0.75rem;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.4) rgba(255, 255, 255, 0.08);
   -webkit-overflow-scrolling: touch;
+    cursor: grab;
+  user-select: none;
+}
+
+.hourlyRail:active {
+  cursor: grabbing;
 }
 
 .hourlyRail::-webkit-scrollbar {
-  display: none;
+  height: 6px;
+  display: block;
+}
+
+.hourlyRail::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+  margin: 0 1.35rem;
+}
+
+.hourlyRail::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 999px;
+}
+
+.hourlyRail::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.railNavBtns {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.railNavBtn {
+  background: rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  line-height: 1;
+  padding-bottom: 2px;
+}
+
+.railNavBtn:hover {
+  background: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.45);
+  transform: scale(1.08);
 }
 
 .hourCard {
-  min-width: 72px;
+  min-width: 74px;
   flex-shrink: 0;
-  background: var(--bg-glass, rgba(255, 255, 255, 0.04));
-  border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  padding: 0.85rem 0.5rem;
+  background: rgba(18, 26, 44, 0.52);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 0.9rem 0.55rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-  transition: transform 0.15s ease, background 0.15s ease;
+  gap: 0.45rem;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
 }
 
 .hourCard:hover {
-  background: var(--bg-glass-hover, rgba(255, 255, 255, 0.08));
-  transform: translateY(-2px);
+  background: rgba(26, 38, 62, 0.65);
+  border-color: rgba(255, 255, 255, 0.28);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
 }
 
 .hourTime {
   font-size: 0.78rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .hourEmoji {
-  font-size: 1.35rem;
+  font-size: 1.45rem;
   line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
 }
 
 .hourTemp {
-  font-size: 0.95rem;
+  font-size: 1.05rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
 }
 
 .hourRain {
-  font-size: 0.72rem;
-  color: #60a5fa;
-  font-weight: 600;
+  font-size: 0.74rem;
+  color: #38bdf8;
+  font-weight: 700;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* ── 6-Day Forecast Strip ───────────────────────────────────── */
 .sixDayCard {
-  margin: 0 1.25rem;
-  padding: 1.1rem 1rem;
-  background: var(--bg-glass, rgba(255, 255, 255, 0.04));
-  border: 1px solid var(--border-subtle);
-  border-radius: 20px;
+  margin: 0 1.35rem;
+  padding: 1.15rem 1.1rem;
+  background: rgba(18, 26, 44, 0.52);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
 .sixDayGrid {
   display: grid;
   grid-template-columns: repeat(6, 1fr);
-  gap: 0.5rem;
+  gap: 0.6rem;
   text-align: center;
 }
 
@@ -341,59 +676,72 @@
 }
 
 .sixDayDay {
-  font-size: 0.75rem;
+  font-size: 0.76rem;
   font-weight: 700;
-  color: var(--text-secondary);
+  color: rgba(255, 255, 255, 0.75);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 
 .sixDayEmoji {
-  font-size: 1.3rem;
+  font-size: 1.4rem;
   line-height: 1;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.3));
 }
 
 .sixDayMax {
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
 .sixDayMin {
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   font-weight: 500;
-  color: var(--text-muted);
+  color: rgba(255, 255, 255, 0.62);
 }
 
 /* ── Activities Grid ────────────────────────────────────────── */
 .activitiesGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
-  padding: 0 1.25rem;
+  gap: 0.75rem;
+  padding: 0 1.35rem;
   box-sizing: border-box;
   width: 100%;
 }
 
 .activityCard {
-  background: var(--bg-glass, rgba(255, 255, 255, 0.04));
-  border: 1px solid var(--border-subtle);
-  border-radius: 18px;
-  padding: 0.9rem 1.1rem;
+  background: rgba(18, 26, 44, 0.52);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  padding: 0.9rem 1.15rem;
   display: flex;
   align-items: center;
   gap: 0.85rem;
   min-width: 0;
   box-sizing: border-box;
   overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  transition: transform 0.18s ease, background 0.18s ease;
+}
+
+.activityCard:hover {
+  background: rgba(26, 38, 62, 0.65);
+  border-color: rgba(255, 255, 255, 0.26);
+  transform: translateY(-2px);
 }
 
 .activityIcon {
   font-size: 1.35rem;
-  width: 38px;
-  height: 38px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -411,7 +759,7 @@
 .activityName {
   font-size: 0.88rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: #ffffff;
 }
 
 .activityRating {
@@ -422,99 +770,90 @@
 
 /* ── Allergies Section ──────────────────────────────────────── */
 .allergiesCard {
-  margin: 0 1.25rem;
-  background: var(--bg-glass, rgba(255, 255, 255, 0.04));
-  border: 1px solid var(--border-subtle);
-  border-radius: 18px;
-  padding: 1rem 1.15rem;
+  margin: 0 1.35rem;
+  background: rgba(18, 26, 44, 0.52);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 20px;
+  padding: 1rem 1.25rem;
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.9rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
 
-/* ── Radar Preview Map Card ─────────────────────────────────── */
+/* ── Radar / Satellite Map Preview ──────────────────────────── */
 .radarCard {
-  margin: 1.25rem 1.25rem 0.5rem;
-  border-radius: 20px;
+  margin: 1.25rem 1.35rem 0.5rem;
+  border-radius: 22px;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: #090e1a;
-  position: relative;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.4);
+  background: rgba(10, 16, 28, 0.7);
 }
 
 .radarImageContainer {
   position: relative;
   width: 100%;
-  height: 200px;
-  overflow: hidden;
+  height: 220px;
   cursor: pointer;
-  background: #060911;
+  overflow: hidden;
 }
 
 .radarImg {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
-  display: block;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .radarImageContainer:hover .radarImg {
-  transform: scale(1.03);
-}
-
-.radarImageContainer::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, transparent 60%, rgba(9, 14, 26, 0.95) 100%);
-  pointer-events: none;
+  transform: scale(1.04);
 }
 
 .radarOverlay {
   position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
+  top: 0.85rem;
+  left: 0.85rem;
   background: rgba(10, 14, 26, 0.85);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  padding: 0.32rem 0.75rem;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0.35rem 0.85rem;
   border-radius: 20px;
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: #f1f5f9;
   border: 1px solid rgba(255, 255, 255, 0.18);
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.5rem;
   z-index: 2;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
 }
 
 .radarExpandHint {
   position: absolute;
-  bottom: 0.75rem;
-  right: 0.75rem;
-  background: rgba(14, 165, 233, 0.25);
-  border: 1px solid rgba(56, 189, 248, 0.4);
+  bottom: 0.85rem;
+  right: 0.85rem;
+  background: rgba(14, 165, 233, 0.3);
+  border: 1px solid rgba(56, 189, 248, 0.45);
   color: #38bdf8;
-  padding: 0.25rem 0.65rem;
+  padding: 0.28rem 0.75rem;
   border-radius: 20px;
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   font-weight: 600;
   display: flex;
   align-items: center;
-  gap: 0.3rem;
-  backdrop-filter: blur(8px);
+  gap: 0.35rem;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   z-index: 2;
   transition: all 0.2s ease;
 }
 
 .radarImageContainer:hover .radarExpandHint {
-  background: rgba(14, 165, 233, 0.4);
+  background: rgba(14, 165, 233, 0.5);
   border-color: #38bdf8;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
 }
 
 .radarPulse {
@@ -522,55 +861,57 @@
   height: 8px;
   border-radius: 50%;
   background: #ef4444;
-  box-shadow: 0 0 8px #ef4444;
+  box-shadow: 0 0 10px #ef4444;
   animation: pulse 1.5s infinite;
 }
 
 .radarActions {
   display: flex;
-  gap: 0.65rem;
-  padding: 0.85rem 1rem;
-  background: #090e1a;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 0.75rem;
+  padding: 0.95rem 1.15rem;
+  background: rgba(10, 16, 28, 0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .radarActionBtn {
   flex: 1;
-  padding: 0.6rem 0.9rem;
+  padding: 0.65rem 1rem;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  color: #f1f5f9;
-  font-family: var(--font-body);
-  font-size: 0.82rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  font-family: var(--font-body, inherit);
+  font-size: 0.84rem;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
+  gap: 0.5rem;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
 .radarActionBtn:hover {
-  background: rgba(56, 189, 248, 0.16);
-  border-color: rgba(56, 189, 248, 0.45);
+  background: rgba(56, 189, 248, 0.22);
+  border-color: rgba(56, 189, 248, 0.5);
   color: #38bdf8;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(56, 189, 248, 0.15);
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.2);
 }
 
-/* ── Expandable Details & Charts Toggle ─────────────────────── */
+/* ── Expandable Details Toggle ──────────────────────────────── */
 .toggleDetailsBtn {
-  width: calc(100% - 2.5rem);
-  margin: 1rem 1.25rem 1.25rem;
-  padding: 0.75rem 1rem;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-subtle);
+  width: calc(100% - 2.7rem);
+  margin: 1.15rem 1.35rem 1.35rem;
+  padding: 0.85rem 1.15rem;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 24px;
-  color: var(--text-primary);
-  font-family: var(--font-body);
+  color: #ffffff;
+  font-family: var(--font-body, inherit);
   font-size: 0.88rem;
   font-weight: 600;
   display: flex;
@@ -578,16 +919,18 @@
   justify-content: center;
   gap: 0.5rem;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
 .toggleDetailsBtn:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
 }
 
 .expandedDetails {
-  padding: 0 1.25rem 1.25rem;
+  padding: 0 1.35rem 1.35rem;
   animation: fadeIn 0.3s ease;
 }
 
@@ -605,305 +948,515 @@
 /* ── Mobile Phone View (<= 640px) ───────────────────────────── */
 @media (max-width: 640px) {
   .card {
-    border-radius: 18px;
+    border-radius: 20px;
     margin-bottom: 0.85rem;
+    width: 100%;
+    max-width: 100%;
   }
 
   .header {
-    padding: 0.85rem 0.85rem 0.35rem;
+    padding: 0.85rem 0.95rem 0.35rem;
+    gap: 0.5rem;
+  }
+
+  .locationTitleGroup {
+    min-width: 0;
+    flex: 1;
+    gap: 0.35rem;
+  }
+
+  .locationPin {
+    font-size: 1.1rem;
   }
 
   .locationName {
     font-size: 1.15rem;
+    max-width: 180px;
+  }
+
+  .headerActions {
+    flex-shrink: 0;
+    gap: 0.35rem;
+  }
+
+  .sourceBadge {
+    font-size: 0.68rem;
+    padding: 0.22rem 0.5rem;
+    max-width: 155px;
+  }
+
+  .iconBtn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.85rem;
   }
 
   .heroSection {
-    padding: 0.4rem 0.85rem 0.85rem;
+    padding: 0.4rem 0.95rem 0.95rem;
   }
 
   .heroTemp {
-    font-size: 3rem;
+    font-size: 3.4rem;
   }
 
   .heroCondition {
-    font-size: 1.05rem;
+    font-size: 1.15rem;
   }
 
   .heroRange {
-    font-size: 0.82rem;
+    font-size: 0.86rem;
   }
 
   .warningCard {
-    margin: 0 0.85rem 0.75rem;
-    padding: 0.75rem 0.85rem;
-    border-radius: 14px;
-    gap: 0.65rem;
+    margin: 0 0.95rem 0.75rem;
+    padding: 0.85rem 0.95rem;
+    border-radius: 16px;
+    gap: 0.75rem;
   }
 
   .warningTitle {
-    font-size: 0.92rem;
-  }
-
-  .warningDesc {
-    font-size: 0.8rem;
-  }
-
-  .sectionTitle {
-    margin: 0.85rem 0.85rem 0.45rem;
     font-size: 0.95rem;
   }
 
+  .warningDesc {
+    font-size: 0.82rem;
+  }
+
+  .sectionTitle {
+    margin: 0.95rem 0.95rem 0.45rem;
+    font-size: 0.78rem;
+  }
+
   .conditionsGrid {
-    padding: 0 0.85rem;
-    gap: 0.45rem;
+    padding: 0 0.95rem;
+    gap: 0.55rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .appleWidget {
+    padding: 0.8rem 0.85rem;
+    min-height: 145px;
+    border-radius: 18px;
+  }
+
   .conditionPill {
-    padding: 0.6rem 0.65rem;
-    gap: 0.5rem;
-    border-radius: 14px;
+    padding: 0.7rem 0.75rem;
+    gap: 0.6rem;
+    border-radius: 16px;
     min-width: 0;
   }
 
   .conditionIcon {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    font-size: 1.05rem;
-  }
-
-  .conditionLabel {
-    font-size: 0.72rem;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .conditionValue {
-    font-size: 0.82rem;
-    line-height: 1.25;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .tomorrowCard {
-    margin: 0.75rem 0.85rem 0;
-    padding: 0.75rem 0.85rem;
-    border-radius: 14px;
-  }
-
-  .tomorrowTitle {
-    font-size: 0.82rem;
-  }
-
-  .tomorrowDesc {
-    font-size: 0.82rem;
-  }
-
-  .hourlyRail {
-    padding: 0 0.85rem 0.4rem;
-    gap: 0.45rem;
-  }
-
-  .hourCard {
-    min-width: 62px;
-    padding: 0.65rem 0.35rem;
-    border-radius: 12px;
-  }
-
-  .hourTime {
-    font-size: 0.72rem;
-  }
-
-  .hourEmoji {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
     font-size: 1.15rem;
   }
 
+  .conditionLabel {
+    font-size: 0.7rem;
+  }
+
+  .conditionValue {
+    font-size: 0.88rem;
+  }
+
+  .tomorrowCard {
+    margin: 0.75rem 0.95rem 0;
+    padding: 0.85rem 0.95rem;
+    border-radius: 16px;
+  }
+
+  .hourlyRail {
+    padding: 0 0.95rem 0.4rem;
+    gap: 0.55rem;
+  }
+
+  .hourCard {
+    min-width: 66px;
+    padding: 0.75rem 0.4rem;
+    border-radius: 14px;
+  }
+
+  .hourTime {
+    font-size: 0.74rem;
+  }
+
+  .hourEmoji {
+    font-size: 1.25rem;
+  }
+
   .hourTemp {
-    font-size: 0.85rem;
+    font-size: 0.92rem;
   }
 
   .sixDayCard {
-    margin: 0 0.85rem;
-    padding: 0.85rem 0.5rem;
-    border-radius: 14px;
+    margin: 0 0.95rem;
+    padding: 0.95rem 0.6rem;
+    border-radius: 16px;
     overflow-x: auto;
   }
 
   .sixDayGrid {
-    gap: 0.25rem;
-    min-width: 260px;
+    gap: 0.35rem;
+    min-width: 280px;
   }
 
   .sixDayDay {
-    font-size: 0.65rem;
+    font-size: 0.68rem;
   }
 
   .sixDayEmoji {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
   }
 
   .sixDayMax {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
   }
 
   .sixDayMin {
-    font-size: 0.72rem;
+    font-size: 0.75rem;
   }
 
   .activitiesGrid {
-    padding: 0 0.85rem;
-    gap: 0.45rem;
+    padding: 0 0.95rem;
+    gap: 0.55rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .activityCard {
-    padding: 0.6rem 0.65rem;
-    gap: 0.5rem;
-    border-radius: 14px;
+    padding: 0.7rem 0.75rem;
+    gap: 0.6rem;
+    border-radius: 16px;
     min-width: 0;
   }
 
   .activityIcon {
-    width: 28px;
-    height: 28px;
-    min-width: 28px;
-    font-size: 1.05rem;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    font-size: 1.15rem;
   }
 
   .activityName {
-    font-size: 0.78rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 0.82rem;
   }
 
   .activityRating {
-    font-size: 0.72rem;
+    font-size: 0.76rem;
   }
 
   .allergiesCard {
-    margin: 0 0.85rem;
-    padding: 0.75rem 0.85rem;
-    border-radius: 14px;
-  }
-
-  .radarCard {
-    margin: 0.85rem 0.85rem 0.35rem;
+    margin: 0 0.95rem;
+    padding: 0.85rem 0.95rem;
     border-radius: 16px;
   }
 
+  .radarCard {
+    margin: 0.95rem 0.95rem 0.35rem;
+    border-radius: 18px;
+  }
+
   .radarImageContainer {
-    height: 160px;
+    height: 170px;
   }
 
   .radarActions {
-    padding: 0.55rem 0.75rem;
-    gap: 0.45rem;
+    padding: 0.65rem 0.85rem;
+    gap: 0.55rem;
     flex-direction: column;
   }
 
   .radarActionBtn {
     width: 100%;
-    font-size: 0.78rem;
-    padding: 0.45rem 0.65rem;
+    font-size: 0.8rem;
+    padding: 0.55rem 0.75rem;
   }
 
   .toggleDetailsBtn {
-    width: calc(100% - 1.7rem);
-    margin: 0.75rem 0.85rem 0.85rem;
-    padding: 0.65rem 0.75rem;
-    font-size: 0.82rem;
+    width: calc(100% - 1.9rem);
+    margin: 0.85rem 0.95rem 0.95rem;
+    padding: 0.75rem 0.85rem;
+    font-size: 0.84rem;
   }
 
   .expandedDetails {
-    padding: 0 0.85rem 0.85rem;
+    padding: 0 0.95rem 0.95rem;
   }
 }
 
-/* ── Ultra-compact Phones (<= 380px) ────────────────────────── */
-@media (max-width: 380px) {
-  .header {
-    padding: 0.65rem 0.55rem 0.25rem;
+/* ── Apple Weather 2-Column Square Widget Grid ──────────────── */
+.appleWidgetsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.85rem;
+  padding: 0 1.35rem;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.appleWidgetCard {
+  background: rgba(18, 26, 44, 0.52);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 22px;
+  padding: 1.05rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 165px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  box-sizing: border-box;
+  overflow: hidden;
+  transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+}
+
+.appleWidgetCard:hover {
+  background: rgba(26, 38, 62, 0.65);
+  border-color: rgba(255, 255, 255, 0.26);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.38);
+}
+
+.widgetHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.74rem;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.72);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.widgetHeaderIcon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.widgetValueGroup {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.25rem;
+}
+
+.widgetBigVal {
+  font-family: var(--font-headline, -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1.1;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  letter-spacing: -0.02em;
+}
+
+.widgetSubLabel {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #ffffff;
+  margin-top: 0.15rem;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.widgetGraphicArea {
+  margin: 0.4rem 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.widgetFooter {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.35;
+  margin-top: auto;
+  padding-top: 0.45rem;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* ── UV Index Slider ── */
+.uvBarContainer {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  margin: 0.65rem 0 0.45rem;
+}
+
+.uvGradientBar {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #22c55e 0%, #eab308 25%, #f97316 50%, #ef4444 75%, #a855f7 100%);
+}
+
+.uvThumb {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+  transform: translate(-50%, -50%);
+}
+
+/* ── AQI Bar ── */
+.aqiBarContainer {
+  position: relative;
+  width: 100%;
+  height: 6px;
+  margin: 0.65rem 0 0.45rem;
+}
+
+.aqiGradientBar {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #22c55e 0%, #eab308 40%, #f97316 70%, #ef4444 100%);
+}
+
+.aqiThumb {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+  transform: translate(-50%, -50%);
+}
+
+/* ── Mobile adjustments for Apple widgets ── */
+@media (max-width: 640px) {
+  .appleWidgetsGrid {
+    padding: 0 0.95rem;
+    gap: 0.6rem;
   }
 
-  .heroSection {
-    padding: 0.35rem 0.55rem 0.65rem;
+  .appleWidgetCard {
+    padding: 0.85rem;
+    min-height: 150px;
+    border-radius: 18px;
   }
 
-  .heroTemp {
-    font-size: 2.6rem;
+  .widgetBigVal {
+    font-size: 1.85rem;
   }
 
-  .conditionsGrid {
-    padding: 0 0.55rem;
-    gap: 0.35rem;
-  }
-
-  .conditionPill {
-    padding: 0.45rem 0.45rem;
-    gap: 0.35rem;
-  }
-
-  .conditionIcon {
-    width: 24px;
-    height: 24px;
-    min-width: 24px;
+  .widgetSubLabel {
     font-size: 0.95rem;
   }
 
-  .conditionLabel {
-    font-size: 0.66rem;
-  }
-
-  .conditionValue {
+  .widgetFooter {
     font-size: 0.76rem;
   }
+}
 
-  .activitiesGrid {
-    padding: 0 0.55rem;
-    gap: 0.35rem;
+/* ── Feels Like, Visibility & Moon Phase Widgets ────────────── */
+.feelsLikeDeltaBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.65rem;
+  border-radius: 12px;
+  font-size: 0.76rem;
+  font-weight: 700;
+  width: fit-content;
+  margin: 0.25rem 0 0.45rem;
+}
+
+.tempCompareContainer {
+  width: 100%;
+  margin: 0.35rem 0;
+}
+
+.tempCompareTrack {
+  width: 100%;
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #38bdf8 0%, #fb923c 60%, #ef4444 100%);
+  position: relative;
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+}
+
+.tempCompareLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  color: rgba(255, 255, 255, 0.82);
+  margin-top: 0.35rem;
+  font-weight: 600;
+}
+
+.visibilityBarContainer {
+  position: relative;
+  width: 100%;
+  margin: 0.45rem 0;
+}
+
+.visibilityTrack {
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(to right, #64748b 0%, #38bdf8 50%, #22c55e 100%);
+}
+
+.visibilityMarker {
+  position: absolute;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.9);
+  transform: translate(-50%, -50%);
+}
+
+.visibilityScaleLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.72rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 0.4rem;
+  font-weight: 600;
+}
+
+.moonGraphicArea {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0.3rem 0;
+}
+
+.moonDisk {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #cbd5e1 55%, #64748b 100%);
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.55);
+  flex-shrink: 0;
+}
+
+@media (max-width: 390px) {
+  .header {
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    padding: 0.75rem 0.85rem 0.25rem;
   }
-
-  .activityCard {
-    padding: 0.45rem 0.45rem;
-    gap: 0.35rem;
+  .locationTitleGroup {
+    width: 100%;
   }
-
-  .activityIcon {
-    width: 24px;
-    height: 24px;
-    min-width: 24px;
-    font-size: 0.95rem;
+  .locationName {
+    max-width: 100%;
+    font-size: 1.1rem;
   }
-
-  .activityName {
-    font-size: 0.74rem;
-  }
-
-  .activityRating {
-    font-size: 0.68rem;
-  }
-
-  .tomorrowCard,
-  .warningCard,
-  .sixDayCard,
-  .allergiesCard,
-  .radarCard {
-    margin-left: 0.55rem;
-    margin-right: 0.55rem;
-  }
-
-  .toggleDetailsBtn {
-    width: calc(100% - 1.1rem);
-    margin-left: 0.55rem;
-    margin-right: 0.55rem;
-  }
-
-  .expandedDetails {
-    padding: 0 0.55rem 0.55rem;
+  .headerActions {
+    width: 100%;
+    justify-content: space-between;
   }
 }

@@ -9,7 +9,7 @@
 
 To manually run the application locally in just a few steps, please refer to the dedicated manual startup guide:
 
-👉 **[Read the Full Manual Startup Guide](file:///Users/ankitrai/Documents/FINAL%20PROTOYPE/MANUAL_STARTUP_GUIDE.md)**
+👉 **[Read the Full Manual Startup Guide](file:///Users/ankitrai/Documents/Megha%20Setu%20Final/MANUAL_STARTUP_GUIDE.md)**
 
 ### Quick Command Reference:
 
@@ -53,5 +53,7 @@ docker-compose up --build
 ---
 
 ## 📚 Documentation
-- **[Manual Startup Guide](file:///Users/ankitrai/Documents/FINAL%20PROTOYPE/MANUAL_STARTUP_GUIDE.md)** — Step-by-step local setup, environment variables, dependencies, and troubleshooting.
-- **[Master Project Documentation](file:///Users/ankitrai/Documents/FINAL%20PROTOYPE/PROJECT_MASTER_DOCUMENTATION.md)** — Comprehensive architecture, pitch blueprint, 5 domain modes, and technical specifications.
+- **[AI Agent Onboarding & Engineering Guide](file:///Users/ankitrai/Documents/Megha%20Setu%20Final/AI_AGENT_PROJECT_GUIDE.md)** — Comprehensive architecture, code invariants, chronological development history, directory walkthrough, and regression checklist for AI agents and developers.
+- **[Manual Startup Guide](file:///Users/ankitrai/Documents/Megha%20Setu%20Final/MANUAL_STARTUP_GUIDE.md)** — Step-by-step local setup, environment variables, dependencies, and troubleshooting.
+- **[Master Project Documentation](file:///Users/ankitrai/Documents/Megha%20Setu%20Final/PROJECT_MASTER_DOCUMENTATION.md)** — Comprehensive architecture, pitch blueprint, 5 domain modes, and technical specifications.
+- **[Antigravity Session Documentation](file:///Users/ankitrai/Documents/Megha%20Setu%20Final/ANTIGRAVITY_SESSION_DOCUMENTATION.md)** — Task execution timeline and engineering record.

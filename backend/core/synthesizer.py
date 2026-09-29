@@ -189,10 +189,19 @@ Target language for native version: {lang_name} (ISO: {target_language})
 {task_instruction}
 """
 
+    # ─── DSOC GUARDRAIL CHECK ────────────────────────────────────────────────
+    # Verify that no numeric risk values were generated outside risk_engine.py
+    # (this is an assertion-level safety check — the prompt also enforces this)
+    for r in risks:
+        if not hasattr(r, "level"):
+            logger.error("DSOC VIOLATION: risk record missing deterministic level — aborting LLM call")
+            raise ValueError("Risk record missing deterministic level field")
+
     model = get_model(system_instruction=system_prompt)
 
     try:
-        response = model.generate_content(full_prompt)
+        # ─── ASYNC-FIRST call — avoids blocking the event loop ───────────────
+        response = await model.generate_content_async(full_prompt)
         raw_text = ""
         try:
             if hasattr(response, "text") and response.text:
@@ -642,7 +651,8 @@ Advisory context (location: {location}, domain: {domain_filter}):
 
     model = get_model()
     try:
-        response = model.generate_content(full_prompt)
+        # Async-first chip generation — non-blocking
+        response = await model.generate_content_async(full_prompt)
         raw = response.text.strip()
         # Extract JSON
         json_match = re.search(r"\{.*\}", raw, re.DOTALL)

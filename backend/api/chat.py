@@ -7,6 +7,7 @@ intent → location → weather fetch (tiered) → warnings → risk engine → 
 import logging
 import time
 from typing import Optional
+import httpx
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 
@@ -606,12 +607,27 @@ async def chat(req: ChatRequest):
     # 13. Save session to Redis
     await save_session(session)
 
-    # 14. Optionally write to MongoDB chat history
+    # 14. Write to MongoDB chat history for authenticated user
     user = None
     if req.user_id:
         user = await get_user_by_id(req.user_id)
-    if user and user.get("history_opt_in"):
+    if user:
         try:
+            # Record user question
+            await write_chat_message(ChatHistoryDoc(
+                user_id=str(user["_id"]),
+                session_id=session["session_id"],
+                role="user",
+                turn_type=turn_type,
+                text_en=req.message,
+                text_native=req.message if language != "en" else None,
+                native_language=language if language != "en" else None,
+                domain_filter=domain_filter,
+                location_name=location_name,
+                latitude=lat,
+                longitude=lon,
+            ))
+            # Record assistant response
             await write_chat_message(ChatHistoryDoc(
                 user_id=str(user["_id"]),
                 session_id=session["session_id"],

@@ -14,10 +14,12 @@ export interface CurrentWeather {
   wind_direction?: number;
   precipitation?: number;
   surface_pressure?: number;
+  pressure_msl?: number;
   uv_index?: number;
   uv_category?: string;
   visibility?: number;
   cloud_cover?: number;
+  is_day?: number;
 }
 
 export interface HourlyForecastItem {
@@ -30,6 +32,7 @@ export interface HourlyForecastItem {
   weather_code?: number;
   condition?: string;
   emoji?: string;
+  is_day?: number;
 }
 
 export interface DailyForecastItem {
