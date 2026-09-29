@@ -16,13 +16,10 @@ logger = logging.getLogger(__name__)
 
 # ─── Model Preference Order ──────────────────────────────────────────────────
 CANDIDATE_MODELS = [
-    "gemini-3.1-flash-lite",
-    "gemini-3.8-flash",
-    "gemini-3.5-flash",
-    "gemini-flash-latest",
     "gemini-flash-lite-latest",
-    "gemini-3.6-flash",
-    "gemini-3.7-flash",
+    "gemini-3.1-flash-lite",
+    "gemini-3.5-flash-lite",
+    "gemini-flash-latest",
 ]
 
 _verified_model_id: Optional[str] = None
@@ -149,7 +146,7 @@ class ModelWrapper:
                         contents=contents,
                         config=config,
                     ),
-                    timeout=kwargs.get("timeout", 15.0),
+                    timeout=kwargs.get("timeout", 5.0),
                 )
             except (asyncio.TimeoutError, Exception) as exc:
                 err_str = str(exc)
