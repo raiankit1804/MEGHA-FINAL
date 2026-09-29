@@ -163,6 +163,21 @@ async def warning_cache_set(location_key: str, data: list) -> None:
     )
 
 
+async def clear_all_caches() -> None:
+    """Purge weather and warning caches to force fresh fetch."""
+    global _redis, _memory_cache
+    if _redis is not None:
+        try:
+            keys = await _redis.keys(f"{WEATHER_PREFIX}*")
+            if keys:
+                await _redis.delete(*keys)
+        except Exception as exc:
+            logger.debug("Redis weather key purge error: %s", exc)
+    keys_to_del = [k for k in _memory_cache.keys() if k.startswith(WEATHER_PREFIX) or k.startswith(WARNING_PREFIX)]
+    for k in keys_to_del:
+        _memory_cache.pop(k, None)
+
+
 # ─── Health Check ─────────────────────────────────────────────────────────────
 
 async def redis_ping() -> bool:

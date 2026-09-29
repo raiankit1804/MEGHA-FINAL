@@ -385,11 +385,30 @@ async def _fetch_air_quality(lat: float, lon: float) -> Optional[dict]:
             return None
 
 
+_SIMULATE_TIER1_OUTAGE: bool = False
+
+
+def set_simulate_tier1_outage(enabled: bool) -> bool:
+    global _SIMULATE_TIER1_OUTAGE
+    _SIMULATE_TIER1_OUTAGE = bool(enabled)
+    logger.info("🧪 Simulated Tier 1 weather outage set to: %s", _SIMULATE_TIER1_OUTAGE)
+    return _SIMULATE_TIER1_OUTAGE
+
+
+def get_simulate_tier1_outage() -> bool:
+    global _SIMULATE_TIER1_OUTAGE
+    return _SIMULATE_TIER1_OUTAGE
+
+
 async def fetch_tier1(lat: float, lon: float, location_info: dict) -> dict:
     """
     Tier 1: Open-Meteo GFS seamless forecast (India-optimized, high resolution, IMD-aligned).
     Raises RateLimitError or httpx.HTTPError on failure — let caller chain to Tier 2/3.
     """
+    if _SIMULATE_TIER1_OUTAGE:
+        logger.warning("🧪 [DEMO] Simulated Tier 1 Open-Meteo outage active — raising RateLimitError to force Tier 3 (wttr.in) failover")
+        raise RateLimitError("Simulated primary API outage for live demonstration")
+
     raw = await _fetch_forecast(lat, lon, model="gfs_seamless")
     aqi_raw = await _fetch_air_quality(lat, lon)
     raw["location_info"] = location_info
@@ -403,6 +422,9 @@ async def fetch_tier2_nwp(lat: float, lon: float, location_info: dict) -> Option
     Tier 2: ICON seamless NWP model guidance (secondary independent source).
     Returns None on any failure — this is non-critical.
     """
+    if _SIMULATE_TIER1_OUTAGE:
+        return None
+
     try:
         raw = await _fetch_forecast(lat, lon, model="icon_seamless")
         raw["location_info"] = location_info
@@ -414,3 +436,4 @@ async def fetch_tier2_nwp(lat: float, lon: float, location_info: dict) -> Option
 
 class RateLimitError(Exception):
     pass
+

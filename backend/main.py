@@ -104,6 +104,7 @@ from api.user import router as user_router
 from api.pdf import router as pdf_router
 from api.satellite import router as satellite_router
 from api.news import router as news_router
+from api.dev import router as dev_router
 
 app.include_router(chat_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
@@ -114,6 +115,7 @@ app.include_router(user_router, prefix="/api")
 app.include_router(pdf_router, prefix="/api")
 app.include_router(satellite_router, prefix="/api")
 app.include_router(news_router, prefix="/api")
+app.include_router(dev_router, prefix="/api")
 
 # ─── Health Probe ─────────────────────────────────────────────────────────────
 

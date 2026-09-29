@@ -200,8 +200,8 @@ Target language for native version: {lang_name} (ISO: {target_language})
     model = get_model(system_instruction=system_prompt)
 
     try:
-        # ─── ASYNC-FIRST call — avoids blocking the event loop ───────────────
-        response = await model.generate_content_async(full_prompt)
+        # ─── ASYNC-FIRST call — avoids blocking the event loop (4.0s max before fallback) ───
+        response = await model.generate_content_async(full_prompt, timeout=4.0)
         raw_text = ""
         try:
             if hasattr(response, "text") and response.text:
@@ -651,8 +651,8 @@ Advisory context (location: {location}, domain: {domain_filter}):
 
     model = get_model()
     try:
-        # Async-first chip generation — non-blocking
-        response = await model.generate_content_async(full_prompt)
+        # Async-first chip generation — non-blocking (2.0s max before using instant generic chips)
+        response = await model.generate_content_async(full_prompt, timeout=2.0)
         raw = response.text.strip()
         # Extract JSON
         json_match = re.search(r"\{.*\}", raw, re.DOTALL)

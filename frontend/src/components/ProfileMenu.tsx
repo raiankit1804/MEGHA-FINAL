@@ -17,6 +17,25 @@ export interface ProfileMenuProps {
 export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat }: ProfileMenuProps) {
   const { colorScheme, setColorScheme } = useTheme();
   const [clearing, setClearing] = useState(false);
+  const [isOutage, setIsOutage] = useState(false);
+  const [togglingOutage, setTogglingOutage] = useState(false);
+
+  React.useEffect(() => {
+    api.get('/api/dev/outage-status')
+      .then((res) => setIsOutage(!!res?.simulated_outage))
+      .catch(() => {});
+  }, []);
+
+  const handleToggleOutage = async () => {
+    setTogglingOutage(true);
+    try {
+      const res = await api.get('/api/dev/toggle-outage');
+      setIsOutage(!!res?.simulated_outage);
+    } catch {
+      /* non-critical */
+    }
+    setTogglingOutage(false);
+  };
 
   const handleLogin = () => {
     window.location.href = GOOGLE_AUTH_URL;
@@ -98,6 +117,49 @@ export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Failover Simulator (Demo Mode) */}
+        <div style={divider} />
+        <div style={section}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem' }}>
+            <label style={sectionLabel}>Failover Simulator (Demo)</label>
+            <span style={{
+              fontSize: '0.7rem',
+              fontWeight: 700,
+              padding: '2px 8px',
+              borderRadius: '999px',
+              background: isOutage ? 'rgba(239, 68, 68, 0.15)' : 'rgba(34, 197, 94, 0.15)',
+              color: isOutage ? '#ef4444' : '#22c55e',
+              border: `1px solid ${isOutage ? '#ef4444' : '#22c55e'}`
+            }}>
+              {isOutage ? 'Tier 3 (wttr.in)' : 'Tier 1 (Open-Meteo)'}
+            </span>
+          </div>
+          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginBottom: '0.65rem' }}>
+            {isOutage
+              ? '🔴 Primary API disabled. Live queries will route directly to wttr.in!'
+              : 'Simulate primary API outage to demonstrate automatic wttr.in failover.'}
+          </p>
+          <button
+            type="button"
+            onClick={handleToggleOutage}
+            disabled={togglingOutage}
+            style={{
+              ...toggleChip,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.4rem',
+              background: isOutage ? 'rgba(239, 68, 68, 0.12)' : 'var(--badge-bg)',
+              borderColor: isOutage ? '#ef4444' : 'var(--border-subtle)',
+              color: isOutage ? '#ef4444' : 'var(--accent-primary)',
+              fontWeight: 600,
+            }}
+          >
+            {togglingOutage ? 'Switching…' : isOutage ? '🟢 Restore Primary API (Open-Meteo)' : '🧪 Simulate API Outage (Switch to wttr.in)'}
+          </button>
         </div>
 
         {/* Chat History for logged in users */}
