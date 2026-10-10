@@ -574,20 +574,7 @@ export default function WeatherApp() {
               <span style={{ fontWeight: 800, fontSize: '0.72rem', letterSpacing: '0.04em' }}>SOS</span>
             </button>
 
-            {/* Quick 1-tap Dark / Light Mode Switcher */}
-            <button
-              type="button"
-              onClick={() => {
-                const next = colorScheme === 'dark' ? 'light' : 'dark';
-                setColorScheme(next);
-                if (user) api.patch('/api/user', { color_scheme: next }).catch(() => {});
-              }}
-              style={mobileHeaderActionBtn}
-              title={colorScheme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              aria-label="Toggle Dark / Light Mode"
-            >
-              <span style={{ fontSize: '0.95rem' }}>{colorScheme === 'dark' ? '☀️' : '🌙'}</span>
-            </button>
+
             <button
               type="button"
               onClick={handleNewChat}
