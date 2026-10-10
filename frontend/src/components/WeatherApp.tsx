@@ -534,7 +534,7 @@ export default function WeatherApp() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
-            {/* Mobile Download Button with shining effect */}
+            {/* Mobile Download Button with shining effect (Phone View Compact Icon) */}
             <button
               type="button"
               onClick={() => setShowDownload(true)}
@@ -545,12 +545,12 @@ export default function WeatherApp() {
             >
               <span className="shineSweep" aria-hidden="true" />
               <svg
-                width="13"
-                height="13"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.6"
+                strokeWidth="2.3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 aria-hidden="true"
@@ -560,7 +560,6 @@ export default function WeatherApp() {
                 <polyline points="7 10 12 15 17 10" />
                 <line x1="12" y1="15" x2="12" y2="3" />
               </svg>
-              <span>Download</span>
             </button>
 
             {/* Mobile SOS Emergency Button */}
