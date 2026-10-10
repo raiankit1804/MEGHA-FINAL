@@ -12,9 +12,10 @@ export interface ProfileMenuProps {
   onClose: () => void;
   onSettingsChange?: (changes: Partial<UserProfile>) => void;
   onNewChat?: () => void;
+  onLogout?: () => void;
 }
 
-export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat }: ProfileMenuProps) {
+export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat, onLogout }: ProfileMenuProps) {
   const { colorScheme, setColorScheme } = useTheme();
   const [clearing, setClearing] = useState(false);
   const [isOutage, setIsOutage] = useState(false);
@@ -38,7 +39,9 @@ export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat
   };
 
   const handleLogin = () => {
-    window.location.href = GOOGLE_AUTH_URL;
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    const targetUrl = origin ? `${GOOGLE_AUTH_URL}?redirect_to=${encodeURIComponent(origin)}` : GOOGLE_AUTH_URL;
+    window.location.href = targetUrl;
   };
 
   const handleLogout = async () => {
@@ -47,8 +50,20 @@ export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat
     } catch {
       /* non-critical */
     }
-    localStorage.removeItem('auth_token');
-    window.location.reload();
+    try {
+      localStorage.removeItem('wgpt_token');
+      localStorage.removeItem('auth_token');
+      sessionStorage.removeItem('wgpt_token');
+      sessionStorage.removeItem('auth_token');
+      document.cookie = 'wgpt_token=; Max-Age=0; path=/;';
+      document.cookie = 'wgpt_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    } catch {
+      /* non-critical */
+    }
+    onLogout?.();
+    if (typeof window !== 'undefined') {
+      window.location.href = window.location.pathname;
+    }
   };
 
   const handleClearHistory = async () => {
@@ -77,7 +92,15 @@ export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat
         <div style={section}>
           {user ? (
             <div style={userRow}>
-              {user.avatar_url && <img src={user.avatar_url} alt="" style={avatar} />}
+              <img
+                src={user.avatar_url || '/default-avatar.png'}
+                alt={user.name || 'User'}
+                style={avatar}
+                referrerPolicy="no-referrer"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = '/default-avatar.png';
+                }}
+              />
               <div>
                 <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{user.name}</div>
                 <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{user.email}</div>
@@ -91,31 +114,6 @@ export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat
               <button className="btn-primary" onClick={handleLogin} style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
                 <GoogleIcon />
                 Sign in with Google
-              </button>
-              <button
-                type="button"
-                className="btn-ghost"
-                onClick={() => {
-                  window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/auth/demo-login`;
-                }}
-                style={{
-                  width: '100%',
-                  marginTop: '0.5rem',
-                  fontSize: '0.8rem',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '0.35rem',
-                  color: 'var(--accent-primary)',
-                  border: '1px dashed var(--accent-primary)',
-                  borderRadius: 'var(--radius-md)',
-                  padding: '0.45rem',
-                  cursor: 'pointer',
-                  background: 'var(--bg-glass)',
-                }}
-                title="Quick login for testing chat history persistence"
-              >
-                ⚡ 1-Click Instant Login (Demo / Testing)
               </button>
             </div>
           )}

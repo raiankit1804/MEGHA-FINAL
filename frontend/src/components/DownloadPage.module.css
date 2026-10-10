@@ -1,0 +1,1801 @@
+/* Apple Keynote Style Reveal — Download & Coming Soon Page */
+
+.downloadOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #000000 !important;
+  color: #f5f5f7;
+  overflow-y: auto;
+  overflow-x: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: auto;
+  animation: keynoteFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes keynoteFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+
+/* Minimalist Apple Top Bar */
+/* Minimalist Apple Top Bar (Fixed over viewport) */
+.topBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1.5rem;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  min-width: 0;
+}
+
+.brandLogo {
+  width: 26px;
+  height: 26px;
+  object-fit: contain;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.6));
+}
+
+.brandName {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: #f5f5f7;
+  white-space: nowrap;
+}
+
+.keynoteTag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #a1a1a6;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  white-space: nowrap;
+}
+
+.closeButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #f5f5f7;
+  padding: 0.42rem 0.9rem;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.closeButton:hover {
+  background: rgba(255, 255, 255, 0.24);
+  transform: scale(1.02);
+}
+
+/* Page Container */
+.container {
+  position: relative;
+  z-index: 1;
+  max-width: 1140px;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0 auto;
+  margin-top: -5vh;
+  padding: 1rem 1.25rem 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* Hero Section */
+.hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  max-width: 860px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: clamp(0.72rem, 2.2vw, 0.84rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #e879f9;
+  background: rgba(232, 121, 249, 0.1);
+  border: 1px solid rgba(232, 121, 249, 0.3);
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  box-shadow: 0 0 16px rgba(232, 121, 249, 0.25);
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.eyebrowDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #e879f9;
+  box-shadow: 0 0 8px #e879f9;
+  flex-shrink: 0;
+  animation: pulseDot 2s infinite ease-in-out;
+}
+
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.8); }
+}
+
+.headline {
+  font-size: clamp(1.85rem, 5.5vw, 4.2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+  margin: 0;
+  color: #ffffff;
+  width: 100%;
+  max-width: 100%;
+  padding: 0 0.5rem;
+  box-sizing: border-box;
+  text-align: center;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+.headlineTop {
+  color: #ffffff;
+  display: inline-block;
+  max-width: 100%;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+.headlineBottom {
+  color: rgba(255, 255, 255, 0.82);
+  display: inline-block;
+  max-width: 100%;
+}
+
+/* Animated Typography Reveal Section */
+.revealHeadlineCluster {
+  margin: 0.5rem 0 0.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 72px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.revealTextFrame {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 54px;
+  width: 100%;
+}
+
+.revealTextWord {
+  font-size: clamp(1.2rem, 3.8vw, 2.45rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: #ffffff;
+  text-align: center;
+  background: linear-gradient(135deg, #ffffff 40%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  text-shadow: 0 0 40px rgba(192, 132, 252, 0.35);
+}
+
+.vaporLabel {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: #86868b;
+}
+
+.subheadline {
+  font-size: clamp(0.92rem, 2.5vw, 1.25rem);
+  font-weight: 400;
+  line-height: 1.55;
+  color: #a1a1a6;
+  max-width: 620px;
+  width: 100%;
+  padding: 0 0.75rem;
+  box-sizing: border-box;
+  margin: 0;
+  letter-spacing: -0.015em;
+  text-align: center;
+  word-break: normal;
+  overflow-wrap: break-word;
+}
+
+/* Apple Floating Device Showcase */
+.showcaseWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.deviceMockupFrame {
+  position: relative;
+  width: min(100%, 360px);
+  aspect-ratio: 9 / 18.5;
+  background: #09090b;
+  border-radius: 48px;
+  padding: 12px;
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.14),
+    0 0 0 8px #18181b,
+    0 30px 80px -10px rgba(192, 132, 252, 0.3),
+    0 40px 100px -20px rgba(0, 0, 0, 0.9);
+  animation: floatMockup 6s ease-in-out infinite;
+  overflow: hidden;
+}
+
+@keyframes floatMockup {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(0.4deg);
+  }
+}
+
+.deviceScreen {
+  width: 100%;
+  height: 100%;
+  border-radius: 38px;
+  background: radial-gradient(circle at 50% 30%, #0f172a 0%, #020617 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.5rem 1.25rem;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.screenDynamicIsland {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 22px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 10;
+}
+
+.screenRadarVisual {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  border: 1px dashed rgba(56, 189, 248, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.radarSweepBeam {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 230px;
+  height: 230px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    rgba(56, 189, 248, 0.45) 0deg,
+    rgba(192, 132, 252, 0.2) 35deg,
+    transparent 85deg,
+    transparent 360deg
+  );
+  animation: rotateRadarSweep 4s linear infinite;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+@keyframes rotateRadarSweep {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+.radarPulse1 {
+  position: absolute;
+  width: 170px;
+  height: 170px;
+  border-radius: 50%;
+  border: 1px solid rgba(192, 132, 252, 0.35);
+  animation: radarExpand 3s infinite linear;
+}
+
+.radarPulse2 {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(192, 132, 252, 0.22) 0%, transparent 70%);
+}
+
+.radarPulse3 {
+  position: absolute;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  border: 1px dashed rgba(192, 132, 252, 0.18);
+  animation: radarExpand 3s infinite linear 1.5s;
+}
+
+@keyframes radarExpand {
+  0% { transform: scale(0.6); opacity: 0.85; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+/* Phone Screen "Coming Soon" Holographic Card */
+.comingSoonCenterCard {
+  position: relative;
+  z-index: 10;
+  background: rgba(10, 16, 32, 0.82);
+  border: 1px solid rgba(192, 132, 252, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  border-radius: 22px;
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.32rem;
+  text-align: center;
+  animation: cardFloatGlow 4s ease-in-out infinite;
+  width: 86%;
+  max-width: 215px;
+  box-sizing: border-box;
+}
+
+@keyframes cardFloatGlow {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 24px rgba(192, 132, 252, 0.22);
+  }
+  50% {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.9), 0 0 36px rgba(56, 189, 248, 0.4);
+  }
+}
+
+.comingSoonLiveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.32);
+  padding: 0.22rem 0.6rem;
+  border-radius: 9999px;
+}
+
+.comingSoonLiveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+  animation: liveDotPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes liveDotPulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.4); opacity: 0.4; }
+}
+
+.comingSoonShimmerTitle {
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  margin-top: 0.15rem;
+  background: linear-gradient(90deg, #ffffff 0%, #38bdf8 30%, #e879f9 65%, #ffffff 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: textShimmerSweep 3s linear infinite;
+}
+
+@keyframes textShimmerSweep {
+  0% { background-position: 0% center; }
+  100% { background-position: 200% center; }
+}
+
+.comingSoonSubText {
+  font-size: 0.68rem;
+  color: #cbd5e1;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.comingSoonProgressTrack {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  margin-top: 0.35rem;
+  overflow: hidden;
+}
+
+.comingSoonProgressBar {
+  width: 88%;
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8, #c084fc);
+  border-radius: 9999px;
+  animation: progressPulseGlow 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes progressPulseGlow {
+  from { opacity: 0.75; }
+  to { opacity: 1; filter: drop-shadow(0 0 6px #38bdf8); }
+}
+
+.comingSoonMetaStatus {
+  font-size: 0.62rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-top: 0.15rem;
+}
+
+.screenTopInfo {
+  position: relative;
+  z-index: 5;
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.screenCity {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.screenTemp {
+  font-size: 3.2rem;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+  line-height: 1;
+  margin: 0.3rem 0;
+}
+
+.screenCondition {
+  font-size: 0.82rem;
+  color: #c084fc;
+  font-weight: 600;
+}
+
+.screenBottomAlert {
+  position: relative;
+  z-index: 5;
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  backdrop-filter: blur(12px);
+  border-radius: 18px;
+  padding: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.screenAlertIcon {
+  font-size: 1.4rem;
+}
+
+.screenAlertTitle {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.screenAlertSub {
+  font-size: 0.68rem;
+  color: #94a3b8;
+}
+
+.deviceReflection {
+  position: absolute;
+  bottom: -40px;
+  width: 320px;
+  height: 30px;
+  background: radial-gradient(ellipse, rgba(192, 132, 252, 0.25) 0%, transparent 70%);
+  filter: blur(14px);
+  pointer-events: none;
+}
+
+/* Call to Action Buttons (Apple Keynote Style) */
+.actionCluster {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 480px;
+}
+
+.primaryCta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 1.05rem 2rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #000;
+  background: #ffffff;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.25);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.primaryCta:hover {
+  transform: scale(1.02);
+  background: #f5f5f7;
+  box-shadow: 0 14px 40px rgba(255, 255, 255, 0.38);
+}
+
+.ctaMeta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 0.82rem;
+  color: #86868b;
+}
+
+.ctaMetaDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: #52525b;
+}
+
+/* Apple Bento Grid Showcase (Coming Soon Features) */
+.bentoSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem;
+}
+
+.bentoHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+  max-width: 720px;
+  width: 100%;
+}
+
+.bentoTitle {
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.12;
+  display: block;
+  width: 100%;
+}
+
+.bentoSub {
+  font-size: clamp(0.95rem, 2vw, 1.15rem);
+  color: #a1a1a6;
+  margin: 0;
+  letter-spacing: -0.015em;
+  line-height: 1.5;
+  display: block;
+  width: 100%;
+}
+
+.bentoGrid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 1.35rem;
+  width: 100%;
+}
+
+.bentoCard {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.015) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 28px;
+  padding: 2.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 20px 45px -10px rgba(0, 0, 0, 0.7);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.bentoCard:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.025) 100%);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 28px 60px -10px rgba(0, 0, 0, 0.85);
+}
+
+.bentoCol8 {
+  grid-column: span 12;
+}
+
+@media (min-width: 960px) {
+  .bentoCol8 {
+    grid-column: span 8;
+  }
+}
+
+.bentoCol4 {
+  grid-column: span 12;
+}
+
+@media (min-width: 960px) {
+  .bentoCol4 {
+    grid-column: span 4;
+  }
+}
+
+.bentoCol6 {
+  grid-column: span 12;
+}
+
+@media (min-width: 960px) {
+  .bentoCol6 {
+    grid-column: span 6;
+  }
+}
+
+.bentoCol12 {
+  grid-column: span 12;
+}
+
+.bentoTag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #86868b;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.bentoHeadline {
+  font-size: clamp(1.4rem, 2.4vw, 1.95rem);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: #ffffff;
+  margin: 0 0 0.6rem 0;
+  line-height: 1.18;
+}
+
+.bentoText {
+  font-size: 0.94rem;
+  line-height: 1.52;
+  color: #a1a1a6;
+  margin: 0;
+}
+
+.bentoBigStat {
+  font-size: clamp(3.2rem, 7vw, 5.2rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin: 1.2rem 0 0.5rem;
+  background: linear-gradient(135deg, #38bdf8 0%, #a855f7 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bentoProgressTrack {
+  width: 100%;
+  height: 5px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  margin-top: 1.5rem;
+  overflow: hidden;
+}
+
+.bentoProgressBar {
+  height: 100%;
+  background: linear-gradient(90deg, #38bdf8, #c084fc);
+  border-radius: 9999px;
+}
+
+/* --- Apple-Grade Specialized Widgets Inside Bento Cards --- */
+
+/* 1. Barometer & Air Pressure Widget */
+.pressureWidget {
+  margin-top: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 1.4rem;
+}
+
+.pressureGaugeRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.pressureSvgWrap {
+  width: 110px;
+  height: 65px;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.pressureValueCluster {
+  display: flex;
+  flex-direction: column;
+}
+
+.pressureNumber {
+  font-size: clamp(2rem, 3.5vw, 2.6rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #38bdf8;
+  line-height: 1;
+}
+
+.pressureUnit {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-left: 0.3rem;
+}
+
+.pressureTrendBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.74rem;
+  font-weight: 600;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  background: rgba(239, 68, 68, 0.14);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  margin-top: 0.5rem;
+  width: fit-content;
+}
+
+.pressureMetaRow {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.76rem;
+  color: #86868b;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 0.75rem;
+}
+
+/* 2. Moon & Celestial Phase Widget */
+.moonWidget {
+  margin-top: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 1.4rem;
+}
+
+.moonHeaderRow {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.moonOrbVisual {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffffff 0%, #e2e8f0 40%, #94a3b8 70%, #475569 100%);
+  box-shadow: 0 0 25px rgba(226, 232, 240, 0.4), inset -10px -4px 15px rgba(15, 23, 42, 0.85);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.moonOrbCrater1 {
+  position: absolute;
+  top: 25%;
+  left: 30%;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(100, 116, 139, 0.35);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.moonOrbCrater2 {
+  position: absolute;
+  bottom: 25%;
+  right: 28%;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(100, 116, 139, 0.28);
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.moonPhaseText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.moonPhaseName {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.moonPhaseIllum {
+  font-size: 0.8rem;
+  color: #c084fc;
+  font-weight: 600;
+}
+
+.moonEphemerisGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.65rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 0.85rem;
+}
+
+.moonEphemerisItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.moonEphemerisLabel {
+  font-size: 0.7rem;
+  color: #86868b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.moonEphemerisValue {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+/* 3. Instant Situation PDF Report Generation Widget */
+.pdfWidget {
+  margin-top: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.pdfMockupPaper {
+  background: linear-gradient(180deg, #18181b 0%, #09090b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6);
+  position: relative;
+  overflow: hidden;
+}
+
+.pdfPaperHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.5rem;
+}
+
+.pdfDocTitle {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #38bdf8;
+  text-transform: uppercase;
+}
+
+.pdfStamp {
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.pdfDataPreview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  font-size: 0.72rem;
+}
+
+.pdfDataCol {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.pdfDataCol span:first-child {
+  color: #86868b;
+  font-size: 0.65rem;
+}
+
+.pdfDataCol span:last-child {
+  color: #f8fafc;
+  font-weight: 600;
+}
+
+.pdfGenerateButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+  padding: 0.8rem 1.4rem;
+  border-radius: 9999px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s ease;
+  width: 100%;
+}
+
+.pdfGenerateButton:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(255, 255, 255, 0.12);
+}
+
+.pdfSuccessNotification {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #4ade80;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.25);
+  padding: 0.55rem 1rem;
+  border-radius: 9999px;
+  animation: fadeInToast 0.3s ease;
+}
+
+@keyframes fadeInToast {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 4. Everyday Lifestyle & Activity Scorecard Widget */
+.lifestyleWidget {
+  margin-top: 1.6rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.85rem;
+}
+
+@media (max-width: 600px) {
+  .lifestyleWidget {
+    grid-template-columns: 1fr;
+  }
+}
+
+.activityPillCard {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  padding: 1.1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  transition: all 0.2s ease;
+}
+
+.activityPillCard:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.activityCardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.activityIconName {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.activityScoreBadge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.18rem 0.5rem;
+  border-radius: 9999px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.activityCondition {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #cbd5e1;
+}
+
+.activitySubDesc {
+  font-size: 0.72rem;
+  color: #86868b;
+  line-height: 1.4;
+}
+
+/* 5. Dual On-Device AI Models Switcher Widget */
+.aiModelWidget {
+  margin-top: 1.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.aiSegmentedControl {
+  display: flex;
+  padding: 0.3rem;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  width: 100%;
+  max-width: 680px;
+  gap: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .aiSegmentedControl {
+    flex-direction: column;
+    border-radius: 20px;
+    padding: 0.4rem;
+  }
+}
+
+.aiSegmentBtn {
+  flex: 1;
+  padding: 0.6rem 0.85rem;
+  border-radius: 9999px;
+  background: transparent;
+  border: none;
+  color: #86868b;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+
+.aiSegmentBtnActive {
+  background: #ffffff !important;
+  color: #000000 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.aiModelShowcase {
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  padding: 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.aiModelHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.aiModelTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.aiModelTag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.aiTagOnDevice {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.aiTagBudget {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.aiTagCloud {
+  background: rgba(168, 85, 247, 0.15);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.aiSpecsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.85rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  padding-top: 1rem;
+}
+
+.aiSpecItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.aiSpecItemLabel {
+  font-size: 0.7rem;
+  color: #86868b;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.aiSpecItemValue {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #f1f5f9;
+}
+
+/* Keynote Subscription Capsule */
+.notifyCapsule {
+  width: 100%;
+  max-width: 640px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 32px;
+  padding: 2.5rem 2rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.notifyCapsuleTitle {
+  font-size: 1.45rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  margin: 0;
+}
+
+.notifyCapsuleSub {
+  font-size: 0.9rem;
+  color: #86868b;
+  margin: 0;
+  max-width: 440px;
+}
+
+.notifyForm {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 440px;
+}
+
+.notifyInput {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  padding: 0.85rem 1.4rem;
+  font-size: 0.9rem;
+  color: #ffffff;
+  outline: none;
+  transition: all 0.18s ease;
+}
+
+.notifyInput:focus {
+  border-color: #38bdf8;
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+}
+
+.notifyButton {
+  background: #ffffff;
+  color: #000000;
+  border: none;
+  border-radius: 9999px;
+  padding: 0.85rem 1.4rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.notifyButton:hover {
+  background: #e2e8f0;
+  transform: scale(1.02);
+}
+
+.successMessage {
+  color: #22c55e;
+  font-size: 0.92rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* Mobile & Tablet Responsive Layout Optimizations */
+@media (max-width: 768px) {
+  .topBar {
+    padding: 0.65rem 1rem;
+  }
+
+  .keynoteTag {
+    display: none;
+  }
+
+  .container {
+    margin-top: -6vh;
+    padding: 1rem 0.85rem 4rem;
+    gap: 2rem;
+  }
+
+  .headline {
+    font-size: clamp(1.45rem, 6.5vw, 2.4rem);
+    padding: 0 0.25rem;
+    line-height: 1.18;
+  }
+
+  .subheadline {
+    font-size: 0.88rem;
+    line-height: 1.48;
+    padding: 0 0.25rem;
+  }
+
+  .eyebrow {
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    padding: 0.28rem 0.65rem;
+  }
+
+  .deviceMockupFrame {
+    width: min(100%, 300px);
+    border-radius: 38px;
+    padding: 8px;
+  }
+
+  .deviceScreen {
+    border-radius: 30px;
+    padding: 1.25rem 1rem;
+  }
+
+  .screenTemp {
+    font-size: 2.6rem;
+  }
+
+  .bentoGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .bentoCol8,
+  .bentoCol4,
+  .bentoCol6,
+  .bentoCol12 {
+    grid-column: span 1 !important;
+  }
+
+  .bentoCard {
+    padding: 1.35rem 1.15rem;
+    border-radius: 22px;
+  }
+
+  .bentoTitle {
+    font-size: 1.85rem;
+  }
+
+  .bentoHeadline {
+    font-size: 1.35rem;
+  }
+
+  .bentoBigStat {
+    font-size: 2.8rem;
+    margin: 0.8rem 0 0.3rem;
+  }
+
+  .notifyCapsule {
+    padding: 1.8rem 1.2rem;
+    border-radius: 24px;
+  }
+
+  .notifyForm {
+    flex-direction: column;
+    gap: 0.65rem;
+  }
+
+  .notifyButton {
+    width: 100%;
+    padding: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .topBar {
+    padding: 0.55rem 0.75rem;
+  }
+
+  .brandName {
+    font-size: 0.88rem;
+  }
+
+  .closeButton {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.76rem;
+  }
+
+  .primaryCta {
+    padding: 0.95rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  .ctaMeta {
+    font-size: 0.72rem;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .deviceMockupFrame {
+    width: min(100%, 270px);
+    border-radius: 34px;
+    padding: 7px;
+  }
+
+  .deviceScreen {
+    border-radius: 26px;
+    padding: 1rem 0.85rem;
+  }
+}
+
+/* Feature Chips around Phone Showcase */
+.chipCluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  max-width: 680px;
+  margin-top: 1.8rem;
+}
+
+.featureChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  padding: 0.45rem 1rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #e2e8f0;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: all 0.2s ease;
+}
+
+.featureChip:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(56, 189, 248, 0.4);
+  transform: translateY(-2px);
+}
+
+/* 5 Specialized Operating Modes Grid */
+.modesSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  text-align: center;
+  max-width: 720px;
+  width: 100%;
+}
+
+.sectionTag {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #38bdf8;
+  margin-bottom: 0.2rem;
+}
+
+.sectionTitle {
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.15;
+}
+
+.sectionSub {
+  font-size: 1rem;
+  color: #a1a1a6;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.modesGrid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.1rem;
+  width: 100%;
+}
+
+@media (max-width: 1100px) {
+  .modesGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .modesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .modesGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.modeCard {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.015) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  padding: 1.6rem 1.3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 16px 36px -10px rgba(0, 0, 0, 0.6);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.modeCard:hover {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.075) 0%, rgba(255, 255, 255, 0.025) 100%);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-3px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25), 0 24px 45px -8px rgba(0, 0, 0, 0.75);
+}
+
+.modeIconBadge {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.55rem;
+  margin-bottom: 0.2rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.modeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modeTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.modeTag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.modeDesc {
+  font-size: 0.84rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.48;
+}
+
+/* Specs & Architecture Highlights */
+.specsSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.specsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.specCard {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 1.8rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.25s ease;
+}
+
+.specCard:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+  transform: translateY(-2px);
+}
+
+.specValue {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, #38bdf8 0%, #c084fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.specTitle {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.specDesc {
+  font-size: 0.84rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.45;
+}
+
+/* Development Roadmap Section */
+.roadmapSection {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.roadmapGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.roadmapCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  padding: 1.6rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.roadmapHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.roadmapQuarter {
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #e2e8f0;
+}
+
+.roadmapStatusDone {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: rgba(34, 197, 94, 0.15);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.3);
+}
+
+.roadmapStatusActive {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  animation: pulseBadge 2s infinite ease-in-out;
+}
+
+.roadmapStatusUpcoming {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #a1a1a6;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+@keyframes pulseBadge {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.roadmapTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+.roadmapDesc {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.statusBadge {
+  color: #38bdf8;
+  font-weight: 600;
+}
+
+

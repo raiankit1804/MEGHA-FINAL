@@ -257,7 +257,7 @@ function LanguageToggle({ value, onChange }: { value: string; onChange: (lang: s
 }
 
 function ProfileButton({ user, onClick }: { user?: UserProfile | null; onClick: () => void }) {
-  if (user?.avatar_url) {
+  if (user) {
     return (
       <button
         onClick={onClick}
@@ -267,9 +267,13 @@ function ProfileButton({ user, onClick }: { user?: UserProfile | null; onClick: 
         title={user.name || 'Profile'}
       >
         <img
-          src={user.avatar_url}
+          src={user.avatar_url || '/default-avatar.png'}
           alt={user.name || 'User'}
           style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }}
+          referrerPolicy="no-referrer"
+          onError={(e) => {
+            (e.currentTarget as HTMLImageElement).src = '/default-avatar.png';
+          }}
         />
       </button>
     );

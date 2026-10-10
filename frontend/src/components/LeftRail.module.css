@@ -253,7 +253,7 @@
   border: 1px solid transparent;
   background: transparent;
   cursor: pointer;
-  overflow: hidden;
+  overflow: visible;
   transition: background 0.18s ease;
 }
 
@@ -263,9 +263,16 @@
 
 .avatarImg {
   width: 32px;
+  min-width: 32px;
+  max-width: 32px;
   height: 32px;
+  min-height: 32px;
+  max-height: 32px;
   border-radius: 50%;
   object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+  aspect-ratio: 1 / 1;
 }
 
 .avatarFallback {
@@ -631,3 +638,74 @@
   0%, 100% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.4); opacity: 0.4; }
 }
+
+/* Eye-catching Android APK Navigation Button */
+.apkDownloadRailBtn {
+  position: relative;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(37, 99, 235, 0.04) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apkDownloadRailBtn:hover {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.18) 0%, rgba(37, 99, 235, 0.12) 100%);
+  border-color: rgba(56, 189, 248, 0.45);
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.22);
+}
+
+.apkPulseGlow {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 8px #22c55e;
+  animation: pulseGlow 1.6s infinite;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 6px #22c55e;
+  }
+  50% {
+    transform: scale(1.3);
+    box-shadow: 0 0 12px #22c55e, 0 0 18px rgba(34, 197, 94, 0.4);
+  }
+}
+
+.apkPillBadge {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.45rem;
+  border-radius: 9999px;
+  color: #fff;
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.35);
+  animation: badgeShimmer 3s ease-in-out infinite;
+}
+
+@keyframes badgeShimmer {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.25); transform: translateY(-0.5px); }
+}
+
+.mobileApkBtn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  margin: 0.25rem 0.5rem 0.5rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.12) 0%, rgba(37, 99, 235, 0.08) 100%);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(56, 189, 248, 0.15);
+}
+

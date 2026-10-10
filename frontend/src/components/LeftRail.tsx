@@ -29,6 +29,7 @@ export interface LeftRailProps {
   onOpenMobileDrawer?: () => void;
   domainFilter?: string;
   onDomainChange?: (modeId: string) => void;
+  onOpenDownload?: () => void;
 }
 
 export default function LeftRail({
@@ -47,6 +48,7 @@ export default function LeftRail({
   onOpenMobileDrawer,
   domainFilter = 'normal',
   onDomainChange,
+  onOpenDownload,
 }: LeftRailProps) {
   const { colorScheme, setColorScheme } = useTheme();
   const [isHovered, setIsHovered] = useState(false);
@@ -93,6 +95,25 @@ export default function LeftRail({
               </svg>
             </span>
             <span className={styles.btnLabel}>{getTranslation(language, 'newChat', 'New chat')}</span>
+          </button>
+
+          {/* Android APK Download & Upcoming Features */}
+          <button
+            type="button"
+            className={`${styles.railBtn} ${styles.apkDownloadRailBtn}`}
+            onClick={onOpenDownload}
+            title="Megha Setu for Android • Coming Soon Preview"
+            aria-label="Megha Setu for Android Coming Soon"
+            id="nav-download-apk-btn"
+          >
+            <span className={styles.btnIcon} style={{ fontSize: '1.18rem', position: 'relative' }}>
+              🤖
+              <span className={styles.apkPulseGlow} />
+            </span>
+            <span className={styles.btnLabel} style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <span>Android App</span>
+              <span className={styles.apkPillBadge}>Soon 🚀</span>
+            </span>
           </button>
 
           {/* Chat History */}
@@ -177,11 +198,20 @@ export default function LeftRail({
             id="profile-menu-trigger"
           >
             <span className={styles.btnIcon}>
-              {user?.avatar_url ? (
-                <img src={user.avatar_url} alt={user.name || 'User'} className={styles.avatarImg} />
+              {user ? (
+                <img
+                  src={user.avatar_url || '/default-avatar.png'}
+                  alt={user.name || 'User'}
+                  className={styles.avatarImg}
+                  style={{ width: 32, height: 32, minWidth: 32, minHeight: 32, borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }}
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = '/default-avatar.png';
+                  }}
+                />
               ) : (
                 <div className={styles.avatarFallback}>
-                  <span>{user?.name ? user.name.charAt(0).toUpperCase() : '👤'}</span>
+                  <span>👤</span>
                 </div>
               )}
             </span>
@@ -236,6 +266,22 @@ export default function LeftRail({
               >
                 <span style={{ fontSize: '1.1rem', fontWeight: 700 }}>＋</span>
                 <span>{getTranslation(language, 'newChat', 'New chat')}</span>
+              </button>
+
+              {/* Android APK Download Card */}
+              <button
+                type="button"
+                className={styles.mobileApkBtn}
+                onClick={() => {
+                  onOpenDownload?.();
+                  onCloseMobileDrawer?.();
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '1.2rem' }}>🤖</span>
+                  <span>Android App (APK)</span>
+                </div>
+                <span className={styles.apkPillBadge}>GET APP ⚡</span>
               </button>
 
               {/* Intelligence Domain Modes */}
@@ -352,11 +398,19 @@ export default function LeftRail({
                   onCloseMobileDrawer?.();
                 }}
               >
-                {user?.avatar_url ? (
-                  <img src={user.avatar_url} alt="" className={styles.mobileAvatarImg} />
+                {user ? (
+                  <img
+                    src={user.avatar_url || '/default-avatar.png'}
+                    alt=""
+                    className={styles.mobileAvatarImg}
+                    referrerPolicy="no-referrer"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/default-avatar.png';
+                    }}
+                  />
                 ) : (
                   <div className={styles.mobileAvatarFallback}>
-                    <span>{user?.name ? user.name.charAt(0).toUpperCase() : '👤'}</span>
+                    <span>👤</span>
                   </div>
                 )}
                 <div className={styles.mobileProfileInfo}>

@@ -171,6 +171,9 @@ async def clear_all_caches() -> None:
             keys = await _redis.keys(f"{WEATHER_PREFIX}*")
             if keys:
                 await _redis.delete(*keys)
+            w_keys = await _redis.keys(f"{WARNING_PREFIX}*")
+            if w_keys:
+                await _redis.delete(*w_keys)
         except Exception as exc:
             logger.debug("Redis weather key purge error: %s", exc)
     keys_to_del = [k for k in _memory_cache.keys() if k.startswith(WEATHER_PREFIX) or k.startswith(WARNING_PREFIX)]

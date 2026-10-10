@@ -64,9 +64,11 @@ async def require_user(request: Request) -> dict:
 
 
 def get_effective_redirect_uri() -> str:
-    """Return verified redirect URI, preventing localhost usage in production/Render."""
+    """Return verified redirect URI, preventing localhost usage in production/Render and stripping whitespace."""
     import os
     uri = getattr(settings, "google_redirect_uri", "")
+    if uri:
+        uri = uri.strip()
     if uri and "localhost" not in uri:
         return uri
     # Auto-resolve production Render URI if running remotely
@@ -77,11 +79,11 @@ def get_effective_redirect_uri() -> str:
         or os.getenv("PORT")
     ):
         return "https://megha-backend-01bw.onrender.com/api/auth/callback"
-    return uri or "https://megha-backend-01bw.onrender.com/api/auth/callback"
+    return (uri or "https://megha-backend-01bw.onrender.com/api/auth/callback").strip()
 
 
 @router.get("/auth/google")
-async def google_login():
+async def google_login(redirect_to: Optional[str] = None):
     """Redirect to Google OAuth consent screen."""
     if not settings.google_oauth_available:
         raise HTTPException(
@@ -90,18 +92,20 @@ async def google_login():
         )
     redirect_uri = get_effective_redirect_uri()
     params = {
-        "client_id": settings.google_client_id,
+        "client_id": settings.google_client_id.strip(),
         "redirect_uri": redirect_uri,
         "response_type": "code",
         "scope": "openid email profile",
         "access_type": "offline",
     }
+    if redirect_to:
+        params["state"] = redirect_to.strip()
     query = "&".join(f"{k}={v}" for k, v in params.items())
     return RedirectResponse(url=f"{GOOGLE_AUTH_URL}?{query}")
 
 
 @router.get("/auth/callback")
-async def google_callback(code: str, response: Response):
+async def google_callback(code: str, response: Response, state: Optional[str] = None):
     """Exchange Google auth code for user info — server-side only."""
     if not settings.google_oauth_available:
         raise HTTPException(status_code=503, detail="Google OAuth not configured")
@@ -149,6 +153,8 @@ async def google_callback(code: str, response: Response):
 
     # Redirect to frontend
     frontend_url = "http://localhost:3000" if settings.environment == "development" else settings.frontend_url.rstrip("/")
+    if state and any(allowed in state for allowed in ["localhost", "meghasetu", "vercel.app"]):
+        frontend_url = state.rstrip("/")
     redirect = RedirectResponse(url=f"{frontend_url}?login=success&token={app_token}")
     redirect.set_cookie(
         key="wgpt_token",
@@ -160,35 +166,11 @@ async def google_callback(code: str, response: Response):
     )
     return redirect
 
-
-@router.get("/auth/demo-login")
-async def demo_login():
-    """1-Click instant login for local development, hackathon demos, and video walkthroughs."""
-    profile = UserProfile(
-        google_sub="demo_evaluator_sub_101",
-        name="Ankit Rai",
-        email="rai774354@gmail.com",
-        avatar_url=None,
-    )
-    user_id = await upsert_user_profile(profile)
-    app_token = create_jwt(user_id, "rai774354@gmail.com")
-
-    frontend_url = "http://localhost:3000" if settings.environment == "development" else settings.frontend_url.rstrip("/")
-    redirect = RedirectResponse(url=f"{frontend_url}?login=success&token={app_token}")
-    redirect.set_cookie(
-        key="wgpt_token",
-        value=app_token,
-        httponly=True,
-        secure=settings.environment != "development",
-        samesite="lax",
-        max_age=settings.jwt_expire_hours * 3600,
-    )
-    return redirect
 
 
 @router.post("/auth/logout")
 async def logout(response: Response):
-    response.delete_cookie("wgpt_token")
+    response.delete_cookie(key="wgpt_token", path="/", httponly=True, samesite="lax")
     return {"status": "logged_out"}
 
 

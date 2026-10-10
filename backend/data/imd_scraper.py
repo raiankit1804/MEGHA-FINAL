@@ -188,6 +188,9 @@ async def fetch_warnings_for_location(
     all_warnings = []
     if isinstance(district_warnings, list):
         for w in district_warnings:
+            sev = (w.get("severity") or "").lower()
+            if sev in ["green", "none", "no warning", ""]:
+                continue
             loc = (w.get("location_name") or "").lower()
             if not location_name or location_name.lower() in loc or (state and state.lower() in loc):
                 all_warnings.append(w)
@@ -195,8 +198,8 @@ async def fetch_warnings_for_location(
     if isinstance(cyclone_warnings, list):
         all_warnings.extend(cyclone_warnings)
 
-    # If no scraped bulletin is returned, generate IMD-aligned color-coded watches
-    # matching IMD Nowcast criteria (thunderstorms, lightning, convective rain)
+    # If no scraped bulletin is returned, only generate color-coded watches
+    # if actual severe convective conditions exist (thunderstorms, severe squalls, heavy rain)
     if not all_warnings and weather_data:
         curr = weather_data.get("current_weather", {})
         daily = weather_data.get("daily_forecast", [])
@@ -212,13 +215,13 @@ async def fetch_warnings_for_location(
             + " " + " ".join(str(d.get("condition") or "") for d in daily[:4])
         ).lower()
 
+        # Legitimate thunderstorm / lightning detection
         has_thunder = (
             w_code in [95, 96, 99]
-            or any((h.get("weather_code") or 0) in [95, 96, 99] for h in hourly)
-            or any((d.get("weather_code") or 0) in [95, 96, 99] for d in daily[:4])
+            or any((h.get("weather_code") or 0) in [95, 96, 99] for h in hourly[:12])
+            or any((d.get("weather_code") or 0) in [95, 96, 99] for d in daily[:2])
             or "thunder" in cond_text
             or "lightning" in cond_text
-            or "storm" in cond_text
         )
 
         p_today = float(today_d.get("precipitation_sum") or 0.0)
@@ -231,17 +234,17 @@ async def fetch_warnings_for_location(
         wind_speed = float(curr.get("wind_speed") or 0.0)
 
         # 1. Thunderstorm with Lightning Watch (Yellow / Orange)
-        if has_thunder or rain_prob >= 40 or "rain" in cond_text or "shower" in cond_text:
+        if has_thunder:
             is_severe = (
                 w_code in [96, 99]
-                or any(h.get("weather_code") in [96, 99] for h in hourly)
-                or any(d.get("weather_code") in [96, 99] for d in daily[:3])
+                or any(h.get("weather_code") in [96, 99] for h in hourly[:12])
+                or any(d.get("weather_code") in [96, 99] for d in daily[:2])
             )
             sev = "orange" if is_severe else "yellow"
             hazard_name = "Orange Warning for Severe Thunderstorms & Hail" if sev == "orange" else "Yellow Watch for Thunderstorms & Lightning"
             desc = (
                 f"{hazard_name} in effect for {location_name}. "
-                f"Isolated lightning strikes, convective gusty winds, and sudden thundery showers anticipated. "
+                f"Isolated lightning strikes, convective gusty winds, and thundery activity observed or forecast. "
                 f"IMD Safety Advisory: Stay indoors during lightning activity; unplug sensitive electronic devices and avoid sheltering under isolated trees."
             )
             all_warnings.append(_make_warning_record(
@@ -253,8 +256,17 @@ async def fetch_warnings_for_location(
                 bulletin_type="imd_nowcast_alert",
             ))
 
-        # 2. Heavy Rainfall Alert
-        if precip_sum >= 64.5:
+        # 2. Heavy Rainfall Alert (IMD threshold: >= 64.5 mm heavy, >= 115.6 mm very heavy)
+        if precip_sum >= 115.6:
+            all_warnings.append(_make_warning_record(
+                hazard="Red Warning for Extremely Heavy Rainfall",
+                location_name=location_name,
+                severity="red",
+                description=f"Extremely heavy rainfall ({precip_sum:.1f} mm) expected in {location_name}. High flood and waterlogging alert. Source: India Meteorological Department",
+                state=state,
+                bulletin_type="imd_rainfall_alert",
+            ))
+        elif precip_sum >= 64.5:
             all_warnings.append(_make_warning_record(
                 hazard="Orange Alert for Heavy Rainfall",
                 location_name=location_name,
@@ -263,7 +275,7 @@ async def fetch_warnings_for_location(
                 state=state,
                 bulletin_type="imd_rainfall_alert",
             ))
-        elif precip_sum >= 35.5:
+        elif precip_sum >= 35.5 and rain_prob >= 70:
             all_warnings.append(_make_warning_record(
                 hazard="Yellow Watch for Moderate to Heavy Rain",
                 location_name=location_name,
@@ -273,8 +285,8 @@ async def fetch_warnings_for_location(
                 bulletin_type="imd_rainfall_alert",
             ))
 
-        # 3. Squally Wind Watch
-        if wind_speed >= 35:
+        # 3. Squally Wind Watch (IMD threshold: >= 45 km/h)
+        if wind_speed >= 45:
             all_warnings.append(_make_warning_record(
                 hazard="Yellow Watch for Squally Winds",
                 location_name=location_name,
@@ -283,17 +295,6 @@ async def fetch_warnings_for_location(
                 state=state,
                 bulletin_type="imd_wind_alert",
             ))
-
-    # If still no warning but location is requested, provide standard IMD seasonal convective watch
-    if not all_warnings:
-        all_warnings.append(_make_warning_record(
-            hazard="Yellow Watch for Thunderstorms & Lightning",
-            location_name=location_name,
-            severity="yellow",
-            description=f"IMD Seasonal Convective Watch active for {location_name}. Probability of isolated afternoon thunderstorms with lightning and gusty winds. Stay updated with live radar.",
-            state=state,
-            bulletin_type="imd_nowcast_alert",
-        ))
 
     return all_warnings
 

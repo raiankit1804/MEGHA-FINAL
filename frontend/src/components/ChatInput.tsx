@@ -9,6 +9,7 @@ import { useTheme } from '../theme/ThemeProvider';
 import { ThinkingOrb } from 'thinking-orbs';
 import { BorderBeam } from 'border-beam';
 import { VoiceBeam, useMicrophone } from 'voice-glow';
+import LatticeLoader from './LatticeLoader';
 
 const DOMAIN_MODES: DomainMode[] = [
   { id: 'normal', icon: '🏙️', nameKey: 'modes.normal', label: 'City', desc: 'Urban weather, daily commutes & rain updates' },
@@ -469,7 +470,7 @@ export default function ChatInput({
             )}
           </button>
 
-          {/* Send Button with ThinkingOrb animation */}
+          {/* Send Button with LatticeLoader animation */}
           <button
             type="button"
             className={`${styles.actionBtn} ${styles.sendBtn} ${query.trim() ? styles.sendBtnReady : ''}`}
@@ -480,10 +481,17 @@ export default function ChatInput({
             style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}
           >
             {loading ? (
-              <ThinkingOrb
-                state="working"
-                size={20}
-                theme={colorScheme === 'dark' ? 'dark' : 'light'}
+              <LatticeLoader
+                status="working"
+                grid={3}
+                shape="round"
+                cellSize={3}
+                gap={1.5}
+                fontSize={0}
+                showTimer={false}
+                label=""
+                idleOpacity={0.25}
+                color="currentColor"
               />
             ) : (
               <SendIcon />

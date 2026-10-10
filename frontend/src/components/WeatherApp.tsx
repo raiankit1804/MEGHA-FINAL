@@ -12,6 +12,7 @@ import SosModal from './SosModal';
 import DisasterWarningModal from './DisasterWarningModal';
 import SatelliteModal from './SatelliteModal';
 import LanguageModal from './LanguageModal';
+import DownloadPage from './DownloadPage';
 import { useTheme } from '../theme/ThemeProvider';
 import {
   ChatMessage,
@@ -95,6 +96,7 @@ export default function WeatherApp() {
   const [showWarnings, setShowWarnings] = useState(false);
   const [showSatellite, setShowSatellite] = useState(false);
   const [showLanguageModal, setShowLanguageModal] = useState(false);
+  const [showDownload, setShowDownload] = useState(false);
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
 
@@ -248,11 +250,11 @@ export default function WeatherApp() {
     const url = `/api/warnings?location=${encodeURIComponent(locName)}${lat ? `&lat=${lat}` : ''}${lon ? `&lon=${lon}` : ''}${state ? `&state=${encodeURIComponent(state)}` : ''}`;
     api.get(url)
       .then((res) => {
-        if (res.warnings && res.warnings.length > 0) {
-          setActiveWarnings(res.warnings);
-        }
+        setActiveWarnings(res?.warnings || []);
       })
-      .catch(() => {});
+      .catch(() => {
+        setActiveWarnings([]);
+      });
   }, [session.sessionLocation?.name, session.sessionLocation?.latitude]);
 
   // Sync current conversation into sessionsList & localStorage
@@ -358,6 +360,8 @@ export default function WeatherApp() {
               icon: '/megha_setu_phone.png',
             });
           }
+        } else {
+          setActiveWarnings([]);
         }
       } catch (err: any) {
         setError(err.message || 'Something went wrong. Please try again.');
@@ -376,6 +380,7 @@ export default function WeatherApp() {
     setShowWarnings(false);
     setShowProfile(false);
     setShowLanguageModal(false);
+    setShowDownload(false);
     setIsMobileDrawerOpen(false);
   }, []);
 
@@ -387,6 +392,7 @@ export default function WeatherApp() {
         setSession((s) => ({ ...s, session_id: target.id }));
       }
       setShowHistory(false);
+      setShowDownload(false);
     },
     [sessionsList]
   );
@@ -497,6 +503,7 @@ export default function WeatherApp() {
         onOpenMobileDrawer={() => setIsMobileDrawerOpen(true)}
         domainFilter={session.domainFilter}
         onDomainChange={handleDomainFilter}
+        onOpenDownload={() => setShowDownload(true)}
       />
 
       {/* Main Content Area */}
@@ -527,6 +534,30 @@ export default function WeatherApp() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
+            {/* Mobile Android APK Download Button with glowing animation */}
+            <button
+              type="button"
+              onClick={() => setShowDownload(true)}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.3rem',
+                padding: '0.32rem 0.65rem',
+                background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.16) 0%, rgba(37, 99, 235, 0.12) 100%)',
+                border: '1px solid rgba(56, 189, 248, 0.35)',
+                borderRadius: '9999px',
+                color: '#38bdf8',
+                cursor: 'pointer',
+                boxShadow: '0 0 10px rgba(56, 189, 248, 0.22)',
+              }}
+              title="Download Android APK"
+              aria-label="Download Android App"
+              id="mobile-nav-apk-btn"
+            >
+              <span style={{ fontSize: '0.88rem' }}>🤖</span>
+              <span style={{ fontWeight: 800, fontSize: '0.72rem', letterSpacing: '0.04em' }}>APK</span>
+            </button>
+
             {/* Mobile SOS Emergency Button */}
             <button
               type="button"
@@ -569,11 +600,19 @@ export default function WeatherApp() {
               aria-label="Account"
               title={user?.name || 'Account'}
             >
-              {user?.avatar_url ? (
-                <img src={user.avatar_url} alt="" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+              {user ? (
+                <img
+                  src={user.avatar_url || '/default-avatar.png'}
+                  alt=""
+                  style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }}
+                  referrerPolicy="no-referrer"
+                  onError={(e) => {
+                    (e.currentTarget as HTMLImageElement).src = '/default-avatar.png';
+                  }}
+                />
               ) : (
                 <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-headline)' }}>
-                  {user?.name ? user.name.charAt(0).toUpperCase() : '👤'}
+                  👤
                 </span>
               )}
             </button>
@@ -598,6 +637,10 @@ export default function WeatherApp() {
             user={user}
             onClose={() => setShowProfile(false)}
             onNewChat={handleNewChat}
+            onLogout={() => {
+              setUser(null);
+              setShowProfile(false);
+            }}
             onSettingsChange={(changes) => {
               if (changes.history_opt_in !== undefined && user) {
                 setUser((u) => (u ? { ...u, ...changes } : null));
@@ -638,6 +681,14 @@ export default function WeatherApp() {
           <SosModal
             onClose={() => setShowSos(false)}
             locationName={session.sessionLocation?.name}
+            language={session.language}
+          />
+        )}
+
+        {/* Android APK Download & Upcoming Features Page with VaporType */}
+        {showDownload && (
+          <DownloadPage
+            onClose={() => setShowDownload(false)}
             language={session.language}
           />
         )}

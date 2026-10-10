@@ -17,6 +17,7 @@ import styles from './ChatWindow.module.css';
 import { ChatMessage, DomainModeId, SessionLocation, UserProfile } from '../types/chat';
 import { useTheme } from '../theme/ThemeProvider';
 import { ThinkingOrb } from 'thinking-orbs';
+import LatticeLoader from './LatticeLoader';
 
 marked.setOptions({ breaks: true, gfm: true });
 
@@ -476,28 +477,50 @@ function FollowupChips({ native, english, language, onChipClick }: FollowupChips
 }
 
 function LoadingBubble() {
-  const { colorScheme } = useTheme();
-  const theme = colorScheme === 'dark' ? 'dark' : 'light';
-
   return (
     <div className={`${styles.row} ${styles.rowAssistant}`}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
         <div className={styles.avatar} aria-hidden="true" style={{ background: 'transparent' }}>
-          <ThinkingOrb state="searching" size={32} theme={theme} />
+          <img
+            src="/megha_setu_phone.png"
+            alt="Megha App"
+            style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'contain' }}
+          />
         </div>
         <div
           className={`${styles.bubble} ${styles.bubbleAssistant}`}
           style={{
-            padding: '0.65rem 1rem',
-            display: 'flex',
+            padding: '0.75rem 1.15rem',
+            display: 'inline-flex',
             alignItems: 'center',
             gap: '0.6rem',
             fontSize: '0.88rem',
-            color: 'var(--text-secondary)',
+            background: 'var(--bg-card)',
+            border: '1px solid var(--border-subtle)',
+            borderRadius: '16px',
+            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
+            backdropFilter: 'blur(12px)',
           }}
         >
-          <ThinkingOrb state="working" size={20} theme={theme} />
-          <span>Analyzing meteorology models & forecasts...</span>
+          <LatticeLoader
+            status="working"
+            label="Thinking"
+            doneLabel="Done in"
+            errorLabel="Failed after"
+            pattern="orbit"
+            grid={3}
+            shape="round"
+            doneColor="#22c55e"
+            errorColor="#ef4444"
+            cellSize={6}
+            gap={2.5}
+            fontSize={14}
+            step={90}
+            idleOpacity={0.18}
+            color="var(--text-primary)"
+            glow={false}
+            showTimer
+          />
         </div>
       </div>
     </div>
