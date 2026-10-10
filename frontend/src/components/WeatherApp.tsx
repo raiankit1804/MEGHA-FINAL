@@ -534,28 +534,33 @@ export default function WeatherApp() {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem', flexShrink: 0 }}>
-            {/* Mobile Android APK Download Button with glowing animation */}
+            {/* Mobile Download Button with shining effect */}
             <button
               type="button"
               onClick={() => setShowDownload(true)}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '0.3rem',
-                padding: '0.32rem 0.65rem',
-                background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.16) 0%, rgba(37, 99, 235, 0.12) 100%)',
-                border: '1px solid rgba(56, 189, 248, 0.35)',
-                borderRadius: '9999px',
-                color: '#38bdf8',
-                cursor: 'pointer',
-                boxShadow: '0 0 10px rgba(56, 189, 248, 0.22)',
-              }}
-              title="Download Android APK"
-              aria-label="Download Android App"
-              id="mobile-nav-apk-btn"
+              className="shiningDownloadBtn"
+              title="Download Megha Setu Application"
+              aria-label="Download Megha Setu Application"
+              id="mobile-nav-download-btn"
             >
-              <span style={{ fontSize: '0.88rem' }}>🤖</span>
-              <span style={{ fontWeight: 800, fontSize: '0.72rem', letterSpacing: '0.04em' }}>APK</span>
+              <span className="shineSweep" aria-hidden="true" />
+              <svg
+                width="13"
+                height="13"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+                style={{ flexShrink: 0 }}
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span>Download</span>
             </button>
 
             {/* Mobile SOS Emergency Button */}

@@ -30,3 +30,66 @@ body {
     display: flex;
   }
 }
+
+/* Shining Download Button */
+.shiningDownloadBtn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.32rem 0.68rem;
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 9999px;
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  overflow: hidden;
+  box-shadow: 0 0 14px rgba(2, 132, 199, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.shiningDownloadBtn:hover {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.shiningDownloadBtn:active {
+  transform: translateY(0) scale(0.97);
+}
+
+.shiningDownloadBtn .shineSweep {
+  position: absolute;
+  top: -60%;
+  left: -90%;
+  width: 60%;
+  height: 220%;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0.1) 75%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: rotate(24deg);
+  animation: downloadBtnShine 2.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+
+@keyframes downloadBtnShine {
+  0% {
+    left: -100%;
+  }
+  42% {
+    left: 140%;
+  }
+  100% {
+    left: 140%;
+  }
+}
+
