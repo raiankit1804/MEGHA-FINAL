@@ -92,6 +92,31 @@ export default function ProfileMenu({ user, onClose, onSettingsChange, onNewChat
                 <GoogleIcon />
                 Sign in with Google
               </button>
+              <button
+                type="button"
+                className="btn-ghost"
+                onClick={() => {
+                  window.location.href = `${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/api/auth/demo-login`;
+                }}
+                style={{
+                  width: '100%',
+                  marginTop: '0.5rem',
+                  fontSize: '0.8rem',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '0.35rem',
+                  color: 'var(--accent-primary)',
+                  border: '1px dashed var(--accent-primary)',
+                  borderRadius: 'var(--radius-md)',
+                  padding: '0.45rem',
+                  cursor: 'pointer',
+                  background: 'var(--bg-glass)',
+                }}
+                title="Quick login for testing chat history persistence"
+              >
+                ⚡ 1-Click Instant Login (Demo / Testing)
+              </button>
             </div>
           )}
         </div>

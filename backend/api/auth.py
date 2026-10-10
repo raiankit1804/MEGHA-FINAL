@@ -144,9 +144,13 @@ async def google_callback(code: str, response: Response):
     )
     user_id = await upsert_user_profile(profile)
 
-    # Issue app JWT (httpOnly cookie — never exposed to JS)
+    # Issue app JWT
     app_token = create_jwt(user_id, userinfo["email"])
-    response.set_cookie(
+
+    # Redirect to frontend
+    frontend_url = "http://localhost:3000" if settings.environment == "development" else settings.frontend_url.rstrip("/")
+    redirect = RedirectResponse(url=f"{frontend_url}?login=success&token={app_token}")
+    redirect.set_cookie(
         key="wgpt_token",
         value=app_token,
         httponly=True,
@@ -154,10 +158,32 @@ async def google_callback(code: str, response: Response):
         samesite="lax",
         max_age=settings.jwt_expire_hours * 3600,
     )
+    return redirect
 
-    # Redirect to frontend
-    frontend_url = settings.frontend_url.rstrip("/")
-    return RedirectResponse(url=f"{frontend_url}?login=success&token={app_token}")
+
+@router.get("/auth/demo-login")
+async def demo_login():
+    """1-Click instant login for local development, hackathon demos, and video walkthroughs."""
+    profile = UserProfile(
+        google_sub="demo_evaluator_sub_101",
+        name="Ankit Rai",
+        email="rai774354@gmail.com",
+        avatar_url=None,
+    )
+    user_id = await upsert_user_profile(profile)
+    app_token = create_jwt(user_id, "rai774354@gmail.com")
+
+    frontend_url = "http://localhost:3000" if settings.environment == "development" else settings.frontend_url.rstrip("/")
+    redirect = RedirectResponse(url=f"{frontend_url}?login=success&token={app_token}")
+    redirect.set_cookie(
+        key="wgpt_token",
+        value=app_token,
+        httponly=True,
+        secure=settings.environment != "development",
+        samesite="lax",
+        max_age=settings.jwt_expire_hours * 3600,
+    )
+    return redirect
 
 
 @router.post("/auth/logout")
