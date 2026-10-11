@@ -54,7 +54,7 @@ export default function WaitlistPage() {
             date: new Date().toISOString(),
           });
           localStorage.setItem('megha_waitlist_entries', JSON.stringify(existing));
-        } catch (_) {}
+        } catch (_) { }
       } else {
         setErrorMessage(data.error || 'Failed to submit. Please try again.');
       }
@@ -203,7 +203,7 @@ export default function WaitlistPage() {
                       id="waitlist-phone"
                       type="tel"
                       className={styles.formInput}
-                      placeholder="+91 98765 43210"
+                      placeholder="+91 9999999999"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
                       disabled={submitting}
