@@ -277,44 +277,45 @@ export default function TileReveal({
     };
   }, [scrollContainerRef, rawProgress]);
 
-  // Buttery-smooth spring interpolation
+  // Buttery-smooth Apple spring interpolation with fluid inertia
   const smoothProgress = useSpring(rawProgress, {
-    stiffness: 180,
-    damping: 28,
-    mass: 0.1
+    stiffness: 55,
+    damping: 18,
+    mass: 0.5,
+    restDelta: 0.0001
   });
 
   // 1. Initial "SCROLL |" Indicator
   const scrollIndicatorOpacity = useTransform(smoothProgress, [0.0, 0.08], [1, 0]);
 
   // 2. STAGE 1 TILES (Top-Center, Top-Right, Bottom-Center fly in early)
-  const earlyTilesOpacity = useTransform(smoothProgress, [0.05, 0.18, 0.48, 0.62], [0, 1, 1, 0]);
-  const earlyTileTopY = useTransform(smoothProgress, [0.05, 0.18, 0.48, 0.66], [-140, 0, 0, -180]);
-  const earlyTileRightX = useTransform(smoothProgress, [0.05, 0.18, 0.48, 0.66], [140, 0, 0, 180]);
-  const earlyTileBottomY = useTransform(smoothProgress, [0.05, 0.18, 0.48, 0.66], [140, 0, 0, 180]);
+  const earlyTilesOpacity = useTransform(smoothProgress, [0.04, 0.22, 0.54, 0.72], [0, 1, 1, 0]);
+  const earlyTileTopY = useTransform(smoothProgress, [0.04, 0.22, 0.54, 0.76], [-160, 0, 0, -200]);
+  const earlyTileRightX = useTransform(smoothProgress, [0.04, 0.22, 0.54, 0.76], [160, 0, 0, 200]);
+  const earlyTileBottomY = useTransform(smoothProgress, [0.04, 0.22, 0.54, 0.76], [160, 0, 0, 200]);
 
-  // 3. STAGE 2 TILES (Remaining 6 tiles assemble into 3x3 grid)
-  const fullGridOpacity = useTransform(smoothProgress, [0.16, 0.28, 0.48, 0.62], [0, 1, 1, 0]);
-  const tlX = useTransform(smoothProgress, [0.16, 0.28, 0.48, 0.66], [-140, 0, 0, -180]);
-  const tlY = useTransform(smoothProgress, [0.16, 0.28, 0.48, 0.66], [-140, 0, 0, -180]);
-  const mlX = useTransform(smoothProgress, [0.16, 0.28, 0.48, 0.66], [-160, 0, 0, -200]);
-  const mcScale = useTransform(smoothProgress, [0.16, 0.28, 0.48, 0.66], [0.5, 1, 1, 1.3]);
-  const mrX = useTransform(smoothProgress, [0.16, 0.28, 0.48, 0.66], [160, 0, 0, 200]);
-  const blX = useTransform(smoothProgress, [0.16, 0.28, 0.48, 0.66], [-140, 0, 0, -180]);
-  const blY = useTransform(smoothProgress, [0.16, 0.28, 0.48, 0.66], [140, 0, 0, 180]);
-  const brX = useTransform(smoothProgress, [0.16, 0.28, 0.48, 0.66], [160, 0, 0, 200]);
-  const brY = useTransform(smoothProgress, [0.16, 0.28, 0.48, 0.66], [140, 0, 0, 180]);
+  // 3. STAGE 2 TILES (Remaining 6 tiles assemble into 3x3 grid, holding stably for appreciation)
+  const fullGridOpacity = useTransform(smoothProgress, [0.14, 0.30, 0.54, 0.72], [0, 1, 1, 0]);
+  const tlX = useTransform(smoothProgress, [0.14, 0.30, 0.54, 0.76], [-160, 0, 0, -200]);
+  const tlY = useTransform(smoothProgress, [0.14, 0.30, 0.54, 0.76], [-160, 0, 0, -200]);
+  const mlX = useTransform(smoothProgress, [0.14, 0.30, 0.54, 0.76], [-180, 0, 0, -220]);
+  const mcScale = useTransform(smoothProgress, [0.14, 0.30, 0.54, 0.76], [0.6, 1, 1, 1.25]);
+  const mrX = useTransform(smoothProgress, [0.14, 0.30, 0.54, 0.76], [180, 0, 0, 220]);
+  const blX = useTransform(smoothProgress, [0.14, 0.30, 0.54, 0.76], [-160, 0, 0, -200]);
+  const blY = useTransform(smoothProgress, [0.14, 0.30, 0.54, 0.76], [160, 0, 0, 200]);
+  const brX = useTransform(smoothProgress, [0.14, 0.30, 0.54, 0.76], [180, 0, 0, 220]);
+  const brY = useTransform(smoothProgress, [0.14, 0.30, 0.54, 0.76], [160, 0, 0, 200]);
 
-  // 4. STAGE 4: FINAL REVEAL (Tiles dissolve, subtitle & content appear without dead space)
-  const finalContentOpacity = useTransform(smoothProgress, [0.58, 0.74], [0, 1]);
-  const finalContentY = useTransform(smoothProgress, [0.58, 0.74], [22, 0]);
+  // 4. STAGE 4: FINAL REVEAL (Tiles dissolve, subtitle & content appear with smooth ease)
+  const finalContentOpacity = useTransform(smoothProgress, [0.68, 0.86], [0, 1]);
+  const finalContentY = useTransform(smoothProgress, [0.68, 0.86], [28, 0]);
 
   const handleIndicatorClick = () => {
     const el = scrollContainerRef?.current || trackRef.current?.closest('[data-scroll-container]') || window;
     if (el === window) {
-      window.scrollTo({ top: window.innerHeight * 0.7, behavior: 'smooth' });
+      window.scrollTo({ top: window.innerHeight * 0.9, behavior: 'smooth' });
     } else {
-      (el as HTMLElement).scrollTo({ top: window.innerHeight * 0.7, behavior: 'smooth' });
+      (el as HTMLElement).scrollTo({ top: window.innerHeight * 0.9, behavior: 'smooth' });
     }
   };
 
