@@ -1,33 +1,66 @@
 import { NextRequest, NextResponse } from 'next/server';
+import fs from 'fs';
+import path from 'path';
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { contact, email, phone, name, role } = body;
+    const { name, email, phone, role } = body;
 
-    const contactValue = contact || email || phone || '';
-    if (!contactValue || typeof contactValue !== 'string' || contactValue.trim().length === 0) {
+    // Validate required fields: Name and Email
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
       return NextResponse.json(
-        { success: false, error: 'Please provide a valid email or phone number.' },
+        { success: false, error: 'Please enter your name.' },
         { status: 400 }
       );
     }
 
+    if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      return NextResponse.json(
+        { success: false, error: 'Please enter a valid email address.' },
+        { status: 400 }
+      );
+    }
+
+    const cleanName = name.trim();
+    const cleanEmail = email.trim().toLowerCase();
+    const cleanPhone = (phone && typeof phone === 'string') ? phone.trim() : '';
+
     const payload = {
       timestamp: new Date().toISOString(),
       formattedDate: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
-      contact: contactValue.trim(),
-      email: contactValue.includes('@') ? contactValue.trim() : (email || ''),
-      phone: !contactValue.includes('@') ? contactValue.trim() : (phone || ''),
-      name: name?.trim() || 'Anonymous Observer',
+      name: cleanName,
+      email: cleanEmail,
+      phone: cleanPhone || 'N/A',
       role: role || 'Early Beta Tester',
-      source: 'Megha Setu Waitlist (Waitlist 6)',
+      source: 'Megha Setu Waitlist',
       userAgent: req.headers.get('user-agent') || 'Unknown',
     };
 
     console.log('[Waitlist Submission]:', payload);
 
-    // Check for Google Sheet Webhook URL in env
+    // Save lead locally to data/waitlist_leads.json as a persistent backup
+    try {
+      const dataDir = path.join(process.cwd(), 'data');
+      if (!fs.existsSync(dataDir)) {
+        fs.mkdirSync(dataDir, { recursive: true });
+      }
+      const filePath = path.join(dataDir, 'waitlist_leads.json');
+      let leads = [];
+      if (fs.existsSync(filePath)) {
+        try {
+          leads = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        } catch (_) {
+          leads = [];
+        }
+      }
+      leads.push(payload);
+      fs.writeFileSync(filePath, JSON.stringify(leads, null, 2), 'utf-8');
+    } catch (saveErr) {
+      console.warn('[Local leads storage error]:', saveErr);
+    }
+
+    // Forward to Google Sheet Webhook if configured
     const googleSheetWebhookUrl =
       process.env.GOOGLE_SHEET_WEBHOOK_URL ||
       process.env.GOOGLE_SHEETS_WEBHOOK_URL ||
@@ -57,14 +90,16 @@ export async function POST(req: NextRequest) {
       }
     } else {
       console.log(
-        '[Waitlist Notice]: GOOGLE_SHEET_WEBHOOK_URL is not set yet in .env.local. Submission saved in logs.'
+        '[Waitlist Notice]: GOOGLE_SHEET_WEBHOOK_URL is not set yet in .env.local. Submission saved in local file and logs.'
       );
     }
 
     return NextResponse.json({
       success: true,
       message: 'You have been registered for early access!',
-      contact: contactValue.trim(),
+      name: cleanName,
+      email: cleanEmail,
+      phone: cleanPhone,
       savedToGoogleSheet,
     });
   } catch (error: any) {
@@ -73,5 +108,18 @@ export async function POST(req: NextRequest) {
       { success: false, error: 'Internal Server Error' },
       { status: 500 }
     );
+  }
+}
+
+export async function GET() {
+  try {
+    const filePath = path.join(process.cwd(), 'data', 'waitlist_leads.json');
+    if (fs.existsSync(filePath)) {
+      const data = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+      return NextResponse.json({ success: true, count: data.length, leads: data });
+    }
+    return NextResponse.json({ success: true, count: 0, leads: [] });
+  } catch (err) {
+    return NextResponse.json({ success: false, error: 'Could not read leads' }, { status: 500 });
   }
 }

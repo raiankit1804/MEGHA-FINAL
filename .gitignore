@@ -33,6 +33,7 @@ ENV/
 postgres_data/
 mongo_data/
 redis_data/
+frontend/data/
 
 # OS & Editor files
 .DS_Store

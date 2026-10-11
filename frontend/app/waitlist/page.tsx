@@ -7,7 +7,9 @@ import Lightfall from '../../src/components/Lightfall';
 import styles from './Waitlist6.module.css';
 
 export default function WaitlistPage() {
-  const [contact, setContact] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -15,18 +17,14 @@ export default function WaitlistPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
-    const trimmed = contact.trim();
 
-    if (!trimmed) {
-      setErrorMessage('Please enter your email or phone number.');
+    if (!name.trim()) {
+      setErrorMessage('Please enter your name.');
       return;
     }
 
-    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed);
-    const isPhone = /^[+]?[\d\s-]{8,15}$/.test(trimmed);
-
-    if (!isEmail && !isPhone) {
-      setErrorMessage('Please enter a valid email address or mobile number.');
+    if (!email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setErrorMessage('Please enter a valid email address.');
       return;
     }
 
@@ -36,11 +34,11 @@ export default function WaitlistPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contact: trimmed,
-          email: isEmail ? trimmed : '',
-          phone: isPhone ? trimmed : '',
-          role: 'Private Beta Wave Three',
-          source: 'React Bits Waitlist 6 + Lightfall',
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          role: 'Early Beta Tester',
+          source: 'Megha Setu Waitlist',
         }),
       });
 
@@ -49,7 +47,12 @@ export default function WaitlistPage() {
         setSubmitted(true);
         try {
           const existing = JSON.parse(localStorage.getItem('megha_waitlist_entries') || '[]');
-          existing.push({ contact: trimmed, date: new Date().toISOString() });
+          existing.push({
+            name: name.trim(),
+            email: email.trim(),
+            phone: phone.trim(),
+            date: new Date().toISOString(),
+          });
           localStorage.setItem('megha_waitlist_entries', JSON.stringify(existing));
         } catch (_) {}
       } else {
@@ -89,7 +92,7 @@ export default function WaitlistPage() {
       {/* Subtle Vignette Overlay */}
       <div className={styles.vignetteOverlay} />
 
-      {/* Floating Top-Left Back Navigation (Discreet, zero layout displacement) */}
+      {/* Floating Top-Left Back Navigation */}
       <Link href="/" className={styles.floatingBack} title="Return to Megha Setu">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
           <line x1="19" y1="12" x2="5" y2="12"></line>
@@ -100,80 +103,98 @@ export default function WaitlistPage() {
 
       {/* Centered Main Content (Locked in Viewport) */}
       <div className={styles.mainContent}>
-        {/* Category Pill: PRIVATE BETA · WAVE THREE */}
-        <motion.div
-          className={styles.categoryPill}
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="10" />
-            <circle cx="12" cy="12" r="6" />
-            <circle cx="12" cy="12" r="2" />
-          </svg>
-          <span>PRIVATE BETA · WAVE THREE</span>
-        </motion.div>
-
         {/* Hero Headline */}
         <motion.h1
           className={styles.headline}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          When we go live, you&apos;ll<br />feel it first.
+          When we go live, you&apos;ll feel it first.
         </motion.h1>
 
-        {/* Subtitle */}
+        {/* Subtitle with High Contrast & Legibility */}
         <motion.p
           className={styles.subheadline}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
           Megha Setu opens in small waves. Leave your email or phone number and you&apos;ll get a single ping the moment your invite unlocks: nothing else, ever.
         </motion.p>
 
-        {/* Glass Pill Input Form */}
+        {/* Form Container with Name, Email, and Phone (Optional) */}
         <motion.div
-          className={styles.pillFormWrapper}
+          className={styles.formCardWrapper}
           initial={{ opacity: 0, y: 14, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.65, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.65, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
         >
           <AnimatePresence mode="wait">
             {!submitted ? (
-              <form onSubmit={handleSubmit} className={styles.glassPill}>
-                <input
-                  type="text"
-                  className={styles.pillInput}
-                  placeholder="you@company.com"
-                  value={contact}
-                  onChange={(e) => {
-                    setContact(e.target.value);
-                    if (errorMessage) setErrorMessage('');
-                  }}
-                  disabled={submitting}
-                  autoComplete="email"
-                  aria-label="Email or mobile number for invite"
-                  required
-                />
+              <form onSubmit={handleSubmit} className={styles.glassForm}>
+                <div className={styles.formGridRow}>
+                  <div className={styles.inputWrapper}>
+                    <input
+                      type="text"
+                      className={styles.fieldInput}
+                      placeholder="Your name"
+                      value={name}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        if (errorMessage) setErrorMessage('');
+                      }}
+                      disabled={submitting}
+                      autoComplete="name"
+                      required
+                    />
+                  </div>
 
-                <button
-                  type="submit"
-                  className={styles.pillButton}
-                  disabled={submitting}
-                >
-                  {submitting ? (
-                    <span>Requesting...</span>
-                  ) : (
-                    <>
-                      <span>Request invite</span>
-                      <span className={styles.buttonArrow}>→</span>
-                    </>
-                  )}
-                </button>
+                  <div className={styles.inputWrapper}>
+                    <input
+                      type="email"
+                      className={styles.fieldInput}
+                      placeholder="you@company.com"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (errorMessage) setErrorMessage('');
+                      }}
+                      disabled={submitting}
+                      autoComplete="email"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className={styles.bottomActionRow}>
+                  <div className={styles.inputWrapper}>
+                    <input
+                      type="tel"
+                      className={styles.fieldInput}
+                      placeholder="Mobile number (optional)"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      disabled={submitting}
+                      autoComplete="tel"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className={styles.submitButton}
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <span>Requesting...</span>
+                    ) : (
+                      <>
+                        <span>Request invite</span>
+                        <span className={styles.buttonArrow}>→</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </form>
             ) : (
               <motion.div
@@ -183,12 +204,12 @@ export default function WaitlistPage() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                   <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
                 <span>
-                  You&apos;re in! We&apos;ll ping you the second Wave Three opens.
+                  You&apos;re registered, {name}! We&apos;ll notify you the moment your invite unlocks.
                 </span>
               </motion.div>
             )}
@@ -201,12 +222,12 @@ export default function WaitlistPage() {
           )}
         </motion.div>
 
-        {/* Social Proof: 5 overlapping avatars + exact copy */}
+        {/* Social Proof: Avatars + "people are waiting" */}
         <motion.div
           className={styles.socialProofCluster}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.3 }}
+          transition={{ duration: 0.7, delay: 0.25 }}
         >
           <div className={styles.avatarStack}>
             <div className={styles.avatar}>
@@ -226,7 +247,7 @@ export default function WaitlistPage() {
             </div>
           </div>
           <span className={styles.socialProofText}>
-            <strong>11,204</strong> already in the queue · next wave this month
+            people are waiting for the next wave
           </span>
         </motion.div>
       </div>
