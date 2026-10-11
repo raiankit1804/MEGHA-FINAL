@@ -12,17 +12,30 @@ function getHeaders(extraHeaders: Record<string, string> = {}): Record<string, s
 }
 
 async function apiPost<T = any>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: 'POST',
-    headers: getHeaders({ 'Content-Type': 'application/json' }),
-    credentials: 'include',
-    body: JSON.stringify(body),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err.detail || `HTTP ${res.status}`);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 25000);
+
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      method: 'POST',
+      headers: getHeaders({ 'Content-Type': 'application/json' }),
+      credentials: 'include',
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || `HTTP ${res.status}`);
+    }
+    return await res.json();
+  } catch (err: any) {
+    if (err.name === 'AbortError') {
+      throw new Error('Request timed out. The backend server may be waking up — please click Send again.');
+    }
+    throw err;
+  } finally {
+    clearTimeout(timeoutId);
   }
-  return res.json();
 }
 
 async function apiGet<T = any>(path: string): Promise<T> {

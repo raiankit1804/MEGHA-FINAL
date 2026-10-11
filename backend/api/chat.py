@@ -48,6 +48,8 @@ class ChatRequest(BaseModel):
     latitude: Optional[float] = None
     longitude: Optional[float] = None
     location_name: Optional[str] = None
+    # Direct client-fetched Open-Meteo weather payload (bypasses server egress rate limits)
+    client_weather: Optional[dict] = None
     # Auth
     user_id: Optional[str] = None
 
@@ -444,62 +446,75 @@ async def chat(req: ChatRequest):
     model_agreement = "not_applicable"
     sources = []
 
-    # Check cache first
-    cached = await weather_cache_get(cache_key)
-    if cached:
-        weather_data = cached
-        source_name = weather_data.get("source") or "Open-Meteo (IMD-aligned)"
-        data_freshness = "live"
-        sources = [
-            {"name": source_name, "url": "https://open-meteo.com", "type": "primary"},
-            {"name": "GFS NWP (model guidance)", "url": "https://open-meteo.com", "type": "secondary"},
-        ]
-    else:
-        # Tier 1: Open-Meteo (IMD-aligned)
+    # 1. Check direct client-supplied Open-Meteo data first (bypasses cloud server egress IP rate limits)
+    if req.client_weather and isinstance(req.client_weather, dict) and req.client_weather.get("current"):
         try:
-            loc_info = {"latitude": lat, "longitude": lon, "admin1": state}
-            tier1_raw = await fetch_tier1(lat, lon, loc_info)
-            weather_data = normalize_open_meteo(tier1_raw, location_name, "Open-Meteo (IMD-aligned)", "forecast")
+            weather_data = normalize_open_meteo(req.client_weather, location_name, "Open-Meteo (IMD-aligned)", "forecast")
             sources.append({"name": "Open-Meteo (IMD-aligned)", "url": "https://open-meteo.com", "type": "primary"})
-
-            # Tier 2: NWP/GFS (non-blocking, secondary)
-            tier2_raw = await fetch_tier2_nwp(lat, lon, loc_info)
-            if tier2_raw:
-                tier2_data = normalize_open_meteo(tier2_raw, location_name, "Open-Meteo GFS/NWP", "model_guidance")
-                # Compute model agreement on temperature
-                t1_temp = weather_data.get("current_weather", {}).get("temperature")
-                t2_temp = tier2_data.get("current_weather", {}).get("temperature")
-                model_agreement = compute_model_agreement(t1_temp, t2_temp)
-                weather_data["nwp_comparison"] = tier2_data.get("current_weather")
-                weather_data["model_agreement"] = model_agreement
-                sources.append({"name": "GFS NWP (model guidance)", "url": "https://open-meteo.com", "type": "secondary"})
-
+            sources.append({"name": "GFS NWP (model guidance)", "url": "https://open-meteo.com", "type": "secondary"})
+            data_freshness = "live"
             await weather_cache_set(cache_key, weather_data)
+            logger.info("Used client-supplied live Open-Meteo data for %s", location_name)
+        except Exception as cw_exc:
+            logger.warning("Failed to normalize client-supplied weather: %s", cw_exc)
 
-        except RateLimitError:
-            logger.warning("Open-Meteo rate limited — falling back to wttr.in (Tier 3)")
-            # Tier 3: wttr.in
-            wttr_raw = await fetch_wttr(lat, lon)
-            if wttr_raw:
-                weather_data = normalize_wttr(wttr_raw, location_name, lat, lon)
-                data_freshness = "fallback"
-                sources.append({"name": "wttr.in (fallback)", "url": "https://wttr.in", "type": "fallback"})
-            else:
-                # Tier 4: Synthetic baseline
-                logger.warning("wttr.in also failed — using Tier 4 synthetic baseline")
+    # 2. Check cache if not supplied by client
+    if not weather_data:
+        cached = await weather_cache_get(cache_key)
+        if cached:
+            weather_data = cached
+            source_name = weather_data.get("source") or "Open-Meteo (IMD-aligned)"
+            data_freshness = "live"
+            sources = [
+                {"name": source_name, "url": "https://open-meteo.com", "type": "primary"},
+                {"name": "GFS NWP (model guidance)", "url": "https://open-meteo.com", "type": "secondary"},
+            ]
+        else:
+            # Tier 1: Open-Meteo (IMD-aligned)
+            try:
+                loc_info = {"latitude": lat, "longitude": lon, "admin1": state}
+                tier1_raw = await fetch_tier1(lat, lon, loc_info)
+                weather_data = normalize_open_meteo(tier1_raw, location_name, "Open-Meteo (IMD-aligned)", "forecast")
+                sources.append({"name": "Open-Meteo (IMD-aligned)", "url": "https://open-meteo.com", "type": "primary"})
+
+                # Tier 2: NWP/GFS (non-blocking, secondary)
+                tier2_raw = await fetch_tier2_nwp(lat, lon, loc_info)
+                if tier2_raw:
+                    tier2_data = normalize_open_meteo(tier2_raw, location_name, "Open-Meteo GFS/NWP", "model_guidance")
+                    # Compute model agreement on temperature
+                    t1_temp = weather_data.get("current_weather", {}).get("temperature")
+                    t2_temp = tier2_data.get("current_weather", {}).get("temperature")
+                    model_agreement = compute_model_agreement(t1_temp, t2_temp)
+                    weather_data["nwp_comparison"] = tier2_data.get("current_weather")
+                    weather_data["model_agreement"] = model_agreement
+                    sources.append({"name": "GFS NWP (model guidance)", "url": "https://open-meteo.com", "type": "secondary"})
+
+                await weather_cache_set(cache_key, weather_data)
+
+            except RateLimitError:
+                logger.warning("Open-Meteo rate limited — falling back to wttr.in (Tier 3)")
+                # Tier 3: wttr.in
+                wttr_raw = await fetch_wttr(lat, lon)
+                if wttr_raw:
+                    weather_data = normalize_wttr(wttr_raw, location_name, lat, lon)
+                    data_freshness = "fallback"
+                    sources.append({"name": "wttr.in (fallback)", "url": "https://wttr.in", "type": "fallback"})
+                else:
+                    # Tier 4: Synthetic baseline
+                    logger.warning("wttr.in also failed — using Tier 4 synthetic baseline")
+                    weather_data = normalize_synthetic(
+                        generate_synthetic_weather(lat, lon, location_name), location_name, lat, lon
+                    )
+                    data_freshness = "synthetic"
+                    sources.append({"name": "Synthetic Indian Climatic Baseline", "type": "synthetic"})
+
+            except Exception as exc:
+                logger.error("All weather fetches failed: %s — using synthetic", exc)
                 weather_data = normalize_synthetic(
                     generate_synthetic_weather(lat, lon, location_name), location_name, lat, lon
                 )
                 data_freshness = "synthetic"
                 sources.append({"name": "Synthetic Indian Climatic Baseline", "type": "synthetic"})
-
-        except Exception as exc:
-            logger.error("All weather fetches failed: %s — using synthetic", exc)
-            weather_data = normalize_synthetic(
-                generate_synthetic_weather(lat, lon, location_name), location_name, lat, lon
-            )
-            data_freshness = "synthetic"
-            sources.append({"name": "Synthetic Indian Climatic Baseline", "type": "synthetic"})
 
     # 7. Fetch IMD warnings (non-blocking)
     warning_key = location_name.lower()
@@ -619,8 +634,8 @@ async def chat(req: ChatRequest):
                 session_id=session["session_id"],
                 role="user",
                 turn_type=turn_type,
-                text_en=req.message,
-                text_native=req.message if language != "en" else None,
+                text_en=req.query,
+                text_native=req.query if language != "en" else None,
                 native_language=language if language != "en" else None,
                 domain_filter=domain_filter,
                 location_name=location_name,

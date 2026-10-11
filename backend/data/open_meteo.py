@@ -8,6 +8,7 @@ Never retry in a loop — fail fast, hand off to the next tier.
 """
 
 import logging
+import time
 from typing import Optional
 import httpx
 from config import settings
@@ -339,12 +340,19 @@ async def reverse_geocode(lat: float, lon: float) -> Optional[dict]:
             return None
 
 
+_OPEN_METEO_RATE_LIMITED_UNTIL: float = 0.0
+
+
 async def _fetch_forecast(lat: float, lon: float, model: Optional[str] = None) -> dict:
     """
     Core Open-Meteo forecast fetch.
     model=None → default (India-optimized, Tier 1)
     model="gfs_global" → GFS NWP (Tier 2 model guidance)
     """
+    global _OPEN_METEO_RATE_LIMITED_UNTIL
+    if time.time() < _OPEN_METEO_RATE_LIMITED_UNTIL:
+        raise RateLimitError("Open-Meteo rate limit active (cooldown)")
+
     params = {
         "latitude": lat,
         "longitude": lon,
@@ -359,12 +367,19 @@ async def _fetch_forecast(lat: float, lon: float, model: Optional[str] = None) -
     if getattr(settings, "open_meteo_api_key", None):
         params["apikey"] = settings.open_meteo_api_key
 
-    async with httpx.AsyncClient(headers=HEADERS, timeout=15) as client:
-        resp = await client.get(f"{BASE_URL}/forecast", params=params)
-        if resp.status_code == 429:
-            raise RateLimitError("Open-Meteo rate limit hit")
-        resp.raise_for_status()
-        return resp.json()
+    async with httpx.AsyncClient(headers=HEADERS, timeout=3.5) as client:
+        try:
+            resp = await client.get(f"{BASE_URL}/forecast", params=params)
+            if resp.status_code == 429:
+                _OPEN_METEO_RATE_LIMITED_UNTIL = time.time() + 600.0
+                raise RateLimitError("Open-Meteo rate limit hit")
+            resp.raise_for_status()
+            return resp.json()
+        except httpx.HTTPStatusError as e:
+            if e.response.status_code == 429:
+                _OPEN_METEO_RATE_LIMITED_UNTIL = time.time() + 600.0
+                raise RateLimitError("Open-Meteo rate limit hit")
+            raise
 
 
 async def _fetch_air_quality(lat: float, lon: float) -> Optional[dict]:
@@ -375,7 +390,7 @@ async def _fetch_air_quality(lat: float, lon: float) -> Optional[dict]:
         "current": ",".join(AQI_VARS),
         "timezone": "Asia/Kolkata",
     }
-    async with httpx.AsyncClient(headers=HEADERS, timeout=8) as client:
+    async with httpx.AsyncClient(headers=HEADERS, timeout=3.0) as client:
         try:
             resp = await client.get(AIR_QUALITY_URL, params=params)
             resp.raise_for_status()
@@ -409,6 +424,10 @@ async def fetch_tier1(lat: float, lon: float, location_info: dict) -> dict:
         logger.warning("🧪 [DEMO] Simulated Tier 1 Open-Meteo outage active — raising RateLimitError to force Tier 3 (wttr.in) failover")
         raise RateLimitError("Simulated primary API outage for live demonstration")
 
+    global _OPEN_METEO_RATE_LIMITED_UNTIL
+    if time.time() < _OPEN_METEO_RATE_LIMITED_UNTIL:
+        raise RateLimitError("Open-Meteo rate limit active (cooldown)")
+
     raw = await _fetch_forecast(lat, lon, model="gfs_seamless")
     aqi_raw = await _fetch_air_quality(lat, lon)
     raw["location_info"] = location_info
@@ -425,6 +444,10 @@ async def fetch_tier2_nwp(lat: float, lon: float, location_info: dict) -> Option
     if _SIMULATE_TIER1_OUTAGE:
         return None
 
+    global _OPEN_METEO_RATE_LIMITED_UNTIL
+    if time.time() < _OPEN_METEO_RATE_LIMITED_UNTIL:
+        return None
+
     try:
         raw = await _fetch_forecast(lat, lon, model="icon_seamless")
         raw["location_info"] = location_info
@@ -436,4 +459,5 @@ async def fetch_tier2_nwp(lat: float, lon: float, location_info: dict) -> Option
 
 class RateLimitError(Exception):
     pass
+
 

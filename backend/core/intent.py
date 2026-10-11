@@ -259,29 +259,36 @@ async def extract_intent(
     )
 
     intent = {}
-    try:
-        response = await asyncio.wait_for(
-            client.aio.models.generate_content(
-                model=model_id,
-                contents=query,
-                config=types.GenerateContentConfig(
-                    system_instruction=INTENT_EXTRACTION_PROMPT,
-                    tools=[intent_tool],
-                    temperature=0.1,
-                ),
-            ),
-            timeout=4.0,
-        )
-        if response.candidates and response.candidates[0].content:
-            for part in response.candidates[0].content.parts:
-                if hasattr(part, "function_call") and part.function_call:
-                    fc = part.function_call
-                    if fc.name == "extract_weather_intent":
-                        intent = dict(fc.args)
-                        break
+    # Quick fast-path: if fast city matched and query is standard, check heuristics first
+    heur = heuristic_intent(query, domain_filter)
+    is_standard_fast = bool(fast_city and heur.get("intent_category") == "urban_general" and heur.get("time_horizon") in ["today", "current", "tomorrow"])
 
-    except Exception as exc:
-        logger.warning("LLM intent extraction failed, using heuristic fallback: %s", exc)
+    if not is_standard_fast:
+        try:
+            response = await asyncio.wait_for(
+                client.aio.models.generate_content(
+                    model=model_id,
+                    contents=query,
+                    config=types.GenerateContentConfig(
+                        system_instruction=INTENT_EXTRACTION_PROMPT,
+                        tools=[intent_tool],
+                        temperature=0.1,
+                    ),
+                ),
+                timeout=2.5,
+            )
+            if response.candidates and response.candidates[0].content:
+                for part in response.candidates[0].content.parts:
+                    if hasattr(part, "function_call") and part.function_call:
+                        fc = part.function_call
+                        if fc.name == "extract_weather_intent":
+                            intent = dict(fc.args)
+                            break
+
+        except Exception as exc:
+            logger.warning("LLM intent extraction skipped/failed, using heuristic fallback: %s", exc)
+    else:
+        logger.debug("Fast-path city '%s' matched standard query — skipped LLM intent extraction for zero latency", fast_city[0])
 
     # Apply heuristic fallback for any missing fields
     heur = heuristic_intent(query, domain_filter)

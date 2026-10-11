@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { api } from '../api/client';
+import { fetchClientOpenMeteo } from '../api/weather';
 import SplashScreen from './SplashScreen';
 import LeftRail from './LeftRail';
 import ChatWindow from './ChatWindow';
@@ -325,6 +326,20 @@ export default function WeatherApp() {
         if ((messages.length === 0 || isCurrentLocQuery) && session.sessionLocation?.latitude && isGpsOrHome) {
           payload.latitude = session.sessionLocation.latitude;
           payload.longitude = session.sessionLocation.longitude;
+        }
+
+        // Fetch live Open-Meteo directly from user's browser (zero cloud IP rate limits)
+        const targetLat = payload.latitude || session.sessionLocation?.latitude;
+        const targetLon = payload.longitude || session.sessionLocation?.longitude;
+        if (targetLat && targetLon) {
+          try {
+            const cw = await fetchClientOpenMeteo(targetLat, targetLon);
+            if (cw && cw.current) {
+              payload.client_weather = cw;
+            }
+          } catch (e) {
+            console.debug('Client Open-Meteo fetch skipped:', e);
+          }
         }
 
         const resp = await api.post('/api/chat', payload);

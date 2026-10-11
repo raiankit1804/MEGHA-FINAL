@@ -77,7 +77,7 @@ async def fetch_district_warnings(state: Optional[str] = None) -> list[dict]:
     Returns empty list on any failure — callers must handle gracefully.
     """
     try:
-        async with httpx.AsyncClient(headers=HEADERS, timeout=10, follow_redirects=True) as client:
+        async with httpx.AsyncClient(headers=HEADERS, timeout=2.5, follow_redirects=True) as client:
             resp = await client.get(IMD_DISTRICT_WARNINGS_URL)
             resp.raise_for_status()
 
@@ -136,7 +136,7 @@ async def fetch_district_warnings(state: Optional[str] = None) -> list[dict]:
 async def fetch_cyclone_warnings() -> list[dict]:
     """Scrape IMD cyclone/storm warning page."""
     try:
-        async with httpx.AsyncClient(headers=HEADERS, timeout=10, follow_redirects=True) as client:
+        async with httpx.AsyncClient(headers=HEADERS, timeout=2.5, follow_redirects=True) as client:
             resp = await client.get(IMD_CYCLONE_URL)
             resp.raise_for_status()
 
