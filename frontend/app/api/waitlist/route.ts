@@ -24,7 +24,17 @@ export async function POST(req: NextRequest) {
 
     const cleanName = name.trim();
     const cleanEmail = email.trim().toLowerCase();
-    const cleanPhone = (phone && typeof phone === 'string') ? phone.trim() : '';
+    let cleanPhone = '';
+    if (phone && typeof phone === 'string') {
+      let digits = phone.replace(/\D/g, '');
+      if (digits.startsWith('91') && digits.length === 12) {
+        digits = digits.slice(2);
+      }
+      if (digits.length > 10) {
+        digits = digits.slice(-10);
+      }
+      cleanPhone = digits;
+    }
 
     const payload = {
       timestamp: new Date().toISOString(),

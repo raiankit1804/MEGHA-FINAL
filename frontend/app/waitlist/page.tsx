@@ -28,6 +28,12 @@ export default function WaitlistPage() {
       return;
     }
 
+    const trimmedPhone = phone.trim();
+    if (trimmedPhone && !/^\d{10}$/.test(trimmedPhone)) {
+      setErrorMessage('Please enter a valid 10-digit mobile number, or leave it blank.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       const res = await fetch('/api/waitlist', {
@@ -202,10 +208,17 @@ export default function WaitlistPage() {
                     <input
                       id="waitlist-phone"
                       type="tel"
+                      inputMode="numeric"
+                      pattern="[0-9]{10}"
+                      maxLength={10}
                       className={styles.formInput}
-                      placeholder="+91 9999999999"
+                      placeholder="e.g. 9876543210 (10 digits)"
                       value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
+                      onChange={(e) => {
+                        const cleaned = e.target.value.replace(/\D/g, '').slice(0, 10);
+                        setPhone(cleaned);
+                        if (errorMessage) setErrorMessage('');
+                      }}
                       disabled={submitting}
                       autoComplete="tel"
                     />
