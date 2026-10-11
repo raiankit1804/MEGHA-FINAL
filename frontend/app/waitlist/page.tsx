@@ -89,7 +89,7 @@ export default function WaitlistPage() {
         />
       </div>
 
-      {/* Subtle Vignette Overlay */}
+      {/* Dark Vignette Overlay for Crisp Legibility */}
       <div className={styles.vignetteOverlay} />
 
       {/* Floating Top-Left Back Navigation */}
@@ -101,16 +101,16 @@ export default function WaitlistPage() {
         <span>Back</span>
       </Link>
 
-      {/* Centered Main Content (Locked in Viewport) */}
+      {/* Centered Main Content (Locked in Viewport, Zero Background Patch) */}
       <div className={styles.mainContent}>
-        {/* Hero Headline */}
+        {/* Hero Headline: Balanced 2-line structure */}
         <motion.h1
           className={styles.headline}
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
         >
-          When we go live, you&apos;ll feel it first.
+          When we go live, you&apos;ll<br />feel it first.
         </motion.h1>
 
         {/* Subtitle with High Contrast & Legibility */}
@@ -123,7 +123,7 @@ export default function WaitlistPage() {
           Megha Setu opens in small waves. Leave your email or phone number and you&apos;ll get a single ping the moment your invite unlocks: nothing else, ever.
         </motion.p>
 
-        {/* Form Container with Name, Email, and Phone (Optional) */}
+        {/* Unified Seamless Glass Capsule Form */}
         <motion.div
           className={styles.formCardWrapper}
           initial={{ opacity: 0, y: 14, scale: 0.98 }}
@@ -132,69 +132,69 @@ export default function WaitlistPage() {
         >
           <AnimatePresence mode="wait">
             {!submitted ? (
-              <form onSubmit={handleSubmit} className={styles.glassForm}>
-                <div className={styles.formGridRow}>
-                  <div className={styles.inputWrapper}>
-                    <input
-                      type="text"
-                      className={styles.fieldInput}
-                      placeholder="Your name"
-                      value={name}
-                      onChange={(e) => {
-                        setName(e.target.value);
-                        if (errorMessage) setErrorMessage('');
-                      }}
-                      disabled={submitting}
-                      autoComplete="name"
-                      required
-                    />
-                  </div>
-
-                  <div className={styles.inputWrapper}>
-                    <input
-                      type="email"
-                      className={styles.fieldInput}
-                      placeholder="you@company.com"
-                      value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                        if (errorMessage) setErrorMessage('');
-                      }}
-                      disabled={submitting}
-                      autoComplete="email"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.bottomActionRow}>
-                  <div className={styles.inputWrapper}>
-                    <input
-                      type="tel"
-                      className={styles.fieldInput}
-                      placeholder="Mobile number (optional)"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      disabled={submitting}
-                      autoComplete="tel"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className={styles.submitButton}
+              <form onSubmit={handleSubmit} className={styles.unifiedGlassCapsule}>
+                <div className={styles.capsuleInputRow}>
+                  <input
+                    type="text"
+                    className={styles.capsuleInput}
+                    placeholder="Your name"
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                      if (errorMessage) setErrorMessage('');
+                    }}
                     disabled={submitting}
-                  >
-                    {submitting ? (
-                      <span>Requesting...</span>
-                    ) : (
-                      <>
-                        <span>Request invite</span>
-                        <span className={styles.buttonArrow}>→</span>
-                      </>
-                    )}
-                  </button>
+                    autoComplete="name"
+                    required
+                  />
                 </div>
+
+                <div className={styles.capsuleDivider} />
+
+                <div className={styles.capsuleInputRow}>
+                  <input
+                    type="email"
+                    className={styles.capsuleInput}
+                    placeholder="you@company.com"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (errorMessage) setErrorMessage('');
+                    }}
+                    disabled={submitting}
+                    autoComplete="email"
+                    required
+                  />
+                </div>
+
+                <div className={styles.capsuleDivider} />
+
+                <div className={styles.capsuleInputRow}>
+                  <input
+                    type="tel"
+                    className={styles.capsuleInput}
+                    placeholder="Mobile number (optional)"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    disabled={submitting}
+                    autoComplete="tel"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className={styles.submitButton}
+                  disabled={submitting}
+                >
+                  {submitting ? (
+                    <span>Requesting...</span>
+                  ) : (
+                    <>
+                      <span>Request invite</span>
+                      <span className={styles.buttonArrow}>→</span>
+                    </>
+                  )}
+                </button>
               </form>
             ) : (
               <motion.div
@@ -222,7 +222,7 @@ export default function WaitlistPage() {
           )}
         </motion.div>
 
-        {/* Social Proof: Avatars + "people are waiting" */}
+        {/* Social Proof: Avatars + "people are waiting for the next wave" */}
         <motion.div
           className={styles.socialProofCluster}
           initial={{ opacity: 0 }}
