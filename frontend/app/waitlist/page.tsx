@@ -26,7 +26,7 @@ export default function WaitlistPage() {
     const isPhone = /^[+]?[\d\s-]{8,15}$/.test(trimmed);
 
     if (!isEmail && !isPhone) {
-      setErrorMessage('Please enter a valid email address or phone number.');
+      setErrorMessage('Please enter a valid email address or mobile number.');
       return;
     }
 
@@ -70,7 +70,7 @@ export default function WaitlistPage() {
         <Lightfall
           colors={['#FFFFFF', '#F8FAFC', '#F1F5F9', '#E2E8F0', '#FFFFFF', '#F8FAFC']}
           backgroundColor="#000000"
-          speed={0.6}
+          speed={0.65}
           streakCount={5}
           streakWidth={1.2}
           streakLength={1.5}
@@ -89,32 +89,25 @@ export default function WaitlistPage() {
       {/* Subtle Vignette Overlay */}
       <div className={styles.vignetteOverlay} />
 
-      {/* Header Navigation */}
-      <header className={styles.topNav}>
-        <Link href="/" className={styles.backButton}>
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="19" y1="12" x2="5" y2="12"></line>
-            <polyline points="12 19 5 12 12 5"></polyline>
-          </svg>
-          <span>Return to Megha Setu</span>
-        </Link>
+      {/* Floating Top-Left Back Navigation (Discreet, zero layout displacement) */}
+      <Link href="/" className={styles.floatingBack} title="Return to Megha Setu">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        <span>Back</span>
+      </Link>
 
-        <div className={styles.brandLogo}>
-          <div className={styles.logoIcon}>☁️</div>
-          <span>Megha Setu</span>
-        </div>
-      </header>
-
-      {/* Main Content Area matching the exact React Bits Waitlist 6 reference */}
+      {/* Centered Main Content (Locked in Viewport) */}
       <div className={styles.mainContent}>
         {/* Category Pill: PRIVATE BETA · WAVE THREE */}
         <motion.div
           className={styles.categoryPill}
-          initial={{ opacity: 0, y: -10 }}
+          initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
             <circle cx="12" cy="12" r="10" />
             <circle cx="12" cy="12" r="6" />
             <circle cx="12" cy="12" r="2" />
@@ -125,9 +118,9 @@ export default function WaitlistPage() {
         {/* Hero Headline */}
         <motion.h1
           className={styles.headline}
-          initial={{ opacity: 0, y: 14 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
         >
           When we go live, you&apos;ll<br />feel it first.
         </motion.h1>
@@ -135,19 +128,19 @@ export default function WaitlistPage() {
         {/* Subtitle */}
         <motion.p
           className={styles.subheadline}
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.65, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, delay: 0.16, ease: [0.16, 1, 0.3, 1] }}
         >
           Megha Setu opens in small waves. Leave your email or phone number and you&apos;ll get a single ping the moment your invite unlocks: nothing else, ever.
         </motion.p>
 
-        {/* The Glass Pill Input Form */}
+        {/* Glass Pill Input Form */}
         <motion.div
           className={styles.pillFormWrapper}
-          initial={{ opacity: 0, y: 16, scale: 0.98 }}
+          initial={{ opacity: 0, y: 14, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.7, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.65, delay: 0.22, ease: [0.16, 1, 0.3, 1] }}
         >
           <AnimatePresence mode="wait">
             {!submitted ? (
@@ -188,9 +181,9 @@ export default function WaitlistPage() {
                 initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.35 }}
+                transition={{ duration: 0.3 }}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                   <polyline points="22 4 12 14.01 9 11.01" />
                 </svg>
@@ -208,28 +201,28 @@ export default function WaitlistPage() {
           )}
         </motion.div>
 
-        {/* Social Proof: Exact match with overlapping avatars + text */}
+        {/* Social Proof: 5 overlapping avatars + exact copy */}
         <motion.div
           className={styles.socialProofCluster}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.75, delay: 0.35 }}
+          transition={{ duration: 0.7, delay: 0.3 }}
         >
           <div className={styles.avatarStack}>
             <div className={styles.avatar}>
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=60&auto=format&fit=crop&q=80" alt="member 1" />
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=50&auto=format&fit=crop&q=80" alt="member 1" />
             </div>
             <div className={styles.avatar}>
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=60&auto=format&fit=crop&q=80" alt="member 2" />
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&auto=format&fit=crop&q=80" alt="member 2" />
             </div>
             <div className={styles.avatar}>
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=60&auto=format&fit=crop&q=80" alt="member 3" />
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&auto=format&fit=crop&q=80" alt="member 3" />
             </div>
             <div className={styles.avatar}>
-              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=60&auto=format&fit=crop&q=80" alt="member 4" />
+              <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=50&auto=format&fit=crop&q=80" alt="member 4" />
             </div>
             <div className={styles.avatar}>
-              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=60&auto=format&fit=crop&q=80" alt="member 5" />
+              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=50&auto=format&fit=crop&q=80" alt="member 5" />
             </div>
           </div>
           <span className={styles.socialProofText}>
@@ -237,16 +230,6 @@ export default function WaitlistPage() {
           </span>
         </motion.div>
       </div>
-
-      {/* Footer */}
-      <footer className={styles.footer}>
-        <span>© 2026 Megha Setu — Synoptic Offline Meteorological Network</span>
-        <div className={styles.footerLinks}>
-          <Link href="/" className={styles.footerLink}>Home</Link>
-          <Link href="/#keynote" className={styles.footerLink}>Android Keynote</Link>
-          <a href="https://reactbits.dev" target="_blank" rel="noopener noreferrer" className={styles.footerLink}>React Bits</a>
-        </div>
-      </footer>
     </main>
   );
 }

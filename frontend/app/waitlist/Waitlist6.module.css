@@ -1,142 +1,117 @@
 .pageContainer {
-  position: relative;
-  min-height: 100vh;
-  width: 100%;
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-height: 100dvh;
   background-color: #000000;
   color: #ffffff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   overflow: hidden;
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', sans-serif;
-  padding: 1.5rem 1.25rem 2.5rem;
+  overscroll-behavior: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', -apple-system, sans-serif;
+  padding: 1.25rem;
   box-sizing: border-box;
+  user-select: none;
 }
 
-/* Background Lightfall Container */
+/* Background Lightfall Layer */
 .lightfallBackground {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   z-index: 1;
   pointer-events: auto;
 }
 
-/* Subtle Vignette so text is 100% legible */
+/* Subtle Vignette Overlay */
 .vignetteOverlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 75%, #000000 100%);
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0.75) 75%, #000000 100%);
   z-index: 2;
   pointer-events: none;
 }
 
-/* Header Navigation Bar */
-.topNav {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  max-width: 1100px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 0;
-}
-
-.backButton {
+/* Floating Top-Left Back Button (Discreet & Non-Intrusive) */
+.floatingBack {
+  position: absolute;
+  top: 1.25rem;
+  left: 1.25rem;
+  z-index: 50;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 9999px;
-  color: #94a3b8;
-  font-size: 0.825rem;
+  color: #71717a;
+  font-size: 0.75rem;
   font-weight: 500;
   text-decoration: none;
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: auto;
 }
 
-.backButton:hover {
+.floatingBack:hover {
   background: rgba(255, 255, 255, 0.12);
   border-color: rgba(255, 255, 255, 0.25);
   color: #ffffff;
   transform: translateX(-2px);
 }
 
-.brandLogo {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.925rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: #f8fafc;
-}
-
-.logoIcon {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: #ffffff;
-  color: #000000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-/* Central Content Container */
+/* Main Centered Content (Locked viewport, zero scroll) */
 .mainContent {
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 680px;
-  margin: auto 0;
+  max-width: 640px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 2.5rem 1rem;
+  margin: auto;
+  pointer-events: auto;
+  padding: 0 0.75rem;
 }
 
 /* Category Pill: "PRIVATE BETA · WAVE THREE" */
 .categoryPill {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.4rem 0.95rem;
-  background: rgba(20, 20, 24, 0.65);
+  gap: 0.5rem;
+  padding: 0.38rem 0.9rem;
+  background: rgba(20, 22, 28, 0.7);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 9999px;
-  font-size: 0.725rem;
+  font-size: 0.685rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: #94a3b8;
-  margin-bottom: 2rem;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
 }
 
 .categoryPill svg {
   color: #cbd5e1;
 }
 
-/* Hero Headline matching the exact reference */
+/* Exact Reference Headline */
 .headline {
-  font-size: clamp(2.5rem, 6.2vw, 4.4rem);
+  font-size: clamp(2.35rem, 5.8vw, 4.25rem);
   font-weight: 700;
-  line-height: 1.08;
+  line-height: 1.06;
   letter-spacing: -0.04em;
   color: #ffffff;
   margin: 0 0 1.25rem;
@@ -144,13 +119,13 @@
   font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', sans-serif;
 }
 
-/* Subtitle matching exact style */
+/* Subtitle */
 .subheadline {
-  font-size: clamp(0.95rem, 1.8vw, 1.075rem);
-  line-height: 1.6;
-  color: #8e95a5;
-  max-width: 530px;
-  margin: 0 auto 2.75rem;
+  font-size: clamp(0.9rem, 1.4vw, 1.05rem);
+  line-height: 1.55;
+  color: #8a91a0;
+  max-width: 500px;
+  margin: 0 auto 2.25rem;
   text-wrap: balance;
   font-weight: 400;
 }
@@ -159,32 +134,32 @@
 .pillFormWrapper {
   position: relative;
   width: 100%;
-  max-width: 480px;
-  margin: 0 auto 2.25rem;
+  max-width: 460px;
+  margin: 0 auto 1.75rem;
 }
 
 .glassPill {
   position: relative;
   display: flex;
   align-items: center;
-  background: rgba(20, 22, 27, 0.85);
-  backdrop-filter: blur(28px) saturate(180%);
-  -webkit-backdrop-filter: blur(28px) saturate(180%);
+  background: rgba(20, 22, 28, 0.85);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 9999px;
-  padding: 0.35rem 0.4rem 0.35rem 1.4rem;
+  padding: 0.32rem 0.35rem 0.32rem 1.35rem;
   box-shadow: 
-    0 16px 40px -12px rgba(0, 0, 0, 0.9),
-    0 0 0 1px rgba(255, 255, 255, 0.05),
-    inset 0 1px 1px rgba(255, 255, 255, 0.12);
+    0 14px 40px -10px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 1px 1px rgba(255, 255, 255, 0.14);
   transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glassPill:focus-within {
   border-color: rgba(255, 255, 255, 0.35);
   box-shadow: 
-    0 20px 50px -10px rgba(0, 0, 0, 0.95),
-    0 0 0 2px rgba(255, 255, 255, 0.15),
+    0 18px 45px -8px rgba(0, 0, 0, 0.95),
+    0 0 0 2px rgba(255, 255, 255, 0.14),
     inset 0 1px 1px rgba(255, 255, 255, 0.2);
   transform: translateY(-1px);
 }
@@ -195,42 +170,43 @@
   border: none;
   outline: none;
   color: #ffffff;
-  font-size: 0.95rem;
+  font-size: 0.925rem;
   font-family: inherit;
   font-weight: 450;
   min-width: 0;
-  padding: 0.6rem 0.5rem 0.6rem 0;
+  padding: 0.55rem 0.5rem 0.55rem 0;
 }
 
 .pillInput::placeholder {
-  color: #64748b;
+  color: #525a6c;
   font-weight: 400;
 }
 
-/* The Crisp White "Request invite →" Button */
+/* Crisp White Pill Button "Request invite →" */
 .pillButton {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   background: #ffffff;
-  color: #09090b;
-  font-size: 0.9rem;
+  color: #000000;
+  font-size: 0.885rem;
   font-weight: 600;
   font-family: inherit;
-  padding: 0.75rem 1.35rem;
+  padding: 0.7rem 1.25rem;
   border-radius: 9999px;
   border: none;
   cursor: pointer;
   white-space: nowrap;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 4px 14px rgba(255, 255, 255, 0.2);
+  flex-shrink: 0;
 }
 
 .pillButton:hover:not(:disabled) {
   background: #f4f4f5;
   transform: scale(1.02);
-  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.35);
+  box-shadow: 0 6px 18px rgba(255, 255, 255, 0.35);
 }
 
 .pillButton:active:not(:disabled) {
@@ -238,12 +214,12 @@
 }
 
 .pillButton:disabled {
-  opacity: 0.75;
+  opacity: 0.7;
   cursor: not-allowed;
 }
 
 .buttonArrow {
-  font-size: 1rem;
+  font-size: 0.95rem;
   line-height: 1;
   transition: transform 0.2s ease;
 }
@@ -252,22 +228,22 @@
   transform: translateX(2px);
 }
 
-/* Success Card */
+/* Success Confirmation Pill */
 .successCard {
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-radius: 9999px;
-  padding: 0.85rem 1.75rem;
+  padding: 0.8rem 1.6rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
   color: #ffffff;
-  font-size: 0.925rem;
+  font-size: 0.9rem;
   font-weight: 500;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
-  animation: fadeInPop 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+  animation: fadeInPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 @keyframes fadeInPop {
@@ -282,17 +258,17 @@
 }
 
 .errorMessage {
-  margin-top: 0.85rem;
+  margin-top: 0.75rem;
   color: #f87171;
-  font-size: 0.825rem;
+  font-size: 0.8rem;
 }
 
-/* Social Proof Section (Exact Match to screenshot) */
+/* Social Proof (Exact Match to screenshot) */
 .socialProofCluster {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.85rem;
+  gap: 0.75rem;
 }
 
 .avatarStack {
@@ -301,21 +277,19 @@
 }
 
 .avatar {
-  width: 26px;
-  height: 26px;
+  width: 25px;
+  height: 25px;
   border-radius: 50%;
   border: 2px solid #000000;
   margin-left: -7px;
   background-size: cover;
   background-position: center;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.625rem;
-  font-weight: 600;
-  color: #ffffff;
+  flex-shrink: 0;
 }
 
 .avatar:first-child {
@@ -326,13 +300,15 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .socialProofText {
-  font-size: 0.85rem;
-  color: #94a3b8;
+  font-size: 0.835rem;
+  color: #8b92a2;
   font-weight: 450;
   letter-spacing: -0.01em;
+  white-space: nowrap;
 }
 
 .socialProofText strong {
@@ -340,71 +316,71 @@
   font-weight: 600;
 }
 
-/* Footer Section */
-.footer {
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  max-width: 1100px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-top: 1.5rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  font-size: 0.775rem;
-  color: #64748b;
+/* Viewport & Device Optimization */
+@media (max-height: 700px) {
+  .categoryPill {
+    margin-bottom: 0.85rem;
+  }
+  .headline {
+    font-size: 2.2rem;
+    margin-bottom: 0.85rem;
+  }
+  .subheadline {
+    margin-bottom: 1.5rem;
+  }
+  .pillFormWrapper {
+    margin-bottom: 1.25rem;
+  }
 }
 
-.footerLinks {
-  display: flex;
-  gap: 1.25rem;
-}
-
-.footerLink {
-  color: #64748b;
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.footerLink:hover {
-  color: #cbd5e1;
-}
-
-/* Responsive adjustments */
 @media (max-width: 640px) {
   .pageContainer {
-    padding: 1rem 1rem 1.5rem;
-  }
-
-  .mainContent {
-    padding: 1.5rem 0;
+    padding: 1rem;
   }
 
   .headline {
-    font-size: 2.35rem;
+    font-size: clamp(2rem, 8.5vw, 2.75rem);
+    margin-bottom: 1rem;
+  }
+
+  .subheadline {
+    font-size: 0.875rem;
+    margin-bottom: 1.85rem;
+  }
+
+  .pillFormWrapper {
+    max-width: 100%;
+    margin-bottom: 1.5rem;
   }
 
   .glassPill {
-    padding: 0.35rem 0.35rem 0.35rem 1rem;
+    padding: 0.28rem 0.3rem 0.28rem 1.1rem;
   }
 
   .pillInput {
-    font-size: 0.875rem;
-  }
-
-  .pillButton {
-    padding: 0.65rem 1.05rem;
     font-size: 0.85rem;
   }
 
+  .pillButton {
+    padding: 0.65rem 1rem;
+    font-size: 0.825rem;
+  }
+
   .socialProofCluster {
-    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 0.5rem;
   }
 
-  .footer {
-    flex-direction: column;
-    gap: 0.75rem;
-    text-align: center;
+  .socialProofText {
+    font-size: 0.775rem;
+    white-space: normal;
+  }
+
+  .floatingBack {
+    top: 0.85rem;
+    left: 0.85rem;
+    font-size: 0.7rem;
+    padding: 0.35rem 0.7rem;
   }
 }
