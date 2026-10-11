@@ -31,6 +31,7 @@ export interface ChatWindowProps {
   heroInput?: React.ReactNode;
   onNewChat?: () => void;
   onOpenSatellite?: (mode?: string) => void;
+  onOpenDownload?: () => void;
   user?: UserProfile | null;
   isListening?: boolean;
 }
@@ -45,6 +46,7 @@ export default function ChatWindow({
   heroInput,
   onNewChat,
   onOpenSatellite,
+  onOpenDownload,
   user,
   isListening = false,
 }: ChatWindowProps) {
@@ -90,6 +92,7 @@ export default function ChatWindow({
           language={language}
           heroInput={heroInput}
           onNewChat={onNewChat}
+          onOpenDownload={onOpenDownload}
           user={user}
           isListening={isListening}
         />
@@ -534,11 +537,12 @@ interface EmptyStateProps {
   language: string;
   heroInput?: React.ReactNode;
   onNewChat?: () => void;
+  onOpenDownload?: () => void;
   user?: UserProfile | null;
   isListening?: boolean;
 }
 
-function EmptyState({ onSend, location, domainFilter, language, heroInput, onNewChat, user, isListening = false }: EmptyStateProps) {
+function EmptyState({ onSend, location, domainFilter, language, heroInput, onNewChat, onOpenDownload, user, isListening = false }: EmptyStateProps) {
   const { colorScheme } = useTheme();
   const locName = location?.name && location.name !== 'Select location' ? location.name : null;
 

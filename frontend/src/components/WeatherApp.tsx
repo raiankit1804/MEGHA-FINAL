@@ -610,6 +610,41 @@ export default function WeatherApp() {
           </div>
         </header>
 
+        {/* Apple-Style Ribbon Announcement Banner (Landing Screen) */}
+        {messages.length === 0 && !loading && (
+          <aside
+            className="appleAnnouncementBanner"
+            onClick={() => setShowDownload(true)}
+            role="banner"
+            aria-label="Megha Setu Android App Waitlist Announcement"
+          >
+            <div className="appleBannerContent">
+              <span className="appleBannerText">
+                Get early access to the Megha Setu Android app with offline neural weather intelligence.
+              </span>{' '}
+              <span className="appleBannerLink">
+                <span>Pre-register now</span>
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="appleBannerIcon"
+                  aria-hidden="true"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <line x1="12" y1="8" x2="12" y2="16" />
+                  <line x1="8" y1="12" x2="16" y2="12" />
+                </svg>
+              </span>
+            </div>
+          </aside>
+        )}
+
         {/* Chat History Slideout Drawer */}
         <HistorySidebar
           isOpen={showHistory}
@@ -713,6 +748,7 @@ export default function WeatherApp() {
             }
             onNewChat={handleNewChat}
             onOpenSatellite={() => setShowSatellite(true)}
+            onOpenDownload={() => setShowDownload(true)}
             user={user}
             isListening={isListening}
           />
