@@ -56,3 +56,56 @@ async def get_outage_status():
         "simulated_outage": is_outage,
         "active_source": "wttr.in (Tier 3 Fallback)" if is_outage else "Open-Meteo (Tier 1 IMD-aligned)",
     }
+
+
+@router.get("/diagnose-open-meteo")
+async def diagnose_open_meteo(lat: float = 28.6139, lon: float = 77.2090):
+    """Diagnose why Open-Meteo fails or succeeds from this server."""
+    import httpx
+    from data.open_meteo import BASE_URL, HEADERS, fetch_tier1
+
+    results = {}
+
+    # Test 1: Full fetch_tier1 call
+    try:
+        t1 = await fetch_tier1(lat, lon, {"latitude": lat, "longitude": lon})
+        results["fetch_tier1"] = {
+            "status": "success",
+            "current_temp": t1.get("current", {}).get("temperature_2m"),
+        }
+    except Exception as exc:
+        results["fetch_tier1"] = {
+            "status": "failed",
+            "error_type": type(exc).__name__,
+            "error": str(exc),
+        }
+
+    # Test 2: Raw httpx request with custom headers
+    try:
+        url = f"{BASE_URL}/forecast"
+        params = {"latitude": lat, "longitude": lon, "current": "temperature_2m", "timezone": "Asia/Kolkata"}
+        async with httpx.AsyncClient(headers=HEADERS, timeout=10) as client:
+            resp = await client.get(url, params=params)
+            results["raw_with_headers"] = {
+                "status_code": resp.status_code,
+                "text": resp.text[:400],
+            }
+    except Exception as exc:
+        results["raw_with_headers"] = {"error": str(exc)}
+
+    # Test 3: Raw httpx request with minimal/generic User-Agent
+    try:
+        url = f"{BASE_URL}/forecast"
+        params = {"latitude": lat, "longitude": lon, "current": "temperature_2m", "timezone": "Asia/Kolkata"}
+        generic_headers = {"User-Agent": "Mozilla/5.0 (compatible)", "Accept": "application/json"}
+        async with httpx.AsyncClient(headers=generic_headers, timeout=10) as client:
+            resp = await client.get(url, params=params)
+            results["raw_generic_ua"] = {
+                "status_code": resp.status_code,
+                "text": resp.text[:400],
+            }
+    except Exception as exc:
+        results["raw_generic_ua"] = {"error": str(exc)}
+
+    return results
+
