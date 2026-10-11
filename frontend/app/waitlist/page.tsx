@@ -19,7 +19,7 @@ export default function WaitlistPage() {
     setErrorMessage('');
 
     if (!name.trim()) {
-      setErrorMessage('Please enter your name.');
+      setErrorMessage('Please enter your full name.');
       return;
     }
 
@@ -68,24 +68,23 @@ export default function WaitlistPage() {
 
   return (
     <main className={styles.pageContainer}>
-      {/* Background: React Bits <Lightfall /> Component with White Light Streaks */}
+      {/* Background: Highly-Optimized Smooth 60FPS Lightfall */}
       <div className={styles.lightfallBackground}>
         <Lightfall
-          colors={['#FFFFFF', '#F8FAFC', '#F1F5F9', '#E2E8F0', '#FFFFFF', '#F8FAFC']}
+          colors={['#FFFFFF', '#F8FAFC', '#F1F5F9', '#E2E8F0', '#FFFFFF']}
           backgroundColor="#000000"
-          speed={0.65}
-          streakCount={5}
-          streakWidth={1.2}
-          streakLength={1.5}
-          glow={1.15}
-          density={0.75}
-          twinkle={0.8}
+          speed={0.45}
+          streakCount={3}
+          streakWidth={1.0}
+          streakLength={1.2}
+          glow={1.1}
+          density={0.65}
+          twinkle={0.7}
           zoom={2.2}
-          backgroundGlow={0.2}
+          backgroundGlow={0.18}
           opacity={1}
-          mouseInteraction={true}
-          mouseStrength={0.7}
-          mouseRadius={0.7}
+          dpr={1}
+          mouseInteraction={false}
         />
       </div>
 
@@ -101,100 +100,139 @@ export default function WaitlistPage() {
         <span>Back</span>
       </Link>
 
-      {/* Centered Main Content (Locked in Viewport, Zero Background Patch) */}
+      {/* Centered Main Content (Locked in Viewport) */}
       <div className={styles.mainContent}>
-        {/* Hero Headline: Balanced 2-line structure */}
+        {/* Hero Headline */}
         <motion.h1
           className={styles.headline}
-          initial={{ opacity: 0, y: 12 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
           When we go live, you&apos;ll<br />feel it first.
         </motion.h1>
 
-        {/* Subtitle with High Contrast & Legibility */}
+        {/* Subtitle */}
         <motion.p
           className={styles.subheadline}
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.5, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
         >
-          Megha Setu opens in small waves. Leave your email or phone number and you&apos;ll get a single ping the moment your invite unlocks: nothing else, ever.
+          Megha Setu opens in small waves. Leave your details below and you&apos;ll get a single ping the moment your invite unlocks: nothing else, ever.
         </motion.p>
 
-        {/* Unified Seamless Glass Capsule Form */}
+        {/* Real Structured Form Card */}
         <motion.div
-          className={styles.formCardWrapper}
-          initial={{ opacity: 0, y: 14, scale: 0.98 }}
+          style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+          initial={{ opacity: 0, y: 12, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.65, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.55, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
         >
           <AnimatePresence mode="wait">
             {!submitted ? (
-              <form onSubmit={handleSubmit} className={styles.unifiedGlassCapsule}>
-                <div className={styles.capsuleInputRow}>
-                  <input
-                    type="text"
-                    className={styles.capsuleInput}
-                    placeholder="Your name"
-                    value={name}
-                    onChange={(e) => {
-                      setName(e.target.value);
-                      if (errorMessage) setErrorMessage('');
-                    }}
-                    disabled={submitting}
-                    autoComplete="name"
-                    required
-                  />
+              <form onSubmit={handleSubmit} className={styles.formCard}>
+                {/* Full Name Field */}
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel} htmlFor="waitlist-name">
+                    Full Name <span className={styles.requiredAsterisk}>*</span>
+                  </label>
+                  <div className={styles.inputContainer}>
+                    <svg className={styles.fieldIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                      <circle cx="12" cy="7" r="4" />
+                    </svg>
+                    <input
+                      id="waitlist-name"
+                      type="text"
+                      className={styles.formInput}
+                      placeholder="Enter your full name"
+                      value={name}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        if (errorMessage) setErrorMessage('');
+                      }}
+                      disabled={submitting}
+                      autoComplete="name"
+                      required
+                    />
+                  </div>
                 </div>
 
-                <div className={styles.capsuleDivider} />
-
-                <div className={styles.capsuleInputRow}>
-                  <input
-                    type="email"
-                    className={styles.capsuleInput}
-                    placeholder="you@company.com"
-                    value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (errorMessage) setErrorMessage('');
-                    }}
-                    disabled={submitting}
-                    autoComplete="email"
-                    required
-                  />
+                {/* Email Address Field */}
+                <div className={styles.fieldGroup}>
+                  <label className={styles.fieldLabel} htmlFor="waitlist-email">
+                    Email Address <span className={styles.requiredAsterisk}>*</span>
+                  </label>
+                  <div className={styles.inputContainer}>
+                    <svg className={styles.fieldIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect width="20" height="16" x="2" y="4" rx="2" />
+                      <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                    </svg>
+                    <input
+                      id="waitlist-email"
+                      type="email"
+                      className={styles.formInput}
+                      placeholder="you@company.com"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        if (errorMessage) setErrorMessage('');
+                      }}
+                      disabled={submitting}
+                      autoComplete="email"
+                      required
+                    />
+                  </div>
                 </div>
 
-                <div className={styles.capsuleDivider} />
-
-                <div className={styles.capsuleInputRow}>
-                  <input
-                    type="tel"
-                    className={styles.capsuleInput}
-                    placeholder="Mobile number (optional)"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    disabled={submitting}
-                    autoComplete="tel"
-                  />
+                {/* Mobile Number Field (Optional) */}
+                <div className={styles.fieldGroup}>
+                  <div className={styles.labelRow}>
+                    <label className={styles.fieldLabel} htmlFor="waitlist-phone">
+                      Mobile Number
+                    </label>
+                    <span className={styles.optionalBadge}>Optional</span>
+                  </div>
+                  <div className={styles.inputContainer}>
+                    <svg className={styles.fieldIcon} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <rect width="14" height="20" x="5" y="2" rx="2" ry="2" />
+                      <path d="M12 18h.01" />
+                    </svg>
+                    <input
+                      id="waitlist-phone"
+                      type="tel"
+                      className={styles.formInput}
+                      placeholder="+91 98765 43210"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      disabled={submitting}
+                      autoComplete="tel"
+                    />
+                  </div>
                 </div>
 
+                {/* Submit Button */}
                 <button
                   type="submit"
-                  className={styles.submitButton}
+                  className={styles.submitBtn}
                   disabled={submitting}
                 >
                   {submitting ? (
                     <span>Requesting...</span>
                   ) : (
                     <>
-                      <span>Request invite</span>
-                      <span className={styles.buttonArrow}>→</span>
+                      <span>Request Invite</span>
+                      <span className={styles.btnArrow}>→</span>
                     </>
                   )}
                 </button>
+
+                {errorMessage && (
+                  <p className={styles.errorMessage} role="alert">
+                    {errorMessage}
+                  </p>
+                )}
               </form>
             ) : (
               <motion.div
@@ -204,22 +242,20 @@ export default function WaitlistPage() {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.3 }}
               >
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-                  <polyline points="22 4 12 14.01 9 11.01" />
-                </svg>
-                <span>
-                  You&apos;re registered, {name}! We&apos;ll notify you the moment your invite unlocks.
-                </span>
+                <div className={styles.successIcon}>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 style={{ margin: '0 0 0.35rem', fontSize: '1.1rem', fontWeight: 600 }}>You&apos;re registered, {name}!</h3>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>
+                    We&apos;ve reserved your priority spot. We&apos;ll notify you the moment your invite unlocks.
+                  </p>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
-
-          {errorMessage && (
-            <p className={styles.errorMessage} role="alert">
-              {errorMessage}
-            </p>
-          )}
         </motion.div>
 
         {/* Social Proof: Avatars + "people are waiting for the next wave" */}
@@ -227,7 +263,7 @@ export default function WaitlistPage() {
           className={styles.socialProofCluster}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.7, delay: 0.25 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
         >
           <div className={styles.avatarStack}>
             <div className={styles.avatar}>
