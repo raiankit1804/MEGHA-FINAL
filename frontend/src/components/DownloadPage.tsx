@@ -23,7 +23,7 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
   const [featureIndex, setFeatureIndex] = useState(0);
-  const [activeAiMode, setActiveAiMode] = useState<'offlineHigh' | 'offlineLow' | 'onlineGemini'>('offlineHigh');
+  const [activeAiMode, setActiveAiMode] = useState<'offlineHigh' | 'offlineLow' | 'onlineNimbus'>('offlineHigh');
   const [pdfGenerating, setPdfGenerating] = useState(false);
   const [pdfReady, setPdfReady] = useState(false);
 
@@ -572,7 +572,7 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
               </div>
             </div>
 
-            {/* Bento Card E: 3 AI Modes (Offline High-RAM, Offline Low-RAM, Online Gemini) */}
+            {/* Bento Card E: 3 AI Modes (Offline High-RAM, Offline Low-RAM, Online Cloud) */}
             <div className={`${styles.bentoCard} ${styles.bentoCol12}`}>
               <div>
                 <div className={styles.bentoTag}>
@@ -581,7 +581,7 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
                 </div>
                 <h3 className={styles.bentoHeadline}>3 Intelligent AI modes. Optimized for every phone.</h3>
                 <p className={styles.bentoText}>
-                  Two dedicated 100% offline edge models tailored for higher-RAM and low-RAM budget devices, plus Google Gemini online mode. <span style={{ color: '#38bdf8', fontWeight: 600 }}>Totally optional:</span> offline models download on-demand only if you choose to enable zero-internet local intelligence.
+                  Two dedicated 100% offline edge models tailored for higher-RAM and low-RAM budget devices, plus Nimbus online cloud mode. <span style={{ color: '#38bdf8', fontWeight: 600 }}>Totally optional:</span> offline models download on-demand only if you choose to enable zero-internet local intelligence.
                 </p>
               </div>
 
@@ -595,7 +595,7 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
                     onClick={() => setActiveAiMode('offlineHigh')}
                     className={`${styles.aiSegmentBtn} ${activeAiMode === 'offlineHigh' ? styles.aiSegmentBtnActive : ''}`}
                   >
-                    <span>☁️ Cirrus (Qwen3 1.7B)</span>
+                    <span>☁️ Cirrus</span>
                   </button>
                   <button
                     type="button"
@@ -604,16 +604,16 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
                     onClick={() => setActiveAiMode('offlineLow')}
                     className={`${styles.aiSegmentBtn} ${activeAiMode === 'offlineLow' ? styles.aiSegmentBtnActive : ''}`}
                   >
-                    <span>🌫️ Mist (Gemma 3 270M)</span>
+                    <span>🌫️ Mist</span>
                   </button>
                   <button
                     type="button"
                     role="tab"
-                    aria-selected={activeAiMode === 'onlineGemini'}
-                    onClick={() => setActiveAiMode('onlineGemini')}
-                    className={`${styles.aiSegmentBtn} ${activeAiMode === 'onlineGemini' ? styles.aiSegmentBtnActive : ''}`}
+                    aria-selected={activeAiMode === 'onlineNimbus'}
+                    onClick={() => setActiveAiMode('onlineNimbus')}
+                    className={`${styles.aiSegmentBtn} ${activeAiMode === 'onlineNimbus' ? styles.aiSegmentBtnActive : ''}`}
                   >
-                    <span>⚡ Nimbus (Gemini Online)</span>
+                    <span>⚡ Nimbus</span>
                   </button>
                 </div>
 
@@ -621,9 +621,9 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
                 <div className={styles.aiModelShowcase}>
                   <div className={styles.aiModelHeaderRow}>
                     <div className={styles.aiModelTitle}>
-                      {activeAiMode === 'offlineHigh' && 'Cirrus (high, light cloud) • Qwen3 1.7B, Q4_K_M'}
-                      {activeAiMode === 'offlineLow' && 'Mist • Gemma 3 270M, Q4_K_M'}
-                      {activeAiMode === 'onlineGemini' && 'Nimbus (cloud type) • Google Gemini Synoptic AI'}
+                      {activeAiMode === 'offlineHigh' && 'Cirrus (high, light cloud) • 1.7B Parameters, Q4_K_M'}
+                      {activeAiMode === 'offlineLow' && 'Mist • 270M Parameters, Q4_K_M'}
+                      {activeAiMode === 'onlineNimbus' && 'Nimbus (cloud type) • Synoptic Weather AI'}
                     </div>
                     <span
                       className={`${styles.aiModelTag} ${
@@ -636,16 +636,16 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
                     >
                       {activeAiMode === 'offlineHigh' && '100% Offline • Optional Download'}
                       {activeAiMode === 'offlineLow' && '100% Offline • Optional Download'}
-                      {activeAiMode === 'onlineGemini' && 'Online Mode • Cloud Supercomputing'}
+                      {activeAiMode === 'onlineNimbus' && 'Online Mode • Cloud Supercomputing'}
                     </span>
                   </div>
 
                   <p style={{ fontSize: '0.88rem', color: '#cbd5e1', margin: 0, lineHeight: 1.5 }}>
                     {activeAiMode === 'offlineHigh' &&
-                      'Cirrus: Non-thinking high-altitude reasoning engine running via llama_cpp_flutter. High-quality offline conversational reasoning and dialect voice assistance designed for mid-to-high tier Android phones.'}
+                      'Cirrus: High-altitude reasoning engine running on-device with 1.7B parameters. High-quality offline conversational reasoning and dialect voice assistance designed for mid-to-high tier Android phones.'}
                     {activeAiMode === 'offlineLow' &&
                       'Mist: Highly compact 270M parameter weights optimized to run everywhere, including budget phones with constrained RAM. Ultra-lightweight and efficient.'}
-                    {activeAiMode === 'onlineGemini' &&
+                    {activeAiMode === 'onlineNimbus' &&
                       'Nimbus: Connects to cloud supercomputing clusters when internet is available. Fuses 39 Doppler radar sweeps, ISRO INSAT-3DS multi-spectral radiance feeds, and numerical WRF weather prediction equations.'}
                   </p>
 
@@ -655,7 +655,7 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
                       <span className={styles.aiSpecItemValue} style={{ color: '#38bdf8' }}>
                         {activeAiMode === 'offlineHigh' && 'Cirrus (high, light cloud)'}
                         {activeAiMode === 'offlineLow' && 'Mist'}
-                        {activeAiMode === 'onlineGemini' && 'Nimbus (cloud type)'}
+                        {activeAiMode === 'onlineNimbus' && 'Nimbus (cloud type)'}
                       </span>
                     </div>
 
@@ -674,7 +674,7 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
                       >
                         {activeAiMode === 'offlineHigh' && '~1.4 GB (Optional)'}
                         {activeAiMode === 'offlineLow' && '~220 MB (Optional)'}
-                        {activeAiMode === 'onlineGemini' && '0 MB Local (Cloud API)'}
+                        {activeAiMode === 'onlineNimbus' && '0 MB Local (Cloud API)'}
                       </span>
                     </div>
 
@@ -683,7 +683,7 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
                       <span className={styles.aiSpecItemValue}>
                         {activeAiMode === 'offlineHigh' && 'Higher-RAM phones (Mid & Flagship)'}
                         {activeAiMode === 'offlineLow' && 'Low-RAM phones & Budget devices'}
-                        {activeAiMode === 'onlineGemini' && 'All connected Android devices'}
+                        {activeAiMode === 'onlineNimbus' && 'All connected Android devices'}
                       </span>
                     </div>
 
@@ -692,7 +692,7 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
                       <span className={styles.aiSpecItemValue} style={{ color: '#e2e8f0' }}>
                         {activeAiMode === 'offlineHigh' && 'Totally Optional (On-Demand)'}
                         {activeAiMode === 'offlineLow' && 'Totally Optional (On-Demand)'}
-                        {activeAiMode === 'onlineGemini' && 'No Local Download Required'}
+                        {activeAiMode === 'onlineNimbus' && 'No Local Download Required'}
                       </span>
                     </div>
                   </div>
@@ -706,18 +706,18 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
                     <table className={styles.cloudNamingTable}>
                       <thead>
                         <tr>
-                          <th>Model</th>
+                          <th>Parameters</th>
                           <th>Name</th>
                           <th>Deployment Mode</th>
                         </tr>
                       </thead>
                       <tbody>
                         <tr
-                          onClick={() => setActiveAiMode('onlineGemini')}
-                          className={activeAiMode === 'onlineGemini' ? styles.cloudRowActive : styles.cloudRow}
+                          onClick={() => setActiveAiMode('onlineNimbus')}
+                          className={activeAiMode === 'onlineNimbus' ? styles.cloudRowActive : styles.cloudRow}
                           style={{ cursor: 'pointer' }}
                         >
-                          <td className={styles.tableColModel}>Gemini</td>
+                          <td className={styles.tableColModel}>Cloud Scale</td>
                           <td className={styles.tableColName}>
                             <strong className={styles.cloudNameHighlight}>Nimbus</strong>{' '}
                             <span className={styles.cloudSubNote}>(cloud type)</span>
@@ -729,7 +729,7 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
                           className={activeAiMode === 'offlineHigh' ? styles.cloudRowActive : styles.cloudRow}
                           style={{ cursor: 'pointer' }}
                         >
-                          <td className={styles.tableColModel}>Qwen3 1.7B</td>
+                          <td className={styles.tableColModel}>1.7B</td>
                           <td className={styles.tableColName}>
                             <strong className={styles.cloudNameHighlight}>Cirrus</strong>{' '}
                             <span className={styles.cloudSubNote}>(high, light cloud)</span>
@@ -741,7 +741,7 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
                           className={activeAiMode === 'offlineLow' ? styles.cloudRowActive : styles.cloudRow}
                           style={{ cursor: 'pointer' }}
                         >
-                          <td className={styles.tableColModel}>Gemma 3 270M</td>
+                          <td className={styles.tableColModel}>270M</td>
                           <td className={styles.tableColName}>
                             <strong className={styles.cloudNameHighlight}>Mist</strong>
                           </td>
