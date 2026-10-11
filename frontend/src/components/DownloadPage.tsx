@@ -22,8 +22,6 @@ const ARCHITECTURE_FEATURES = [
 export default function DownloadPage({ onClose }: DownloadPageProps) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const [downloading, setDownloading] = useState(false);
-  const [emailSubscribed, setEmailSubscribed] = useState(false);
-  const [email, setEmail] = useState('');
   const [featureIndex, setFeatureIndex] = useState(0);
   const [activeAiMode, setActiveAiMode] = useState<'offlineHigh' | 'offlineLow' | 'onlineGemini'>('offlineHigh');
   const [pdfGenerating, setPdfGenerating] = useState(false);
@@ -54,12 +52,6 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
     link.click();
     document.body.removeChild(link);
     setTimeout(() => setDownloading(false), 3000);
-  };
-
-  const handleSubscribe = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    setEmailSubscribed(true);
   };
 
   return (
@@ -144,12 +136,7 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
               type="button"
               className={styles.primaryCta}
               onClick={() => {
-                const el = document.getElementById('waitlist-section');
-                if (el) {
-                  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                  const input = document.getElementById('waitlist-input') as HTMLInputElement;
-                  if (input) input.focus();
-                }
+                window.location.href = '/waitlist';
               }}
               id="apple-keynote-preregister-btn"
             >
@@ -948,51 +935,6 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
               </p>
             </div>
           </div>
-        </motion.section>
-
-        {/* Priority Early Access Waitlist Registration Capsule */}
-        <motion.section
-          id="waitlist-section"
-          className={styles.notifyCapsule}
-          initial={{ opacity: 0, y: 35 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, amount: 0.15 }}
-          transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
-        >
-          <StaggeredText
-            text="Be first in line when Megha Setu launches."
-            as="h3"
-            className={styles.notifyCapsuleTitle}
-            segmentBy="words"
-            delay={35}
-            duration={0.65}
-            direction="bottom"
-            blur={true}
-          />
-          <p className={styles.notifyCapsuleSub}>
-            Pre-register with your email or phone number to receive an exclusive early access invitation when the closed beta opens for the application.
-          </p>
-
-          {emailSubscribed ? (
-            <p className={styles.successMessage}>
-              ✓ You’re registered! We’ll notify you as soon as the application closed beta opens.
-            </p>
-          ) : (
-            <form onSubmit={handleSubscribe} className={styles.notifyForm}>
-              <input
-                id="waitlist-input"
-                type="text"
-                placeholder="Enter email or mobile number"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={styles.notifyInput}
-                required
-              />
-              <button type="submit" className={styles.notifyButton}>
-                Notify Me
-              </button>
-            </form>
-          )}
         </motion.section>
       </div>
     </div>

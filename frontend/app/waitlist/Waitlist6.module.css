@@ -1,0 +1,491 @@
+.pageContainer {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #030712;
+  color: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter', sans-serif;
+  padding: 1.5rem 1.25rem 2.5rem;
+  box-sizing: border-box;
+}
+
+/* Background Canvas Layer for GLSL / Water Ripple Field */
+.rippleCanvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: auto;
+  opacity: 0.85;
+}
+
+/* Ambient Radial Glows */
+.ambientGlowTop {
+  position: absolute;
+  top: -15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, rgba(14, 165, 233, 0.05) 50%, transparent 80%);
+  filter: blur(80px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.ambientGlowCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(56, 189, 248, 0.04) 60%, transparent 80%);
+  filter: blur(100px);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Header Navigation Bar */
+.topNav {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+}
+
+.backButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.1rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  color: #94a3b8;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  transform: translateX(-2px);
+}
+
+.brandLogo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #f1f5f9;
+}
+
+.logoIcon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #0284c7, #38bdf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.4);
+}
+
+.topBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4rem 0.85rem;
+  background: rgba(56, 189, 248, 0.08);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: 9999px;
+  font-size: 0.775rem;
+  color: #38bdf8;
+  font-weight: 500;
+}
+
+/* Central Content Container */
+.mainContent {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 760px;
+  margin: auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+/* Category Pill */
+.categoryPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 1rem;
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+  font-size: 0.825rem;
+  font-weight: 500;
+  color: #cbd5e1;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.pulsingDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #38bdf8;
+  box-shadow: 0 0 10px #38bdf8;
+  animation: pulseBeacon 2s infinite ease-in-out;
+}
+
+@keyframes pulseBeacon {
+  0%, 100% {
+    transform: scale(0.9);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 1;
+    box-shadow: 0 0 16px #38bdf8;
+  }
+}
+
+/* Main Hero Typography */
+.headline {
+  font-size: clamp(2.25rem, 5.5vw, 4rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+  margin: 0 0 1.25rem;
+  text-wrap: balance;
+  background: linear-gradient(180deg, #ffffff 30%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.subheadline {
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.6;
+  color: #94a3b8;
+  max-width: 580px;
+  margin: 0 auto 2.75rem;
+  text-wrap: balance;
+  font-weight: 400;
+}
+
+/* React Bits Pro "Waitlist 6" Signature: Glass Pill Input */
+.pillFormWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto 2rem;
+}
+
+.glassPill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 9999px;
+  padding: 0.45rem 0.5rem 0.45rem 1.4rem;
+  box-shadow: 
+    0 12px 40px -10px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 1px 1px rgba(255, 255, 255, 0.15);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glassPill:focus-within {
+  border-color: rgba(56, 189, 248, 0.6);
+  box-shadow: 
+    0 16px 50px -10px rgba(2, 132, 199, 0.4),
+    0 0 0 2px rgba(56, 189, 248, 0.25),
+    inset 0 1px 1px rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.inputIcon {
+  color: #64748b;
+  margin-right: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.glassPill:focus-within .inputIcon {
+  color: #38bdf8;
+}
+
+.pillInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #f8fafc;
+  font-size: 1rem;
+  font-family: inherit;
+  font-weight: 450;
+  min-width: 0;
+}
+
+.pillInput::placeholder {
+  color: #64748b;
+  font-weight: 400;
+}
+
+.pillButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: #ffffff;
+  color: #050b14;
+  font-size: 0.925rem;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.25);
+}
+
+.pillButton:hover:not(:disabled) {
+  background: #f1f5f9;
+  transform: scale(1.02);
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.4);
+}
+
+.pillButton:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.pillButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Feedback & Success State */
+.successCard {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 9999px;
+  padding: 0.9rem 1.8rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #34d399;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+  animation: fadeInPop 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeInPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.94) translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.errorMessage {
+  margin-top: 0.75rem;
+  color: #f87171;
+  font-size: 0.85rem;
+}
+
+/* Social Proof & Community Avatar Stack */
+.socialProofCluster {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.avatarStack {
+  display: flex;
+  align-items: center;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid #030712;
+  margin-left: -10px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.avatar:first-child {
+  margin-left: 0;
+}
+
+.avatar1 { background: linear-gradient(135deg, #0284c7, #38bdf8); }
+.avatar2 { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+.avatar3 { background: linear-gradient(135deg, #059669, #10b981); }
+.avatar4 { background: linear-gradient(135deg, #d97706, #fbbf24); }
+.avatar5 { background: linear-gradient(135deg, #dc2626, #f87171); }
+
+.socialProofText {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  font-weight: 450;
+}
+
+.socialProofText strong {
+  color: #ffffff;
+}
+
+/* Trust Features Row */
+.trustRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.trustItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.785rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.trustDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #475569;
+}
+
+/* Footer Section */
+.footer {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.footerLink {
+  color: #64748b;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footerLink:hover {
+  color: #94a3b8;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 640px) {
+  .pageContainer {
+    padding: 1rem 1rem 1.5rem;
+  }
+
+  .mainContent {
+    padding: 1.5rem 0;
+  }
+
+  .headline {
+    font-size: 2.15rem;
+  }
+
+  .glassPill {
+    flex-direction: column;
+    align-items: stretch;
+    border-radius: 24px;
+    padding: 0.75rem;
+    gap: 0.75rem;
+  }
+
+  .inputIcon {
+    display: none;
+  }
+
+  .pillInput {
+    padding: 0.5rem 0.5rem;
+    font-size: 0.95rem;
+    text-align: center;
+  }
+
+  .pillButton {
+    width: 100%;
+    padding: 0.85rem;
+  }
+
+  .footer {
+    flex-direction: column;
+    gap: 0.75rem;
+    text-align: center;
+  }
+
+  .trustRow {
+    gap: 0.75rem;
+  }
+}
