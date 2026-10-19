@@ -117,7 +117,7 @@ export default function WaitlistPage() {
           <div className={styles.headerRight}>
             <div className={styles.versionBadge}>
               <span className={styles.liveDot} />
-              <span>Android Beta v2.4</span>
+              <span>Android Beta Version</span>
             </div>
             <Link href="/" className={styles.backBtn} title="Launch the Megha Setu Web Application">
               <span>Launch Web App</span>
@@ -417,7 +417,7 @@ export default function WaitlistPage() {
           <a href="https://github.com/raiankit1804/MEGHA-APP" target="_blank" rel="noreferrer" className={styles.footerLink}>Open Source</a>
         </div>
         <div>
-          © {new Date().getFullYear()} Megha Setu Project. All rights reserved. Built for India.
+          © {new Date().getFullYear()} Megha Setu Project. Built by Team Frame Fusion.
         </div>
       </footer>
     </div>

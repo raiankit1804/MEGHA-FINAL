@@ -17,7 +17,6 @@ const SECTORS = [
 ];
 
 export default function DownloadPage({ onClose }: DownloadPageProps) {
-  const [downloading, setDownloading] = useState(false);
   const [activeAiMode, setActiveAiMode] = useState<'offlineHigh' | 'offlineLow' | 'onlineNimbus'>('offlineHigh');
   const [pdfGenerating, setPdfGenerating] = useState(false);
   const [pdfReady, setPdfReady] = useState(false);
@@ -30,17 +29,6 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [queueNumber, setQueueNumber] = useState<number | null>(null);
-
-  const handleDownload = () => {
-    setDownloading(true);
-    const link = document.createElement('a');
-    link.href = '/megha-setu-v1.0.4.apk';
-    link.download = 'megha-setu-v1.0.4.apk';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setTimeout(() => setDownloading(false), 3000);
-  };
 
   const handleGeneratePdf = () => {
     setPdfGenerating(true);
@@ -109,7 +97,7 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
           <span className={styles.brandName}>Megha Setu</span>
           <span className={styles.versionBadge}>
             <span className={styles.pulseDot} />
-            Android Beta v2.4
+            Android Beta Version
           </span>
         </div>
 
@@ -164,15 +152,6 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
               id="hero-preregister-cta"
             >
               <span>🚀 Pre-Register for Early Access</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleDownload}
-              className={styles.secondaryCta}
-              disabled={downloading}
-              id="hero-download-apk-btn"
-            >
-              <span>{downloading ? '⏳ Starting Download...' : '📥 Download Closed Beta APK'}</span>
             </button>
           </div>
 
@@ -581,7 +560,7 @@ export default function DownloadPage({ onClose }: DownloadPageProps) {
         {/* Footer */}
         <footer className={styles.footerArea}>
           <p>
-            Megha Setu • Built for India by Team Neural Nimbus •{' '}
+            Megha Setu • Built by Team Frame Fusion •{' '}
             <a href="#preregister" onClick={scrollToRegister}>
               Join Priority Beta Access
             </a>
