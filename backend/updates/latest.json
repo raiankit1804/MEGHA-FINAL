@@ -1,9 +1,9 @@
 {
-  "versionCode": 5,
-  "versionName": "1.1.1",
-  "apkUrl": "/updates/weathergpt-1.1.1-5.apk",
-  "sha256": "5b592e6dfdca94d03dbffc8f84536bccbfceac5bd17434764f101d9666dda0c7",
+  "versionCode": 6,
+  "versionName": "1.1.2",
+  "apkUrl": "https://raw.githubusercontent.com/raiankit1804/MEGHA-FINAL/main/backend/updates/weathergpt-1.1.2-6.apk",
+  "sha256": "3c66236a0c3e654555a4e2b8d888eb592b13bc54fe154099f0f672a0fac074b5",
   "sizeBytes": 64670005,
-  "notes": "v1.1.1: connects faster to the server (wakes it and shows Connecting\u2026), clearer message when the server is missing data. v1.1: renamed Megha Setu, City mode, mode dropdown, opens live.",
-  "publishedAt": "2026-10-19T18:16:17Z"
+  "notes": "v1.1.2: updates now come from GitHub (no more reinstalling), mesh works between an online and an offline phone.",
+  "publishedAt": "2026-10-19T18:32:16Z"
 }
