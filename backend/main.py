@@ -105,6 +105,7 @@ from api.pdf import router as pdf_router
 from api.satellite import router as satellite_router
 from api.news import router as news_router
 from api.dev import router as dev_router
+from api.v1 import router as v1_router, UPDATES_DIR
 
 app.include_router(chat_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
@@ -116,6 +117,11 @@ app.include_router(pdf_router, prefix="/api")
 app.include_router(satellite_router, prefix="/api")
 app.include_router(news_router, prefix="/api")
 app.include_router(dev_router, prefix="/api")
+app.include_router(v1_router)  # Android app contract: /v1/*
+
+# Published Android builds (APK files) for the in-app updater; the manifest is GET /v1/app/update
+from fastapi.staticfiles import StaticFiles
+app.mount("/updates", StaticFiles(directory=str(UPDATES_DIR), check_dir=False), name="updates")
 
 # ─── Health Probe ─────────────────────────────────────────────────────────────
 
