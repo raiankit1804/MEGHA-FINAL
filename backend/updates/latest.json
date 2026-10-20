@@ -1,9 +1,9 @@
 {
-  "versionCode": 8,
-  "versionName": "1.1.4",
-  "apkUrl": "https://raw.githubusercontent.com/raiankit1804/MEGHA-FINAL/main/backend/updates/weathergpt-1.1.4-8.apk",
-  "sha256": "8bd92721c742e73093612a094451b1e596ac84f0daf74b1921b6c871d1e3a82d",
-  "sizeBytes": 64846789,
-  "notes": "v1.1.4: new Megha Setu app icon. Includes v1.1.3 fixes: City mode live data, simpler Settings, mesh between online and offline phones.",
-  "publishedAt": "2026-10-19T19:06:56Z"
+  "versionCode": 9,
+  "versionName": "1.1.5",
+  "apkUrl": "https://raw.githubusercontent.com/raiankit1804/MEGHA-FINAL/main/backend/updates/weathergpt-1.1.5-9.apk",
+  "sha256": "c4e018e95208c26919d72c233c03aad8ef82ec5302352aed0fac5c5922221ee1",
+  "sizeBytes": 65340645,
+  "notes": "v1.1.5: new Home with animated weather and place name, Indian AQI, hourly and 7-day forecast, advisories for every mode, Research charts, Marine at the nearest sea point, Mode tab, chat history, light/dark mode, cleaner chat answers.",
+  "publishedAt": "2026-10-20T09:47:26Z"
 }
