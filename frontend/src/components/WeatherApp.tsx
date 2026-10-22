@@ -140,6 +140,17 @@ export default function WeatherApp() {
 
   const currentModeObj = DOMAIN_MODES.find((m) => m.id === session.domainFilter) || DOMAIN_MODES[0];
 
+  // Wake the (possibly sleeping) backend as soon as the app opens, then keep it warm while the tab is visible
+  useEffect(() => {
+    const ping = () => {
+      if (document.visibilityState === 'hidden') return;
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || ''}/health`, { cache: 'no-store' }).catch(() => {});
+    };
+    ping();
+    const id = setInterval(ping, 4 * 60 * 1000);
+    return () => clearInterval(id);
+  }, []);
+
   // Check URL params for Google OAuth token callback & initialize user
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -631,14 +642,14 @@ export default function WeatherApp() {
             className="appleAnnouncementBanner"
             onClick={() => setShowDownload(true)}
             role="banner"
-            aria-label="Megha Setu Android App Waitlist Announcement"
+            aria-label="Megha Setu Android App Beta Announcement"
           >
             <div className="appleBannerContent">
               <span className="appleBannerText">
-                Get early access to the Megha Setu Android app with offline neural weather intelligence.
+                The Megha Setu Android app beta is now available.
               </span>{' '}
               <span className="appleBannerLink">
-                <span>Pre-register now</span>
+                <span>Download beta</span>
                 <svg
                   width="13"
                   height="13"

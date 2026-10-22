@@ -2,8 +2,8 @@ name: Backend Keep Alive
 
 on:
   schedule:
-    # Ping every 10 minutes to prevent Render free instance from idling
-    - cron: '*/10 * * * *'
+    # Render's free tier sleeps after ~15 min idle. GitHub cron can run late, so ping every 5 min.
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -12,11 +12,9 @@ jobs:
     steps:
       - name: Ping Health Check
         run: |
+          # Optional override: set RENDER_BACKEND_URL in repo secrets. Defaults to production.
           TARGET_URL="${{ secrets.RENDER_BACKEND_URL }}"
-          if [ -z "$TARGET_URL" ]; then
-            echo "⚠️ RENDER_BACKEND_URL secret is not set yet in GitHub Secrets."
-            echo "Add your Render URL (e.g., https://your-backend.onrender.com) to GitHub Repo -> Settings -> Secrets."
-            exit 0
-          fi
+          TARGET_URL="${TARGET_URL:-https://megha-backend-01bw.onrender.com}"
           echo "Pinging: ${TARGET_URL}/health"
-          curl -s -I -m 15 "${TARGET_URL}/health" || true
+          # Retry so a cold start (up to ~60s) still gets woken
+          curl -fsS -m 60 --retry 3 --retry-delay 10 --retry-all-errors "${TARGET_URL}/health"
